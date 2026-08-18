@@ -1,0 +1,239 @@
+/* ===========================
+   RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+}
+
+/* ===========================
+   CORES DO SISTEMA
+=========================== */
+
+:root{
+
+    --principal:#FFFFE4;
+    --secundaria:#1E3A8A;
+    --primaria:#D3AF37;
+
+    --texto:#1F2937;
+    --texto-claro:#FFFFFF;
+
+}
+
+/* ===========================
+   BODY
+=========================== */
+
+body{
+
+    background:var(--principal);
+
+    font-family:'Cinzel', serif;
+
+    color:var(--texto);
+
+}
+
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container{
+
+    width:100%;
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    flex-direction:column;
+
+    text-align:center;
+
+    padding:40px;
+
+}
+
+.logo{
+
+    width:170px;
+
+    margin-bottom:30px;
+
+}
+
+h1{
+
+    color:var(--secundaria);
+
+    font-size:54px;
+
+    margin-bottom:15px;
+
+}
+
+h1{
+
+    color:var(--secundaria);
+
+    font-size:54px;
+
+    margin-bottom:15px;
+
+}
+
+p{
+
+    font-size:20px;
+
+    max-width:700px;
+
+    line-height:1.6;
+
+    margin-bottom:40px;
+
+}
+
+.botao{
+
+    background:var(--primaria);
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:16px 45px;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    transition:.3s;
+
+}
+
+.botao:hover{
+
+    background:#b99217;
+
+    transform:translateY(-3px);
+
+}
+
+
+/*=========================
+        HERO
+==========================*/
+
+.hero{
+
+    width:100%;
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:80px;
+
+}
+
+.hero-texto{
+
+    width:45%;
+
+}
+.logo{
+
+    width:150px;
+
+    margin-bottom:25px;
+
+}
+
+.hero h1{
+
+    font-size:60px;
+
+    color:var(--secundaria);
+
+    margin-bottom:20px;
+
+}
+.hero h2{
+
+    font-size:30px;
+
+    color:var(--primaria);
+
+    margin-bottom:25px;
+
+}
+.hero p{
+
+    font-size:18px;
+
+    line-height:1.8;
+
+    margin-bottom:40px;
+
+}
+.btn-principal{
+
+    display:inline-block;
+
+    background:var(--primaria);
+
+    color:white;
+
+    padding:18px 45px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    transition:.4s;
+
+    font-size:18px;
+
+}
+
+.btn-principal:hover{
+
+    transform:translateY(-5px);
+
+    background:#bb9722;
+
+}
+
+.hero-imagem{
+
+    width:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+.hero-imagem img{
+
+    width:90%;
+
+}

@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Calendário | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/calendario.css"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- =========================================
+                    SIDEBAR
+        ========================================== -->
+
+        <aside class="sidebar">
+
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+
+            </div>
+
+
+            <nav class="sidebar-menu">
+
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>Dashboard</span>
+
+                </a>
+
+
+                <a href="professor.html">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                    <span>Professor</span>
+
+                </a>
+
+
+                <a href="alunos.html">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                    <span>Alunos</span>
+
+                </a>
+
+
+                <a href="responsaveis.html">
+
+                    <i class="fa-solid fa-people-roof"></i>
+
+                    <span>Responsáveis</span>
+
+                </a>
+
+
+                <a href="turmas.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <span>Turmas</span>
+
+                </a>
+
+
+                <a href="disciplinas.html">
+
+                    <i class="fa-solid fa-book-open"></i>
+
+                    <span>Disciplinas</span>
+
+                </a>
+
+
+                <a href="chat-professor.html">
+
+                    <i class="fa-solid fa-comments"></i>
+
+                    <span>Chat</span>
+
+                </a>
+
+
+                <a
+                    href="calendario.html"
+                    class="active"
+                >
+
+                    <i class="fa-solid fa-calendar-days"></i>
+
+                    <span>Calendário</span>
+
+                </a>
+
+
+                <a href="notificacoes.html">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    <span>Notificações</span>
+
+                </a>
+
+
+                <a href="#">
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    <span>Configurações</span>
+
+                </a>
+
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    <span>Sair</span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =========================================
+                    CONTEÚDO
+        ========================================== -->
+
+        <main class="calendar-page">
+
+
+            <!-- CABEÇALHO -->
+
+            <header class="calendar-page-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Secretaria
+                    </span>
+
+                    <h1>
+                        Calendário Escolar
+                    </h1>
+
+                    <p>
+                        Organize provas, reuniões, atividades, eventos e datas importantes.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="new-event-button"
+                    id="newEventButton"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Novo evento
+
+                </button>
+
+
+            </header>
+
+
+            <!-- =========================================
+                        RESUMO
+            ========================================== -->
+
+            <section class="calendar-summary">
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>Eventos no mês</span>
+
+                        <strong id="monthEventsCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-file-pen"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>Provas / avaliações</span>
+
+                        <strong id="examEventsCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-people-group"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>Reuniões</span>
+
+                        <strong id="meetingEventsCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon warning">
+
+                        <i class="fa-solid fa-star"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>Próximos eventos</span>
+
+                        <strong id="upcomingEventsCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- =========================================
+                    CONTEÚDO DO CALENDÁRIO
+            ========================================== -->
+
+            <section class="calendar-layout">
+
+
+                <!-- CALENDÁRIO -->
+
+                <div class="calendar-panel">
+
+
+                    <div class="calendar-toolbar">
+
+
+                        <div class="calendar-navigation">
+
+
+                            <button
+                                type="button"
+                                class="calendar-nav-button"
+                                id="previousMonthButton"
+                                aria-label="Mês anterior"
+                            >
+
+                                <i class="fa-solid fa-chevron-left"></i>
+
+                            </button>
+
+
+                            <div>
+
+                                <span class="calendar-year" id="calendarYear">
+                                    2026
+                                </span>
+
+                                <h2 id="calendarMonth">
+                                    Agosto
+                                </h2>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="calendar-nav-button"
+                                id="nextMonthButton"
+                                aria-label="Próximo mês"
+                            >
+
+                                <i class="fa-solid fa-chevron-right"></i>
+
+                            </button>
+
+
+                        </div>
+
+
+                        <div class="calendar-toolbar-actions">
+
+
+                            <button
+                                type="button"
+                                class="today-button"
+                                id="todayButton"
+                            >
+                                Hoje
+                            </button>
+
+
+                            <select id="eventTypeFilter">
+
+                                <option value="">
+                                    Todos os tipos
+                                </option>
+
+                                <option value="Prova">
+                                    Prova
+                                </option>
+
+                                <option value="Atividade">
+                                    Atividade
+                                </option>
+
+                                <option value="Reunião">
+                                    Reunião
+                                </option>
+
+                                <option value="Evento">
+                                    Evento
+                                </option>
+
+                                <option value="Feriado">
+                                    Feriado
+                                </option>
+
+                                <option value="Aviso">
+                                    Aviso
+                                </option>
+
+                            </select>
+
+
+                            <select id="eventClassFilter">
+
+                                <option value="">
+                                    Todas as turmas
+                                </option>
+
+                            </select>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="weekdays">
+
+                        <span>Dom</span>
+                        <span>Seg</span>
+                        <span>Ter</span>
+                        <span>Qua</span>
+                        <span>Qui</span>
+                        <span>Sex</span>
+                        <span>Sáb</span>
+
+                    </div>
+
+
+                    <div
+                        class="calendar-grid"
+                        id="calendarGrid"
+                    ></div>
+
+
+                </div>
+
+
+                <!-- PRÓXIMOS EVENTOS -->
+
+                <aside class="upcoming-panel">
+
+
+                    <div class="upcoming-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                Agenda
+                            </span>
+
+                            <h2>
+                                Próximos eventos
+                            </h2>
+
+                        </div>
+
+                        <i class="fa-solid fa-clock"></i>
+
+                    </div>
+
+
+                    <div
+                        class="upcoming-list"
+                        id="upcomingEventsList"
+                    ></div>
+
+
+                    <div
+                        class="upcoming-empty"
+                        id="upcomingEventsEmpty"
+                    >
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <strong>
+                            Nenhum evento próximo
+                        </strong>
+
+                        <span>
+                            Novos eventos aparecerão aqui.
+                        </span>
+
+                    </div>
+
+
+                </aside>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =========================================
+            MODAL CRIAR / EDITAR EVENTO
+    ========================================== -->
+
+    <div
+        class="event-modal"
+        id="eventModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="event-modal-overlay"></div>
+
+
+        <div class="event-modal-box">
+
+
+            <div class="event-modal-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Calendário escolar
+                    </span>
+
+                    <h2 id="eventModalTitle">
+                        Novo evento
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="event-modal-close"
+                    id="eventModalClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <form
+                class="event-form"
+                id="eventForm"
+            >
+
+
+                <input
+                    type="hidden"
+                    id="eventId"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="eventTitle">
+                        Título
+                    </label>
+
+                    <input
+                        type="text"
+                        id="eventTitle"
+                        required
+                        maxlength="80"
+                        placeholder="Ex: Avaliação de Matemática"
+                    >
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="eventType">
+                            Tipo
+                        </label>
+
+                        <select
+                            id="eventType"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="Prova">
+                                Prova
+                            </option>
+
+                            <option value="Atividade">
+                                Atividade
+                            </option>
+
+                            <option value="Reunião">
+                                Reunião
+                            </option>
+
+                            <option value="Evento">
+                                Evento
+                            </option>
+
+                            <option value="Feriado">
+                                Feriado
+                            </option>
+
+                            <option value="Aviso">
+                                Aviso
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="eventClass">
+                            Turma
+                        </label>
+
+                        <select id="eventClass">
+
+                            <option value="">
+                                Toda a escola
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="eventDate">
+                            Data
+                        </label>
+
+                        <input
+                            type="date"
+                            id="eventDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="eventTime">
+                            Horário
+                        </label>
+
+                        <input
+                            type="time"
+                            id="eventTime"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventLocation">
+                        Local
+                    </label>
+
+                    <input
+                        type="text"
+                        id="eventLocation"
+                        maxlength="80"
+                        placeholder="Ex: Sala 05, Auditório ou Quadra"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="eventDescription">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="eventDescription"
+                        maxlength="400"
+                        placeholder="Informações adicionais sobre o evento..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="event-form-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="eventCancelButton"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Salvar evento
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+            VISUALIZAR EVENTO
+    ========================================== -->
+
+    <div
+        class="event-view-modal"
+        id="eventViewModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="event-view-overlay"></div>
+
+
+        <div class="event-view-box">
+
+
+            <div class="event-view-header">
+
+
+                <div class="event-view-icon">
+
+                    <i
+                        class="fa-solid fa-calendar-day"
+                        id="viewEventIcon"
+                    ></i>
+
+                </div>
+
+
+                <div>
+
+                    <span
+                        class="event-type-label"
+                        id="viewEventType"
+                    >
+                        Evento
+                    </span>
+
+                    <h2 id="viewEventTitle">
+                        Evento
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="event-view-close"
+                    id="eventViewClose"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <div class="event-view-content">
+
+
+                <div class="event-view-item">
+
+                    <i class="fa-solid fa-calendar"></i>
+
+                    <div>
+
+                        <span>Data</span>
+
+                        <strong id="viewEventDate">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-view-item">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                    <div>
+
+                        <span>Horário</span>
+
+                        <strong id="viewEventTime">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-view-item">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <div>
+
+                        <span>Turma</span>
+
+                        <strong id="viewEventClass">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-view-item">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <div>
+
+                        <span>Local</span>
+
+                        <strong id="viewEventLocation">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-description-box">
+
+                    <span>
+                        Descrição
+                    </span>
+
+                    <p id="viewEventDescription">
+                        -
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="event-view-actions">
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="editEventButton"
+                >
+
+                    <i class="fa-solid fa-pen"></i>
+
+                    Editar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delete-button"
+                    id="deleteEventButton"
+                >
+
+                    <i class="fa-solid fa-trash"></i>
+
+                    Excluir
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================================
+            CONFIRMAR EXCLUSÃO
+    ========================================== -->
+
+    <div
+        class="delete-event-modal"
+        id="deleteEventModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="delete-event-overlay"></div>
+
+
+        <div class="delete-event-box">
+
+
+            <div class="delete-event-icon">
+
+                <i class="fa-solid fa-trash"></i>
+
+            </div>
+
+
+            <h2>
+                Excluir evento
+            </h2>
+
+
+            <p id="deleteEventMessage">
+                Deseja realmente excluir este evento?
+            </p>
+
+
+            <div class="delete-event-actions">
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="deleteEventCancel"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delete-button"
+                    id="deleteEventConfirm"
+                >
+                    Excluir
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <script src="../js/calendario.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,2709 @@
+/*====================================================
+                    DASHBOARD
+                 PrimeWay School
+====================================================*/
+
+:root{
+
+    --principal:#FFFFE4;
+
+    --secundaria:#1E3A8A;
+
+    --primaria:#D3AF37;
+
+    --texto:#1F2937;
+
+}
+/*====================================================
+                    GERAL
+====================================================*/
+
+body{
+
+    margin:0;
+    padding:0;
+
+    background:var(--principal);
+
+    font-family:'Cinzel', serif;
+
+    overflow:hidden;
+
+}
+
+.dashboard{
+
+    display:flex;
+
+    width:100%;
+
+    height:100vh;
+
+}
+
+
+/*====================================================
+                    SIDEBAR
+====================================================*/
+
+.sidebar{
+
+    width:280px;
+
+    background:var(--secundaria);
+
+    color:white;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    box-shadow:5px 0 20px rgba(0,0,0,.08);
+
+}
+
+
+/*====================================================
+                    LOGO
+====================================================*/
+
+.logo{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:35px 20px;
+
+    border-bottom:1px solid rgba(255,255,255,.12);
+
+}
+
+.logo img{
+
+    width:95px;
+
+    margin-bottom:15px;
+
+}
+
+.logo h2{
+
+    font-size:22px;
+
+    color:white;
+
+    text-align:center;
+
+}
+
+
+/*====================================================
+                    MENU
+====================================================*/
+
+.sidebar nav{
+
+    flex:1;
+
+    margin-top:20px;
+
+}
+
+.sidebar ul{
+
+    list-style:none;
+
+    padding:0;
+
+}
+
+.sidebar li{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:16px 28px;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+    font-size:16px;
+
+}
+
+.sidebar li i{
+
+    width:22px;
+
+    text-align:center;
+
+    font-size:18px;
+
+}
+
+.sidebar li:hover{
+
+    background:rgba(255,255,255,.08);
+
+}
+
+.sidebar li.ativo{
+
+    background:var(--primaria);
+
+    color:white;
+
+    border-left:6px solid white;
+
+}
+
+
+/*====================================================
+                CONTEÚDO
+====================================================*/
+
+.conteudo{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+/*====================================================
+                    HEADER
+====================================================*/
+
+.topo{
+
+    height:85px;
+
+    background:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 35px;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+
+}
+
+
+/*====================================================
+                BARRA DE PESQUISA
+====================================================*/
+
+.pesquisa{
+
+    width:380px;
+
+    height:48px;
+
+    background:#F7F7F7;
+
+    border-radius:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 18px;
+
+}
+
+.pesquisa i{
+
+    color:#8A8A8A;
+
+}
+
+.pesquisa input{
+
+    border:none;
+
+    background:none;
+
+    outline:none;
+
+    width:100%;
+
+    margin-left:12px;
+
+    font-family:inherit;
+
+    font-size:15px;
+
+}
+
+
+/*====================================================
+                    USUÁRIO
+====================================================*/
+
+.usuario{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.usuario img{
+
+    width:50px;
+
+    height:50px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+
+    border:3px solid var(--primaria);
+
+}
+
+.usuario h3{
+
+    margin:0;
+
+    color:var(--texto);
+
+    font-size:18px;
+
+}
+
+.usuario p{
+
+    margin:3px 0 0;
+
+    color:#777;
+
+    font-size:14px;
+
+}
+
+
+/*====================================================
+            BOTÃO NOTIFICAÇÃO
+====================================================*/
+
+.btn-notificacao{
+
+    width:48px;
+
+    height:48px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#F4F4F4;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.btn-notificacao i{
+
+    color:var(--secundaria);
+
+    font-size:18px;
+
+}
+
+.btn-notificacao:hover{
+
+    background:var(--primaria);
+
+    transform:translateY(-3px);
+
+}
+
+.btn-notificacao:hover i{
+
+    color:white;
+
+}
+
+
+/*====================================================
+                ÁREA PRINCIPAL
+====================================================*/
+
+.pagina{
+
+    flex:1;
+
+    padding:35px;
+
+    overflow-y:auto;
+
+    background:var(--principal);
+
+}
+
+.pagina h1{
+
+    color:var(--secundaria);
+
+    font-size:36px;
+
+    margin-bottom:12px;
+
+}
+
+.pagina p{
+
+    color:var(--texto);
+
+    font-size:18px;
+
+}
+
+
+/*====================================================
+                SCROLLBAR
+====================================================*/
+
+::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--primaria);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#F3F3F3;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:1100px){
+
+    .sidebar{
+
+        width:230px;
+
+    }
+
+    .pesquisa{
+
+        width:260px;
+
+    }
+
+}
+
+
+@media(max-width:900px){
+
+    .sidebar{
+
+        width:90px;
+
+    }
+
+    .sidebar h2{
+
+        display:none;
+
+    }
+
+    .sidebar li span{
+
+        display:none;
+
+    }
+
+    .sidebar li{
+
+        justify-content:center;
+
+        padding:18px;
+
+    }
+
+    .logo img{
+
+        width:60px;
+
+    }
+
+}
+
+
+@media(max-width:700px){
+
+    .topo{
+
+        flex-direction:column;
+
+        justify-content:center;
+
+        gap:15px;
+
+        height:130px;
+
+        padding:20px;
+
+    }
+
+    .pesquisa{
+
+        width:100%;
+
+    }
+
+}
+
+/*====================================================
+                CARDS DO DASHBOARD
+====================================================*/
+
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:25px;
+
+    margin-bottom:35px;
+
+}
+
+
+/*================ CARD =================*/
+
+.dashboard-card{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:20px;
+
+    box-shadow:0 12px 30px rgba(0,0,0,.08);
+
+    transition:
+    transform .30s,
+    box-shadow .30s;
+
+    cursor:pointer;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.12);
+
+}
+
+
+/*================ ÍCONE =================*/
+
+.dashboard-card-icon{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    color:white;
+
+    font-size:28px;
+
+}
+
+
+/*================ CORES =================*/
+
+.alunos{
+
+    background:#1E3A8A;
+
+}
+
+.professores{
+
+    background:#D3AF37;
+
+}
+
+.turmas{
+
+    background:#2563EB;
+
+}
+
+.media{
+
+    background:#10B981;
+
+}
+
+
+/*================ TEXTO =================*/
+
+.dashboard-card-text{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.dashboard-card-text span{
+
+    color:#6B7280;
+
+    font-size:15px;
+
+    margin-bottom:8px;
+
+}
+
+.dashboard-card-text h2{
+
+    margin:0;
+
+    color:#1F2937;
+
+    font-size:30px;
+
+}
+
+
+/*================ RESPONSIVO =================*/
+
+@media(max-width:1200px){
+
+    .dashboard-cards{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .dashboard-cards{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+/*====================================================
+            PAINEL DE ATIVIDADES RECENTES
+====================================================*/
+
+.recent-section{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    margin-bottom:35px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+                    CABEÇALHO
+====================================================*/
+
+.recent-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.recent-header h2{
+
+    margin:0 0 6px;
+
+    color:var(--secundaria);
+
+    font-size:24px;
+
+}
+
+.recent-header p{
+
+    margin:0;
+
+    color:#6B7280;
+
+    font-size:14px;
+
+}
+
+
+/*====================================================
+                    FILTRO
+====================================================*/
+
+.recent-filter{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:10px 18px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:10px;
+
+    background:#FFFFFF;
+
+    color:var(--secundaria);
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.recent-filter:hover{
+
+    background:var(--principal);
+
+    border-color:var(--primaria);
+
+}
+
+
+/*====================================================
+                    LISTA
+====================================================*/
+
+.recent-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+/*====================================================
+                ITEM DA ATIVIDADE
+====================================================*/
+
+.recent-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:20px 0;
+
+    border-bottom:1px solid #EEEEEE;
+
+}
+
+.recent-item:last-child{
+
+    border-bottom:none;
+
+    padding-bottom:0;
+
+}
+
+
+/*====================================================
+                    ÍCONE
+====================================================*/
+
+.recent-icon{
+
+    width:52px;
+
+    height:52px;
+
+    min-width:52px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+}
+
+
+/* Cores dos tipos */
+
+.recent-icon.nota{
+
+    background:#E8EEF9;
+
+    color:var(--secundaria);
+
+}
+
+.recent-icon.atividade{
+
+    background:#FBF3D8;
+
+    color:#A47D00;
+
+}
+
+.recent-icon.frequencia{
+
+    background:#E5F6EF;
+
+    color:#16805B;
+
+}
+
+.recent-icon.aviso{
+
+    background:#FFF0D9;
+
+    color:#B56B00;
+
+}
+
+
+/*====================================================
+                    INFORMAÇÕES
+====================================================*/
+
+.recent-info{
+
+    flex:1;
+
+}
+
+.recent-info h3{
+
+    margin:0 0 5px;
+
+    color:#1F2937;
+
+    font-size:16px;
+
+}
+
+.recent-info p{
+
+    margin:0 0 7px;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:14px;
+
+}
+
+.recent-info span{
+
+    color:#9CA3AF;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+}
+
+.recent-info span i{
+
+    margin-right:4px;
+
+}
+
+
+/*====================================================
+                    STATUS
+====================================================*/
+
+.recent-status{
+
+    padding:6px 12px;
+
+    border-radius:20px;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    white-space:nowrap;
+
+}
+
+.recent-status.sucesso{
+
+    background:#DCFCE7;
+
+    color:#166534;
+
+}
+
+.recent-status.novo{
+
+    background:#E8EEF9;
+
+    color:var(--secundaria);
+
+}
+
+.recent-status.aviso-status{
+
+    background:#FEF3C7;
+
+    color:#92400E;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:700px){
+
+    .recent-section{
+
+        padding:20px;
+
+    }
+
+    .recent-header{
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+    .recent-header h2{
+
+        font-size:20px;
+
+    }
+
+    .recent-item{
+
+        align-items:flex-start;
+
+    }
+
+    .recent-status{
+
+        display:none;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .recent-header{
+
+        flex-direction:column;
+
+    }
+
+    .recent-filter{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+}
+
+
+/*====================================================
+        CALENDÁRIO + AVISOS
+====================================================*/
+
+.dashboard-two-columns{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:25px;
+
+    margin-bottom:35px;
+
+}
+
+
+/*====================================================
+                PAINEL
+====================================================*/
+
+.dashboard-panel{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+            CABEÇALHO DO PAINEL
+====================================================*/
+
+.panel-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+
+}
+
+.panel-header h2{
+
+    margin:0 0 5px;
+
+    color:var(--secundaria);
+
+    font-size:22px;
+
+}
+
+.panel-header p{
+
+    margin:0;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:13px;
+
+}
+
+
+/*====================================================
+            BOTÃO DO CABEÇALHO
+====================================================*/
+
+.panel-action{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:var(--principal);
+
+    color:var(--secundaria);
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.panel-action:hover{
+
+    background:var(--primaria);
+
+    color:white;
+
+    transform:translateY(-2px);
+
+}
+
+
+/*====================================================
+                CALENDÁRIO
+====================================================*/
+
+.calendar-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.calendar-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:16px 0;
+
+    border-bottom:1px solid #EEEEEE;
+
+}
+
+.calendar-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+/* DATA */
+
+.calendar-date{
+
+    width:55px;
+
+    min-width:55px;
+
+    height:60px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--principal);
+
+    border-radius:12px;
+
+    border:1px solid rgba(211,175,55,.25);
+
+}
+
+.calendar-day{
+
+    color:var(--secundaria);
+
+    font-size:22px;
+
+    font-weight:600;
+
+    line-height:1;
+
+}
+
+.calendar-month{
+
+    color:var(--primaria);
+
+    font-family:Arial, sans-serif;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+    margin-top:5px;
+
+}
+
+
+/* INFORMAÇÕES */
+
+.calendar-info{
+
+    flex:1;
+
+}
+
+.calendar-info h3{
+
+    margin:0 0 6px;
+
+    color:#1F2937;
+
+    font-size:15px;
+
+}
+
+.calendar-info p{
+
+    margin:0 0 5px;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+}
+
+.calendar-info p i{
+
+    margin-right:5px;
+
+}
+
+.calendar-info span{
+
+    color:#9CA3AF;
+
+    font-family:Arial, sans-serif;
+
+    font-size:11px;
+
+}
+
+
+/* BOTÃO DO CALENDÁRIO */
+
+.calendar-button,
+.notice-button{
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:12px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:var(--secundaria);
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.calendar-button:hover,
+.notice-button:hover{
+
+    border-color:var(--primaria);
+
+    background:var(--principal);
+
+}
+
+.calendar-button i,
+.notice-button i{
+
+    margin-left:8px;
+
+    transition:.3s;
+
+}
+
+.calendar-button:hover i,
+.notice-button:hover i{
+
+    transform:translateX(4px);
+
+}
+
+
+/*====================================================
+                    AVISOS
+====================================================*/
+
+.notice-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+.notice-item{
+
+    display:flex;
+
+    gap:15px;
+
+    padding:16px 0;
+
+    border-bottom:1px solid #EEEEEE;
+
+}
+
+.notice-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+/* ÍCONE */
+
+.notice-icon{
+
+    width:45px;
+
+    height:45px;
+
+    min-width:45px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.notice-icon.importante{
+
+    background:#FEF2F2;
+
+    color:#DC2626;
+
+}
+
+.notice-icon.informativo{
+
+    background:#EFF6FF;
+
+    color:#2563EB;
+
+}
+
+.notice-icon.evento{
+
+    background:#FFFBEB;
+
+    color:#D3AF37;
+
+}
+
+
+/* INFORMAÇÕES */
+
+.notice-info{
+
+    flex:1;
+
+}
+
+.notice-title{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:6px;
+
+}
+
+.notice-title h3{
+
+    margin:0;
+
+    color:#1F2937;
+
+    font-size:14px;
+
+}
+
+
+/* TAG */
+
+.notice-tag{
+
+    padding:3px 8px;
+
+    border-radius:10px;
+
+    font-family:Arial, sans-serif;
+
+    font-size:9px;
+
+    font-weight:bold;
+
+}
+
+.importante-tag{
+
+    background:#FEE2E2;
+
+    color:#B91C1C;
+
+}
+
+.informativo-tag{
+
+    background:#DBEAFE;
+
+    color:#1D4ED8;
+
+}
+
+.evento-tag{
+
+    background:#FEF3C7;
+
+    color:#92400E;
+
+}
+
+
+/* TEXTO */
+
+.notice-info p{
+
+    margin:0 0 6px;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+    line-height:1.5;
+
+}
+
+.notice-time{
+
+    color:#9CA3AF;
+
+    font-family:Arial, sans-serif;
+
+    font-size:10px;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:1000px){
+
+    .dashboard-two-columns{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+
+
+@media(max-width:600px){
+
+    .dashboard-panel{
+
+        padding:20px;
+
+    }
+
+    .panel-header h2{
+
+        font-size:19px;
+
+    }
+
+    .calendar-info h3{
+
+        font-size:14px;
+
+    }
+
+    .notice-title{
+
+        align-items:flex-start;
+
+        flex-direction:column;
+
+        gap:5px;
+
+    }
+
+}
+
+
+/*====================================================
+            DESEMPENHO ACADÊMICO
+====================================================*/
+
+.dashboard-performance{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    margin-bottom:35px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+                CABEÇALHO
+====================================================*/
+
+.performance-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.performance-header h2{
+
+    margin:0 0 6px;
+
+    color:var(--secundaria);
+
+    font-size:22px;
+
+}
+
+.performance-header p{
+
+    margin:0;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:13px;
+
+}
+
+
+/*====================================================
+                    FILTRO
+====================================================*/
+
+.performance-select{
+
+    padding:10px 35px 10px 14px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:var(--secundaria);
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    outline:none;
+
+}
+
+.performance-select:focus{
+
+    border-color:var(--primaria);
+
+}
+
+
+/*====================================================
+                    GRÁFICO
+====================================================*/
+
+.performance-chart{
+
+    display:flex;
+
+    height:300px;
+
+}
+
+
+/* EIXO Y */
+
+.chart-y-axis{
+
+    width:40px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    align-items:flex-end;
+
+    padding:0 10px 35px 0;
+
+}
+
+.chart-y-axis span{
+
+    color:#9CA3AF;
+
+    font-family:Arial, sans-serif;
+
+    font-size:11px;
+
+}
+
+
+/* ÁREA */
+
+.chart-area{
+
+    flex:1;
+
+    position:relative;
+
+    border-left:1px solid #E5E7EB;
+
+    border-bottom:1px solid #E5E7EB;
+
+}
+
+
+/* LINHAS */
+
+.chart-grid{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+.chart-grid span{
+
+    width:100%;
+
+    border-top:1px dashed #E5E7EB;
+
+}
+
+
+/* BARRAS */
+
+.chart-bars{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    align-items:flex-end;
+
+    padding:0 8%;
+
+}
+
+.chart-column{
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-end;
+
+    align-items:center;
+
+    gap:10px;
+
+}
+
+.chart-bar{
+
+    width:65px;
+
+    min-height:10px;
+
+    background:var(--secundaria);
+
+    border-radius:10px 10px 0 0;
+
+    position:relative;
+
+    transition:
+
+        height .8s ease,
+
+        transform .3s ease;
+
+}
+
+.chart-bar:hover{
+
+    background:var(--primaria);
+
+    transform:scaleX(1.08);
+
+}
+
+.chart-bar::before{
+
+    content:attr(data-value);
+
+    position:absolute;
+
+    top:-25px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    color:var(--secundaria);
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+}
+
+.chart-column > span{
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:11px;
+
+    white-space:nowrap;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:700px){
+
+    .dashboard-performance{
+
+        padding:20px;
+
+    }
+
+    .performance-header{
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+    .performance-header h2{
+
+        font-size:19px;
+
+    }
+
+    .chart-bar{
+
+        width:45px;
+
+    }
+
+    .chart-bars{
+
+        padding:0 3%;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .performance-header{
+
+        flex-direction:column;
+
+    }
+
+    .performance-select{
+
+        width:100%;
+
+    }
+
+}
+
+/*====================================================
+                FREQUÊNCIA DOS ALUNOS
+====================================================*/
+
+.dashboard-attendance{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    margin-bottom:35px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+                    CABEÇALHO
+====================================================*/
+
+.attendance-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:30px;
+
+}
+
+.attendance-header h2{
+
+    margin:0 0 6px;
+
+    color:var(--secundaria);
+
+    font-size:22px;
+
+}
+
+.attendance-header p{
+
+    margin:0;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:13px;
+
+}
+
+
+/*====================================================
+                    SELECT
+====================================================*/
+
+.attendance-select{
+
+    padding:10px 35px 10px 14px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:var(--secundaria);
+
+    font-family:inherit;
+
+    cursor:pointer;
+
+    outline:none;
+
+}
+
+.attendance-select:focus{
+
+    border-color:var(--primaria);
+
+}
+
+
+/*====================================================
+                    CONTEÚDO
+====================================================*/
+
+.attendance-content{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    align-items:center;
+
+    gap:50px;
+
+}
+
+
+/*====================================================
+                GRÁFICO CIRCULAR
+====================================================*/
+
+.attendance-chart{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.donut-chart{
+
+    width:220px;
+
+    height:220px;
+
+    border-radius:50%;
+
+    background:
+
+        conic-gradient(
+
+            var(--secundaria) 0% 92%,
+
+            #E5E7EB 92% 100%
+
+        );
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    position:relative;
+
+}
+
+.donut-chart::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:155px;
+
+    height:155px;
+
+    border-radius:50%;
+
+    background:#FFFFFF;
+
+}
+
+.donut-center{
+
+    position:relative;
+
+    z-index:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.donut-center strong{
+
+    color:var(--secundaria);
+
+    font-size:34px;
+
+}
+
+.donut-center span{
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+    margin-top:4px;
+
+}
+
+
+/*====================================================
+                ESTATÍSTICAS
+====================================================*/
+
+.attendance-info{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.attendance-stat{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:16px;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:14px;
+
+    transition:.3s;
+
+}
+
+.attendance-stat:hover{
+
+    transform:translateX(5px);
+
+    border-color:rgba(211,175,55,.45);
+
+}
+
+.attendance-stat-icon{
+
+    width:48px;
+
+    height:48px;
+
+    min-width:48px;
+
+    border-radius:12px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:18px;
+
+}
+
+.attendance-stat-icon.presenca{
+
+    background:#E8F7EF;
+
+    color:#16805B;
+
+}
+
+.attendance-stat-icon.falta{
+
+    background:#FEF2F2;
+
+    color:#DC2626;
+
+}
+
+.attendance-stat-icon.media-frequencia{
+
+    background:#FBF3D8;
+
+    color:#A47D00;
+
+}
+
+.attendance-stat span{
+
+    display:block;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:13px;
+
+    margin-bottom:5px;
+
+}
+
+.attendance-stat strong{
+
+    color:#1F2937;
+
+    font-size:20px;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:800px){
+
+    .attendance-content{
+
+        grid-template-columns:1fr;
+
+        gap:30px;
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .dashboard-attendance{
+
+        padding:20px;
+
+    }
+
+    .attendance-header{
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+    .attendance-header h2{
+
+        font-size:19px;
+
+    }
+
+    .donut-chart{
+
+        width:180px;
+
+        height:180px;
+
+    }
+
+    .donut-chart::before{
+
+        width:125px;
+
+        height:125px;
+
+    }
+
+    .donut-center strong{
+
+        font-size:28px;
+
+    }
+
+}
+
+@media(max-width:500px){
+
+    .attendance-header{
+
+        flex-direction:column;
+
+    }
+
+    .attendance-select{
+
+        width:100%;
+
+    }
+
+}
+
+/*====================================================
+                RESUMO DE INDICADORES
+====================================================*/
+
+.dashboard-indicators{
+
+    background:#FFFFFF;
+
+    border-radius:18px;
+
+    padding:28px;
+
+    margin-bottom:35px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+                    CABEÇALHO
+====================================================*/
+
+.indicators-header{
+
+    margin-bottom:25px;
+
+}
+
+.indicators-header h2{
+
+    margin:0 0 6px;
+
+    color:var(--secundaria);
+
+    font-size:22px;
+
+}
+
+.indicators-header p{
+
+    margin:0;
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:13px;
+
+}
+
+
+/*====================================================
+                    GRID
+====================================================*/
+
+.indicators-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:20px;
+
+}
+
+
+/*====================================================
+                INDICADOR
+====================================================*/
+
+.indicator-card{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:15px;
+
+    padding:20px;
+
+    border:1px solid #EEEEEE;
+
+    border-radius:15px;
+
+    transition:.3s;
+
+}
+
+.indicator-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:rgba(211,175,55,.45);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+}
+
+
+/*====================================================
+                    ÍCONES
+====================================================*/
+
+.indicator-icon{
+
+    width:50px;
+
+    height:50px;
+
+    min-width:50px;
+
+    border-radius:13px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:19px;
+
+}
+
+
+/* Atividades */
+
+.indicator-icon.pendentes{
+
+    background:#EFF6FF;
+
+    color:#2563EB;
+
+}
+
+
+/* Alunos em atenção */
+
+.indicator-icon.atencao{
+
+    background:#FFF7ED;
+
+    color:#EA580C;
+
+}
+
+
+/* Baixa frequência */
+
+.indicator-icon.baixa-frequencia{
+
+    background:#FEF2F2;
+
+    color:#DC2626;
+
+}
+
+
+/* Notas */
+
+.indicator-icon.notas-pendentes{
+
+    background:#FFFBEB;
+
+    color:#A47D00;
+
+}
+
+
+/*====================================================
+                    TEXTO
+====================================================*/
+
+.indicator-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.indicator-content span{
+
+    color:#6B7280;
+
+    font-family:Arial, sans-serif;
+
+    font-size:12px;
+
+    margin-bottom:5px;
+
+}
+
+.indicator-content strong{
+
+    color:#1F2937;
+
+    font-size:27px;
+
+    line-height:1.2;
+
+    margin-bottom:5px;
+
+}
+
+.indicator-content small{
+
+    color:#9CA3AF;
+
+    font-family:Arial, sans-serif;
+
+    font-size:10px;
+
+    line-height:1.4;
+
+}
+
+
+/*====================================================
+                RESPONSIVIDADE
+====================================================*/
+
+@media(max-width:1200px){
+
+    .indicators-grid{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+}
+
+@media(max-width:650px){
+
+    .dashboard-indicators{
+
+        padding:20px;
+
+    }
+
+    .indicators-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .indicators-header h2{
+
+        font-size:19px;
+
+    }
+
+}
+/*====================================================
+            RESPONSIVIDADE FINAL
+            PRIMEWAY SCHOOL
+====================================================*/
+
+
+/*====================================================
+                TABLETS
+====================================================*/
+
+@media (max-width: 1000px){
+
+    .dashboard-cards{
+
+        grid-template-columns:repeat(2, 1fr);
+
+    }
+
+
+    .dashboard-two-columns{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .attendance-content{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .indicators-grid{
+
+        grid-template-columns:repeat(2, 1fr);
+
+    }
+
+}
+
+
+/*====================================================
+                CELULARES
+====================================================*/
+
+@media (max-width: 700px){
+
+    .dashboard-cards{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .indicators-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+
+    .dashboard-performance{
+
+        padding:20px;
+
+    }
+
+
+    .dashboard-attendance{
+
+        padding:20px;
+
+    }
+
+
+    .dashboard-indicators{
+
+        padding:20px;
+
+    }
+
+
+    .dashboard-panel{
+
+        padding:20px;
+
+    }
+
+
+    .performance-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+
+    .performance-select{
+
+        width:100%;
+
+    }
+
+
+    .attendance-header{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+    }
+
+
+    .attendance-select{
+
+        width:100%;
+
+    }
+
+}
+
+
+/*====================================================
+            CELULARES PEQUENOS
+====================================================*/
+
+@media (max-width: 500px){
+
+    .pagina{
+
+        padding:20px 15px;
+
+    }
+
+
+    .dashboard-title{
+
+        font-size:24px;
+
+    }
+
+
+    .dashboard-subtitle{
+
+        font-size:12px;
+
+    }
+
+
+    .card-content h3{
+
+        font-size:20px;
+
+    }
+
+
+    .calendar-item{
+
+        gap:10px;
+
+    }
+
+
+    .calendar-date{
+
+        width:48px;
+
+        min-width:48px;
+
+        height:55px;
+
+    }
+
+
+    .calendar-day{
+
+        font-size:19px;
+
+    }
+
+
+    .calendar-info h3{
+
+        font-size:13px;
+
+    }
+
+
+    .notice-title{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+
+    .chart-bar{
+
+        width:40px;
+
+    }
+
+
+    .donut-chart{
+
+        width:170px;
+
+        height:170px;
+
+    }
+
+
+    .donut-chart::before{
+
+        width:118px;
+
+        height:118px;
+
+    }
+
+
+    .donut-center strong{
+
+        font-size:26px;
+
+    }
+
+}

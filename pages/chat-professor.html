@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Chat | Professor | PrimeWay School</title>
+
+    <!-- COMPONENTES GLOBAIS -->
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <!-- CSS DO CHAT -->
+    <link
+        rel="stylesheet"
+        href="../css/chat.css"
+    >
+
+    <!-- FONTE CINZEL -->
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- FONT AWESOME -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <main class="chat-page">
+
+        <!-- =========================================
+                    CABEÇALHO
+        ========================================== -->
+
+        <header class="chat-header">
+
+            <div class="chat-header-title">
+
+                <button
+                    type="button"
+                    class="chat-back-button"
+                    onclick="history.back()"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+
+                <div>
+
+                    <span class="section-label">
+                        Comunicação
+                    </span>
+
+                    <h1>
+                        Chat do Professor
+                    </h1>
+
+                    <p>
+                        Comunique-se com a equipe escolar e suas turmas.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chat-header-icon">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+
+        </header>
+
+
+        <!-- =========================================
+                    ÁREA PRINCIPAL DO CHAT
+        ========================================== -->
+
+        <section class="chat-container">
+
+            <!-- =====================================
+                    LISTA DE CONVERSAS
+            ====================================== -->
+
+            <aside class="chat-sidebar">
+
+                <div class="chat-sidebar-header">
+
+                    <h2>
+                        Conversas
+                    </h2>
+
+                    <button
+                        type="button"
+                        class="new-chat-button"
+                        id="newChatButton"
+                        aria-label="Nova conversa"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- PESQUISA -->
+
+                <div class="chat-search">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        placeholder="Pesquisar conversa..."
+                    >
+
+                </div>
+
+
+                <!-- CONVERSAS -->
+
+                <div class="chat-conversations">
+
+                    <!-- COORDENAÇÃO -->
+
+                    <button
+                        type="button"
+                        class="conversation active"
+                    >
+
+                        <div class="conversation-avatar">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+
+                        <div class="conversation-info">
+
+                            <strong>
+                                Coordenação
+                            </strong>
+
+                            <span>
+                                Reunião pedagógica amanhã...
+                            </span>
+
+                        </div>
+
+                        <div class="conversation-meta">
+
+                            <small>
+                                08:42
+                            </small>
+
+                            <b>
+                                2
+                            </b>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- 1º ANO A -->
+
+                    <button
+                        type="button"
+                        class="conversation"
+                    >
+
+                        <div class="conversation-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div class="conversation-info">
+
+                            <strong>
+                                1º Ano A
+                            </strong>
+
+                            <span>
+                                Atividade publicada.
+                            </span>
+
+                        </div>
+
+                        <div class="conversation-meta">
+
+                            <small>
+                                Ontem
+                            </small>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- 2º ANO B -->
+
+                    <button
+                        type="button"
+                        class="conversation"
+                    >
+
+                        <div class="conversation-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div class="conversation-info">
+
+                            <strong>
+                                2º Ano B
+                            </strong>
+
+                            <span>
+                                Professor, podemos conversar?
+                            </span>
+
+                        </div>
+
+                        <div class="conversation-meta">
+
+                            <small>
+                                Ontem
+                            </small>
+
+                            <b>
+                                1
+                            </b>
+
+                        </div>
+
+                    </button>
+
+
+                    <!-- SECRETARIA -->
+
+                    <button
+                        type="button"
+                        class="conversation"
+                    >
+
+                        <div class="conversation-avatar">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+
+                        <div class="conversation-info">
+
+                            <strong>
+                                Secretaria
+                            </strong>
+
+                            <span>
+                                Documento disponível.
+                            </span>
+
+                        </div>
+
+                        <div class="conversation-meta">
+
+                            <small>
+                                08/08
+                            </small>
+
+                        </div>
+
+                    </button>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =====================================
+                    CONVERSA ATUAL
+            ====================================== -->
+
+            <section class="chat-conversation">
+
+                <!-- CABEÇALHO -->
+
+                <div class="conversation-header">
+
+                    <!-- VOLTAR PARA LISTA NO MOBILE -->
+
+                    <button
+                        type="button"
+                        class="mobile-conversations-button"
+                        id="mobileConversationsButton"
+                        aria-label="Voltar para conversas"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+
+
+                    <div class="conversation-person">
+
+                        <div class="conversation-avatar large">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+
+                        <div>
+
+                            <h2>
+                                Coordenação
+                            </h2>
+
+                            <span>
+                                Equipe pedagógica
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- OPÇÕES -->
+
+                    <div class="conversation-actions">
+
+                        <button
+                            type="button"
+                            class="conversation-options"
+                            id="conversationOptionsButton"
+                            aria-label="Opções da conversa"
+                            aria-expanded="false"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+
+
+                        <div
+                            class="conversation-menu"
+                            id="conversationMenu"
+                        >
+
+                            <button
+                                type="button"
+                                class="conversation-menu-item"
+                                id="conversationInfoButton"
+                            >
+
+                                <i class="fa-solid fa-circle-info"></i>
+
+                                <span>
+                                    Informações
+                                </span>
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="conversation-menu-item"
+                                id="clearConversationButton"
+                            >
+
+                                <i class="fa-solid fa-broom"></i>
+
+                                <span>
+                                    Limpar conversa
+                                </span>
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="conversation-menu-item danger"
+                                id="deleteConversationButton"
+                            >
+
+                                <i class="fa-solid fa-trash"></i>
+
+                                <span>
+                                    Excluir conversa
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MENSAGENS -->
+
+                <div class="chat-messages"></div>
+
+
+                <!-- CAMPO DE MENSAGEM -->
+
+                <div class="chat-input-area">
+
+                    <button
+                        type="button"
+                        class="chat-attachment"
+                        id="attachmentButton"
+                        aria-label="Anexar arquivo"
+                    >
+                        <i class="fa-solid fa-paperclip"></i>
+                    </button>
+
+                    <input
+                        type="file"
+                        id="attachmentInput"
+                        hidden
+                    >
+
+                    <input
+                        type="text"
+                        placeholder="Digite uma mensagem..."
+                    >
+
+                    <button
+                        type="button"
+                        class="chat-send"
+                        aria-label="Enviar mensagem"
+                    >
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- =========================================
+                MODAL INFORMAÇÕES
+        ========================================== -->
+
+        <div
+            class="info-chat-modal"
+            id="infoChatModal"
+            aria-hidden="true"
+        >
+
+            <div class="info-chat-overlay"></div>
+
+            <div
+                class="info-chat-box"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="infoChatTitle"
+            >
+
+                <div class="info-chat-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            Conversa
+                        </span>
+
+                        <h2 id="infoChatTitle">
+                            Informações
+                        </h2>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="info-chat-close"
+                        id="infoChatClose"
+                        aria-label="Fechar"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="info-chat-content">
+
+                    <div
+                        class="info-chat-avatar"
+                        id="infoChatAvatar"
+                    >
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+
+
+                    <div class="info-chat-main">
+
+                        <h3 id="infoChatName">
+                            Conversa
+                        </h3>
+
+                        <span id="infoChatSubtitle">
+                            Comunicação escolar
+                        </span>
+
+                    </div>
+
+
+                    <div class="info-chat-details">
+
+                        <div class="info-chat-detail">
+
+                            <i class="fa-solid fa-message"></i>
+
+                            <div>
+
+                                <small>
+                                    Mensagens
+                                </small>
+
+                                <strong id="infoChatMessageCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="info-chat-detail">
+
+                            <i class="fa-solid fa-user-group"></i>
+
+                            <div>
+
+                                <small>
+                                    Tipo
+                                </small>
+
+                                <strong id="infoChatType">
+                                    Institucional
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+                    MODAL NOVA CONVERSA
+        ========================================== -->
+
+        <div
+            class="new-chat-modal"
+            id="newChatModal"
+            aria-hidden="true"
+        >
+
+            <div class="new-chat-overlay"></div>
+
+            <div
+                class="new-chat-box"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="newChatTitle"
+            >
+
+                <div class="new-chat-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            Comunicação
+                        </span>
+
+                        <h2 id="newChatTitle">
+                            Nova conversa
+                        </h2>
+
+                        <p>
+                            Escolha com quem deseja conversar.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-close"
+                        id="newChatClose"
+                        aria-label="Fechar"
+                    >
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="new-chat-list">
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="Coordenação"
+                        data-subtitle="Equipe pedagógica"
+                        data-icon="fa-user-tie"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+
+                        <div>
+                            <strong>Coordenação</strong>
+                            <span>Equipe pedagógica</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="Secretaria"
+                        data-subtitle="Secretaria escolar"
+                        data-icon="fa-building"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+
+                        <div>
+                            <strong>Secretaria</strong>
+                            <span>Secretaria escolar</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="Direção"
+                        data-subtitle="Gestão escolar"
+                        data-icon="fa-school"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-school"></i>
+                        </div>
+
+                        <div>
+                            <strong>Direção</strong>
+                            <span>Gestão escolar</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="Orientação"
+                        data-subtitle="Orientação educacional"
+                        data-icon="fa-compass"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+
+                        <div>
+                            <strong>Orientação</strong>
+                            <span>Orientação educacional</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="1º Ano A"
+                        data-subtitle="Turma • Ensino Fundamental"
+                        data-icon="fa-users"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+                            <strong>1º Ano A</strong>
+                            <span>Turma • Ensino Fundamental</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="2º Ano B"
+                        data-subtitle="Turma • Ensino Fundamental"
+                        data-icon="fa-users"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+                            <strong>2º Ano B</strong>
+                            <span>Turma • Ensino Fundamental</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="3º Ano A"
+                        data-subtitle="Turma • Ensino Fundamental"
+                        data-icon="fa-users"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+                            <strong>3º Ano A</strong>
+                            <span>Turma • Ensino Fundamental</span>
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="new-chat-person"
+                        data-chat="4º Ano B"
+                        data-subtitle="Turma • Ensino Fundamental"
+                        data-icon="fa-users"
+                    >
+
+                        <div class="new-chat-person-avatar">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+
+                        <div>
+                            <strong>4º Ano B</strong>
+                            <span>Turma • Ensino Fundamental</span>
+                        </div>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================
+                MODAL DE CONFIRMAÇÃO
+        ========================================== -->
+
+        <div
+            class="confirm-chat-modal"
+            id="confirmChatModal"
+            aria-hidden="true"
+        >
+
+            <div class="confirm-chat-overlay"></div>
+
+            <div
+                class="confirm-chat-box"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="confirmChatTitle"
+                aria-describedby="confirmChatMessage"
+            >
+
+                <div
+                    class="confirm-chat-icon"
+                    id="confirmChatIcon"
+                >
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+
+
+                <h2 id="confirmChatTitle">
+                    Confirmar ação
+                </h2>
+
+                <p id="confirmChatMessage">
+                    Deseja continuar?
+                </p>
+
+
+                <div class="confirm-chat-actions">
+
+                    <button
+                        type="button"
+                        class="confirm-chat-cancel"
+                        id="confirmChatCancel"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="confirm-chat-confirm"
+                        id="confirmChatConfirm"
+                    >
+                        Confirmar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script src="../js/chat.js"></script>
+
+</body>
+
+</html>

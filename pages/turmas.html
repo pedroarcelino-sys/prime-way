@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Turmas | PrimeWay School</title>
+
+
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/turmas.css"
+    >
+
+
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- LOGO -->
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <nav class="sidebar-menu">
+
+
+                <!-- INÍCIO -->
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>
+                        Início
+                    </span>
+
+                </a>
+
+
+                <!-- PROFESSOR -->
+
+                <a href="professor.html">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                    <span>
+                        Professor
+                    </span>
+
+                </a>
+
+
+                <!-- ALUNOS -->
+
+                <a href="alunos.html">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                    <span>
+                        Alunos
+                    </span>
+
+                </a>
+
+
+                <!-- RESPONSÁVEIS -->
+
+                <a href="responsaveis.html">
+
+                    <i class="fa-solid fa-people-roof"></i>
+
+                    <span>
+                        Responsáveis
+                    </span>
+
+                </a>
+
+
+                <!-- TURMAS -->
+
+                <a
+                    href="turmas.html"
+                    class="active"
+                    aria-current="page"
+                >
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <span>
+                        Turmas
+                    </span>
+
+                </a>
+
+
+                <!-- DISCIPLINAS -->
+
+                <a href="disciplinas.html">
+
+                    <i class="fa-solid fa-book-open"></i>
+
+                    <span>
+                        Disciplinas
+                    </span>
+
+                </a>
+
+
+                <!-- CHAT -->
+
+                <a href="chat-professor.html">
+
+                    <i class="fa-solid fa-comments"></i>
+
+                    <span>
+                        Chat
+                    </span>
+
+                </a>
+
+
+                <!-- CALENDÁRIO -->
+
+                <a href="calendario.html">
+
+                    <i class="fa-solid fa-calendar-days"></i>
+
+                    <span>
+                        Calendário
+                    </span>
+
+                </a>
+
+
+                <!-- NOTIFICAÇÕES -->
+
+                <a href="notificacoes.html">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    <span>
+                        Notificações
+                    </span>
+
+                </a>
+
+
+                <!-- CONFIGURAÇÕES -->
+
+                <a
+                    href="#"
+                    id="settingsLink"
+                >
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    <span>
+                        Configurações
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    <span>
+                        Sair
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
+
+        <main class="classes-page">
+
+
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
+
+            <header class="classes-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Secretaria
+                    </span>
+
+                    <h1>
+                        Turmas
+                    </h1>
+
+                    <p>
+                        Organize turmas, professores e alunos vinculados.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="new-class-button"
+                    id="newClassButton"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Nova turma
+
+                </button>
+
+
+            </header>
+
+
+            <!-- ==================================================
+                            CARDS
+            =================================================== -->
+
+            <section class="classes-summary">
+
+
+                <!-- TOTAL DE TURMAS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Total de turmas
+                        </span>
+
+                        <strong id="totalClasses">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- TURMAS ATIVAS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Turmas ativas
+                        </span>
+
+                        <strong id="activeClasses">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- ALUNOS ENTURMADOS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-user-graduate"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Alunos enturmados
+                        </span>
+
+                        <strong id="enrolledStudents">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- VAGAS DISPONÍVEIS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon warning">
+
+                        <i class="fa-solid fa-chair"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Vagas disponíveis
+                        </span>
+
+                        <strong id="availableSeats">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- ==================================================
+                            PAINEL DE TURMAS
+            =================================================== -->
+
+            <section class="classes-panel">
+
+
+                <div class="classes-panel-header">
+
+
+                    <div>
+
+                        <h2>
+                            Lista de turmas
+                        </h2>
+
+                        <p>
+                            Visualize e gerencie as turmas da escola.
+                        </p>
+
+                    </div>
+
+
+                    <!-- FILTROS -->
+
+                    <div class="classes-actions">
+
+
+                        <!-- PESQUISA -->
+
+                        <div class="classes-search">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                id="classSearch"
+                                placeholder="Pesquisar turma..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <!-- TURNO -->
+
+                        <select
+                            id="shiftFilter"
+                            aria-label="Filtrar por turno"
+                        >
+
+                            <option value="">
+                                Todos os turnos
+                            </option>
+
+                            <option value="Manhã">
+                                Manhã
+                            </option>
+
+                            <option value="Tarde">
+                                Tarde
+                            </option>
+
+                            <option value="Integral">
+                                Integral
+                            </option>
+
+                        </select>
+
+
+                        <!-- STATUS -->
+
+                        <select
+                            id="statusFilter"
+                            aria-label="Filtrar por status"
+                        >
+
+                            <option value="">
+                                Todos os status
+                            </option>
+
+                            <option value="Ativa">
+                                Ativa
+                            </option>
+
+                            <option value="Inativa">
+                                Inativa
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                                TABELA
+                =================================================== -->
+
+                <div class="classes-table-wrapper">
+
+
+                    <table class="classes-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Turma
+                                </th>
+
+                                <th>
+                                    Série
+                                </th>
+
+                                <th>
+                                    Turno
+                                </th>
+
+                                <th>
+                                    Professor
+                                </th>
+
+                                <th>
+                                    Sala
+                                </th>
+
+                                <th>
+                                    Alunos
+                                </th>
+
+                                <th>
+                                    Ano
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Ações
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="classesTableBody">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                    <!-- NENHUM RESULTADO -->
+
+                    <div
+                        class="classes-empty"
+                        id="classesEmpty"
+                    >
+
+                        <i class="fa-solid fa-users-slash"></i>
+
+                        <strong>
+                            Nenhuma turma encontrada
+                        </strong>
+
+                        <span>
+                            Tente alterar os filtros.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                MODAL NOVA / EDITAR TURMA
+    =================================================== -->
+
+    <div
+        class="class-modal"
+        id="classModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="class-modal-overlay"></div>
+
+
+        <div
+            class="class-modal-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="classModalTitle"
+        >
+
+
+            <!-- CABEÇALHO -->
+
+            <div class="class-modal-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Secretaria
+                    </span>
+
+                    <h2 id="classModalTitle">
+                        Nova turma
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="class-modal-close"
+                    id="classModalClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <form
+                class="class-form"
+                id="classForm"
+            >
+
+
+                <input
+                    type="hidden"
+                    id="classId"
+                >
+
+
+                <!-- NOME / SÉRIE -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="className">
+                            Nome da turma
+                        </label>
+
+                        <input
+                            type="text"
+                            id="className"
+                            required
+                            autocomplete="off"
+                            placeholder="Ex: 5º Ano A"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="classGrade">
+                            Série / ano
+                        </label>
+
+                        <select
+                            id="classGrade"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="1º Ano">
+                                1º Ano
+                            </option>
+
+                            <option value="2º Ano">
+                                2º Ano
+                            </option>
+
+                            <option value="3º Ano">
+                                3º Ano
+                            </option>
+
+                            <option value="4º Ano">
+                                4º Ano
+                            </option>
+
+                            <option value="5º Ano">
+                                5º Ano
+                            </option>
+
+                            <option value="6º Ano">
+                                6º Ano
+                            </option>
+
+                            <option value="7º Ano">
+                                7º Ano
+                            </option>
+
+                            <option value="8º Ano">
+                                8º Ano
+                            </option>
+
+                            <option value="9º Ano">
+                                9º Ano
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- TURNO / SALA -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="classShift">
+                            Turno
+                        </label>
+
+                        <select
+                            id="classShift"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="Manhã">
+                                Manhã
+                            </option>
+
+                            <option value="Tarde">
+                                Tarde
+                            </option>
+
+                            <option value="Integral">
+                                Integral
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="classRoom">
+                            Sala
+                        </label>
+
+                        <input
+                            type="text"
+                            id="classRoom"
+                            required
+                            autocomplete="off"
+                            placeholder="Ex: Sala 10"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- PROFESSOR / ANO LETIVO -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="classTeacher">
+                            Professor responsável
+                        </label>
+
+                        <input
+                            type="text"
+                            id="classTeacher"
+                            required
+                            autocomplete="off"
+                            placeholder="Nome do professor"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="classYear">
+                            Ano letivo
+                        </label>
+
+                        <input
+                            type="number"
+                            id="classYear"
+                            min="2020"
+                            max="2100"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- CAPACIDADE / ALUNOS -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="classCapacity">
+                            Capacidade máxima
+                        </label>
+
+                        <input
+                            type="number"
+                            id="classCapacity"
+                            min="1"
+                            max="100"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="classStudents">
+                            Alunos matriculados
+                        </label>
+
+                        <input
+                            type="number"
+                            id="classStudents"
+                            value="0"
+                            readonly
+                        >
+
+                        <small class="field-hint">
+                            Calculado automaticamente.
+                        </small>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="classStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="classStatus"
+                        required
+                    >
+
+                        <option value="Ativa">
+                            Ativa
+                        </option>
+
+                        <option value="Inativa">
+                            Inativa
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- AVISO DE CAPACIDADE -->
+
+                <div
+                    class="class-form-warning"
+                    id="capacityWarning"
+                >
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <span>
+                        A capacidade não pode ser menor que o número de alunos vinculados.
+                    </span>
+
+                </div>
+
+
+                <!-- AVISO TURMA DUPLICADA -->
+
+                <div
+                    class="class-form-warning"
+                    id="duplicateClassWarning"
+                >
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <span>
+                        Já existe uma turma com esse nome.
+                    </span>
+
+                </div>
+
+
+                <!-- AÇÕES -->
+
+                <div class="class-form-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="classCancelButton"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Salvar turma
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                    MODAL VISUALIZAR
+    =================================================== -->
+
+    <div
+        class="class-view-modal"
+        id="classViewModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="class-view-overlay"></div>
+
+
+        <div
+            class="class-view-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="viewClassName"
+        >
+
+
+            <div class="class-view-header">
+
+
+                <div class="class-view-avatar">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span class="section-label">
+                        Informações da turma
+                    </span>
+
+                    <h2 id="viewClassName">
+                        Turma
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="class-view-close"
+                    id="classViewClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <div class="class-view-content">
+
+
+                <!-- SÉRIE -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Série
+                    </span>
+
+                    <strong id="viewClassGrade">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- TURNO -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Turno
+                    </span>
+
+                    <strong id="viewClassShift">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- PROFESSOR -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Professor
+                    </span>
+
+                    <strong id="viewClassTeacher">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- SALA -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Sala
+                    </span>
+
+                    <strong id="viewClassRoom">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- ALUNOS -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Alunos
+                    </span>
+
+                    <strong id="viewClassStudents">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- ANO LETIVO -->
+
+                <div class="class-view-item">
+
+                    <span>
+                        Ano letivo
+                    </span>
+
+                    <strong id="viewClassYear">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="class-view-item full">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong id="viewClassStatus">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                    GERENCIAR ALUNOS
+    =================================================== -->
+
+    <div
+        class="students-manager-modal"
+        id="studentsManagerModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="students-manager-overlay"></div>
+
+
+        <div
+            class="students-manager-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="studentsManagerTitle"
+        >
+
+
+            <!-- CABEÇALHO -->
+
+            <div class="students-manager-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Secretaria
+                    </span>
+
+                    <h2 id="studentsManagerTitle">
+                        Gerenciar alunos
+                    </h2>
+
+                    <p id="managerClassName">
+                        Turma
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="students-manager-close"
+                    id="studentsManagerClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- CAPACIDADE -->
+
+            <div class="manager-capacity">
+
+
+                <div>
+
+                    <span>
+                        Ocupação
+                    </span>
+
+                    <strong id="managerCapacityText">
+                        0/0
+                    </strong>
+
+                </div>
+
+
+                <div class="manager-capacity-bar">
+
+                    <span id="managerCapacityBar"></span>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- CONTEÚDO -->
+
+            <div class="students-manager-content">
+
+
+                <!-- ==================================================
+                            ALUNOS DA TURMA
+                =================================================== -->
+
+                <section class="manager-section">
+
+
+                    <div class="manager-section-title">
+
+
+                        <div>
+
+                            <h3>
+                                Alunos da turma
+                            </h3>
+
+                            <p>
+                                Alunos atualmente vinculados.
+                            </p>
+
+                        </div>
+
+
+                        <span
+                            class="manager-counter"
+                            id="linkedStudentsCounter"
+                        >
+                            0
+                        </span>
+
+
+                    </div>
+
+
+                    <div
+                        class="manager-student-list"
+                        id="linkedStudentsList"
+                    ></div>
+
+
+                    <div
+                        class="manager-empty"
+                        id="linkedStudentsEmpty"
+                    >
+
+                        <i class="fa-solid fa-user-graduate"></i>
+
+                        Nenhum aluno nesta turma.
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ==================================================
+                            ALUNOS CADASTRADOS
+                =================================================== -->
+
+                <section class="manager-section">
+
+
+                    <div class="manager-section-title">
+
+
+                        <div>
+
+                            <h3>
+                                Alunos cadastrados
+                            </h3>
+
+                            <p>
+                                Adicione ou transfira alunos.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- PESQUISA -->
+
+                    <div class="manager-search">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <input
+                            type="text"
+                            id="managerStudentSearch"
+                            placeholder="Pesquisar aluno..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="manager-student-list"
+                        id="availableStudentsList"
+                    ></div>
+
+
+                    <div
+                        class="manager-empty"
+                        id="availableStudentsEmpty"
+                    >
+
+                        <i class="fa-solid fa-user-check"></i>
+
+                        Nenhum aluno disponível.
+
+                    </div>
+
+
+                </section>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                    MODAL EXCLUSÃO
+    =================================================== -->
+
+    <div
+        class="delete-class-modal"
+        id="deleteClassModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="delete-class-overlay"></div>
+
+
+        <div
+            class="delete-class-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteClassTitle"
+        >
+
+
+            <div class="delete-class-icon">
+
+                <i class="fa-solid fa-trash"></i>
+
+            </div>
+
+
+            <h2 id="deleteClassTitle">
+                Excluir turma
+            </h2>
+
+
+            <p id="deleteClassMessage">
+                Deseja realmente excluir esta turma?
+            </p>
+
+
+            <div class="delete-class-actions">
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="deleteClassCancel"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delete-button"
+                    id="deleteClassConfirm"
+                >
+
+                    Excluir
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/turmas.js"></script>
+
+
+    <script>
+
+        /*
+         * Configurações ainda não possui página.
+         * Impede o href="#" de mover a tela para o topo.
+         */
+
+        const settingsLink =
+            document.querySelector("#settingsLink");
+
+
+        if (settingsLink) {
+
+            settingsLink.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

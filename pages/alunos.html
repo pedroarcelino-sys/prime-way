@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Alunos | PrimeWay School</title>
+
+
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/alunos.css"
+    >
+
+
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- LOGO -->
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <nav class="sidebar-menu">
+
+
+                <!-- INÍCIO -->
+
+                <a href="dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>
+                        Início
+                    </span>
+
+                </a>
+
+
+                <!-- PROFESSOR -->
+
+                <a href="professor.html">
+
+                    <i class="fa-solid fa-chalkboard-user"></i>
+
+                    <span>
+                        Professor
+                    </span>
+
+                </a>
+
+
+                <!-- ALUNOS -->
+
+                <a
+                    href="alunos.html"
+                    class="active"
+                    aria-current="page"
+                >
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                    <span>
+                        Alunos
+                    </span>
+
+                </a>
+
+
+                <!-- RESPONSÁVEIS -->
+
+                <a href="responsaveis.html">
+
+                    <i class="fa-solid fa-people-roof"></i>
+
+                    <span>
+                        Responsáveis
+                    </span>
+
+                </a>
+
+
+                <!-- TURMAS -->
+
+                <a href="turmas.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    <span>
+                        Turmas
+                    </span>
+
+                </a>
+
+
+                <!-- DISCIPLINAS -->
+
+                <a href="disciplinas.html">
+
+                    <i class="fa-solid fa-book-open"></i>
+
+                    <span>
+                        Disciplinas
+                    </span>
+
+                </a>
+
+
+                <!-- CHAT -->
+
+                <a href="chat-professor.html">
+
+                    <i class="fa-solid fa-comments"></i>
+
+                    <span>
+                        Chat
+                    </span>
+
+                </a>
+
+
+                <!-- CALENDÁRIO -->
+
+                <a href="calendario.html">
+
+                    <i class="fa-solid fa-calendar-days"></i>
+
+                    <span>
+                        Calendário
+                    </span>
+
+                </a>
+
+
+                <!-- NOTIFICAÇÕES -->
+
+                <a href="notificacoes.html">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    <span>
+                        Notificações
+                    </span>
+
+                </a>
+
+
+                <!-- CONFIGURAÇÕES -->
+
+                <a
+                    href="#"
+                    id="settingsLink"
+                >
+
+                    <i class="fa-solid fa-gear"></i>
+
+                    <span>
+                        Configurações
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    <span>
+                        Sair
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
+
+        <main class="students-page">
+
+
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
+
+            <header class="students-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Gestão acadêmica
+                    </span>
+
+                    <h1>
+                        Alunos
+                    </h1>
+
+                    <p>
+                        Consulte e gerencie os alunos cadastrados no sistema.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="new-student-button"
+                    id="newStudentButton"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    <span>
+                        Novo aluno
+                    </span>
+
+                </button>
+
+
+            </header>
+
+
+            <!-- ==================================================
+                            CARDS
+            =================================================== -->
+
+            <section class="students-summary">
+
+
+                <!-- TOTAL DE ALUNOS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-user-graduate"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Total de alunos
+                        </span>
+
+                        <strong id="totalStudents">
+                            1245
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- ALUNOS ATIVOS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Alunos ativos
+                        </span>
+
+                        <strong id="activeStudents">
+                            1198
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- NOVOS ALUNOS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Novos alunos
+                        </span>
+
+                        <strong id="newStudents">
+                            32
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- PENDÊNCIAS -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon warning">
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Pendências
+                        </span>
+
+                        <strong id="pendingStudents">
+                            15
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- ==================================================
+                            LISTA DE ALUNOS
+            =================================================== -->
+
+            <section class="students-panel">
+
+
+                <div class="students-panel-header">
+
+
+                    <div>
+
+                        <h2>
+                            Lista de alunos
+                        </h2>
+
+                        <p>
+                            Pesquise, filtre e consulte informações dos estudantes.
+                        </p>
+
+                    </div>
+
+
+                    <!-- FILTROS -->
+
+                    <div class="students-actions">
+
+
+                        <!-- PESQUISA -->
+
+                        <div class="students-search">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                id="studentSearch"
+                                placeholder="Pesquisar aluno..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <!-- TURMAS -->
+
+                        <select
+                            id="classFilter"
+                            aria-label="Filtrar por turma"
+                        >
+
+                            <option value="">
+                                Todas as turmas
+                            </option>
+
+                        </select>
+
+
+                        <!-- STATUS -->
+
+                        <select
+                            id="statusFilter"
+                            aria-label="Filtrar por status"
+                        >
+
+                            <option value="">
+                                Todos os status
+                            </option>
+
+                            <option value="Ativo">
+                                Ativo
+                            </option>
+
+                            <option value="Pendente">
+                                Pendente
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ==================================================
+                                TABELA
+                =================================================== -->
+
+                <div class="students-table-wrapper">
+
+
+                    <table class="students-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Aluno
+                                </th>
+
+                                <th>
+                                    Matrícula
+                                </th>
+
+                                <th>
+                                    Turma
+                                </th>
+
+                                <th>
+                                    Média
+                                </th>
+
+                                <th>
+                                    Frequência
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Ações
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="studentsTableBody">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                    <!-- NENHUM RESULTADO -->
+
+                    <div
+                        class="students-empty"
+                        id="studentsEmpty"
+                    >
+
+                        <i class="fa-solid fa-user-slash"></i>
+
+                        <strong>
+                            Nenhum aluno encontrado
+                        </strong>
+
+                        <span>
+                            Tente alterar sua pesquisa ou os filtros.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                MODAL NOVO / EDITAR ALUNO
+    =================================================== -->
+
+    <div
+        class="student-modal"
+        id="studentModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="student-modal-overlay"></div>
+
+
+        <div
+            class="student-modal-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="studentModalTitle"
+        >
+
+
+            <!-- CABEÇALHO -->
+
+            <div class="student-modal-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Cadastro
+                    </span>
+
+                    <h2 id="studentModalTitle">
+                        Novo aluno
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="student-modal-close"
+                    id="studentModalClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- FORMULÁRIO -->
+
+            <form
+                class="student-form"
+                id="studentForm"
+            >
+
+
+                <input
+                    type="hidden"
+                    id="studentId"
+                >
+
+
+                <!-- NOME -->
+
+                <div class="form-group">
+
+                    <label for="studentName">
+                        Nome do aluno
+                    </label>
+
+                    <input
+                        type="text"
+                        id="studentName"
+                        required
+                        autocomplete="name"
+                        placeholder="Digite o nome completo"
+                    >
+
+                </div>
+
+
+                <!-- MATRÍCULA / TURMA -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="studentRegistration">
+                            Matrícula
+                        </label>
+
+                        <input
+                            type="text"
+                            id="studentRegistration"
+                            required
+                            autocomplete="off"
+                            placeholder="Ex: PW2026001"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="studentClass">
+                            Turma
+                        </label>
+
+                        <select
+                            id="studentClass"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- MÉDIA / FREQUÊNCIA -->
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="studentAverage">
+                            Média
+                        </label>
+
+                        <input
+                            type="number"
+                            id="studentAverage"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="studentAttendance">
+                            Frequência (%)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="studentAttendance"
+                            min="0"
+                            max="100"
+                            step="1"
+                            required
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="studentStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="studentStatus"
+                        required
+                    >
+
+                        <option value="Ativo">
+                            Ativo
+                        </option>
+
+                        <option value="Pendente">
+                            Pendente
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- AÇÕES -->
+
+                <div class="student-form-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="studentCancelButton"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Salvar aluno
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                    MODAL VISUALIZAR ALUNO
+    =================================================== -->
+
+    <div
+        class="student-view-modal"
+        id="studentViewModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="student-view-overlay"></div>
+
+
+        <div
+            class="student-view-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="viewStudentName"
+        >
+
+
+            <div class="student-view-header">
+
+
+                <div class="student-view-avatar">
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span class="section-label">
+                        Perfil do aluno
+                    </span>
+
+                    <h2 id="viewStudentName">
+                        Aluno
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="student-view-close"
+                    id="studentViewClose"
+                    aria-label="Fechar"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+
+            </div>
+
+
+            <div class="student-view-content">
+
+
+                <!-- MATRÍCULA -->
+
+                <div class="student-view-item">
+
+                    <span>
+                        Matrícula
+                    </span>
+
+                    <strong id="viewStudentRegistration">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- TURMA -->
+
+                <div class="student-view-item">
+
+                    <span>
+                        Turma
+                    </span>
+
+                    <strong id="viewStudentClass">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- MÉDIA -->
+
+                <div class="student-view-item">
+
+                    <span>
+                        Média
+                    </span>
+
+                    <strong id="viewStudentAverage">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- FREQUÊNCIA -->
+
+                <div class="student-view-item">
+
+                    <span>
+                        Frequência
+                    </span>
+
+                    <strong id="viewStudentAttendance">
+                        -
+                    </strong>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="student-view-item full">
+
+                    <span>
+                        Status
+                    </span>
+
+                    <strong id="viewStudentStatus">
+                        -
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                    MODAL EXCLUIR
+    =================================================== -->
+
+    <div
+        class="delete-student-modal"
+        id="deleteStudentModal"
+        aria-hidden="true"
+    >
+
+
+        <div class="delete-student-overlay"></div>
+
+
+        <div
+            class="delete-student-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteStudentTitle"
+        >
+
+
+            <div class="delete-student-icon">
+
+                <i class="fa-solid fa-trash"></i>
+
+            </div>
+
+
+            <h2 id="deleteStudentTitle">
+                Excluir aluno
+            </h2>
+
+
+            <p id="deleteStudentMessage">
+                Deseja excluir este aluno?
+            </p>
+
+
+            <div class="delete-student-actions">
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="deleteStudentCancel"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="delete-button"
+                    id="deleteStudentConfirm"
+                >
+
+                    Excluir
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/alunos.js"></script>
+
+
+    <script>
+
+        /*
+         * Configurações ainda não possui uma página.
+         * Impede o link "#" de jogar a tela para o topo.
+         */
+
+        const settingsLink =
+            document.querySelector("#settingsLink");
+
+
+        if (settingsLink) {
+
+            settingsLink.addEventListener(
+                "click",
+                function (event) {
+
+                    event.preventDefault();
+
+                }
+            );
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>
