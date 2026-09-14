@@ -1277,3 +1277,10 @@
     }
 
 }
+
+.student-form small {
+    display: block;
+    margin-top: 6px;
+    color: var(--texto-secundario);
+    font: 10px/1.4 Arial, sans-serif;
+}

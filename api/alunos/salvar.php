@@ -111,6 +111,27 @@ $matricula =
         ''
     );
 
+$email =
+    mb_strtolower(
+        primewayAlunoTexto(
+            $dados['email'] ?? ''
+        )
+    );
+
+$senha =
+    is_string($dados['password'] ?? null)
+        ? (string) $dados['password']
+        : '';
+
+$telefone =
+    primewayAlunoTexto($dados['phone'] ?? '');
+
+$documento =
+    primewayAlunoTexto($dados['document'] ?? '');
+
+$nascimento =
+    primewayAlunoTexto($dados['birthDate'] ?? '');
+
 $statusRecebido =
     strtolower(
         primewayAlunoTexto(
@@ -190,6 +211,77 @@ if (
     primewayAlunoFalha(
         'A matrícula deve possuir no máximo 50 caracteres.'
     );
+}
+
+if (
+    !filter_var($email, FILTER_VALIDATE_EMAIL) ||
+    mb_strlen($email) > 190
+) {
+
+    primewayAlunoFalha(
+        'Informe um e-mail de acesso válido.',
+        422
+    );
+}
+
+if (
+    $id === null &&
+    mb_strlen($senha) < 8
+) {
+
+    primewayAlunoFalha(
+        'A senha inicial deve ter pelo menos 8 caracteres.',
+        422
+    );
+}
+
+if (
+    $senha !== '' &&
+    (
+        mb_strlen($senha) < 8 ||
+        mb_strlen($senha) > 200
+    )
+) {
+
+    primewayAlunoFalha(
+        'A senha deve ter entre 8 e 200 caracteres.',
+        422
+    );
+}
+
+if (
+    mb_strlen($telefone) > 30 ||
+    mb_strlen($documento) > 30
+) {
+
+    primewayAlunoFalha(
+        'Telefone ou documento excede o limite permitido.',
+        422
+    );
+}
+
+$nascimentoFinal = null;
+
+if ($nascimento !== '') {
+
+    $dataNascimento =
+        DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            $nascimento
+        );
+
+    if (
+        !$dataNascimento ||
+        $dataNascimento->format('Y-m-d') !== $nascimento
+    ) {
+
+        primewayAlunoFalha(
+            'Data de nascimento inválida.',
+            422
+        );
+    }
+
+    $nascimentoFinal = $nascimento;
 }
 
 
@@ -375,10 +467,15 @@ try {
                         a.novo_aluno,
                         a.ingresso_em,
                         pe.nome,
-                        pe.ativo AS pessoa_ativa
+                        pe.ativo AS pessoa_ativa,
+                        u.id AS usuario_id,
+                        u.email AS email_acesso
                     FROM alunos a
                     INNER JOIN pessoas pe
                         ON pe.id = a.pessoa_id
+                    LEFT JOIN usuarios u
+                        ON u.pessoa_id = pe.id
+                       AND u.perfil = \'aluno\'
                     WHERE a.id = :id
                     LIMIT 1
                     FOR UPDATE
@@ -496,6 +593,12 @@ try {
                         'nome'
                     ],
 
+                'email' =>
+                    (string) ($registroAnterior['email_acesso'] ?? ''),
+
+                'hasAccess' =>
+                    $registroAnterior['usuario_id'] !== null,
+
                 'registration' =>
                     (string) $registroAnterior[
                         'matricula'
@@ -541,10 +644,18 @@ try {
                 '
                     INSERT INTO pessoas (
                         nome,
+                        email_contato,
+                        telefone,
+                        documento,
+                        data_nascimento,
                         ativo
                     )
                     VALUES (
                         :nome,
+                        :email,
+                        :telefone,
+                        :documento,
+                        :nascimento,
                         1
                     )
                 '
@@ -552,7 +663,19 @@ try {
 
         $stmtPessoa->execute([
             ':nome' =>
-                $nome
+                $nome,
+
+            ':email' =>
+                $email,
+
+            ':telefone' =>
+                $telefone !== '' ? $telefone : null,
+
+            ':documento' =>
+                $documento !== '' ? $documento : null,
+
+            ':nascimento' =>
+                $nascimentoFinal
         ]);
 
         $pessoaId =
@@ -595,6 +718,36 @@ try {
             (int) $pdo
                 ->lastInsertId();
 
+        $stmtUsuario =
+            $pdo->prepare(
+                '
+                    INSERT INTO usuarios (
+                        pessoa_id,
+                        nome,
+                        email,
+                        senha_hash,
+                        perfil,
+                        ativo
+                    )
+                    VALUES (
+                        :pessoa_id,
+                        :nome,
+                        :email,
+                        :senha_hash,
+                        \'aluno\',
+                        :ativo
+                    )
+                '
+            );
+
+        $stmtUsuario->execute([
+            ':pessoa_id' => $pessoaId,
+            ':nome' => $nome,
+            ':email' => $email,
+            ':senha_hash' => password_hash($senha, PASSWORD_DEFAULT),
+            ':ativo' => $statusRecebido === 'ativo' ? 1 : 0
+        ]);
+
         $acaoAuditoria =
             'CRIAR_ALUNO';
 
@@ -607,7 +760,13 @@ try {
             $pdo->prepare(
                 '
                     UPDATE pessoas
-                    SET nome = :nome
+                    SET
+                        nome = :nome,
+                        email_contato = :email,
+                        telefone = :telefone,
+                        documento = :documento,
+                        data_nascimento = :nascimento,
+                        ativo = :ativo
                     WHERE id = :id
                 '
             );
@@ -615,6 +774,21 @@ try {
         $stmtPessoa->execute([
             ':nome' =>
                 $nome,
+
+            ':email' =>
+                $email,
+
+            ':telefone' =>
+                $telefone !== '' ? $telefone : null,
+
+            ':documento' =>
+                $documento !== '' ? $documento : null,
+
+            ':nascimento' =>
+                $nascimentoFinal,
+
+            ':ativo' =>
+                $statusRecebido === 'ativo' ? 1 : 0,
 
             ':id' =>
                 $pessoaId
@@ -642,6 +816,54 @@ try {
             ':id' =>
                 $id
         ]);
+
+        $usuarioId =
+            primewayIdPositivo(
+                $registroAnterior['usuario_id'] ?? null
+            );
+
+        if ($usuarioId === null && $senha === '') {
+
+            throw new DomainException(
+                'Este aluno ainda não possui acesso. Informe uma senha inicial.'
+            );
+        }
+
+        if ($usuarioId === null) {
+
+            $pdo->prepare(
+                "INSERT INTO usuarios (pessoa_id, nome, email, senha_hash, perfil, ativo)
+                 VALUES (:pessoa_id, :nome, :email, :senha_hash, 'aluno', :ativo)"
+            )->execute([
+                ':pessoa_id' => $pessoaId,
+                ':nome' => $nome,
+                ':email' => $email,
+                ':senha_hash' => password_hash($senha, PASSWORD_DEFAULT),
+                ':ativo' => $statusRecebido === 'ativo' ? 1 : 0
+            ]);
+
+        } else {
+
+            $sqlUsuario =
+                'UPDATE usuarios
+                 SET nome = :nome, email = :email, ativo = :ativo';
+
+            $parametrosUsuario = [
+                ':nome' => $nome,
+                ':email' => $email,
+                ':ativo' => $statusRecebido === 'ativo' ? 1 : 0,
+                ':id' => $usuarioId
+            ];
+
+            if ($senha !== '') {
+                $sqlUsuario .= ', senha_hash = :senha_hash';
+                $parametrosUsuario[':senha_hash'] =
+                    password_hash($senha, PASSWORD_DEFAULT);
+            }
+
+            $sqlUsuario .= " WHERE id = :id AND perfil = 'aluno'";
+            $pdo->prepare($sqlUsuario)->execute($parametrosUsuario);
+        }
 
         $acaoAuditoria =
             'ALTERAR_ALUNO';
@@ -1009,6 +1231,21 @@ try {
                 'matricula'
             ],
 
+        'email' =>
+            $email,
+
+        'phone' =>
+            $telefone,
+
+        'document' =>
+            $documento,
+
+        'birthDate' =>
+            $nascimentoFinal,
+
+        'hasAccess' =>
+            true,
+
         'status' =>
             (string) $resultado[
                 'status'
@@ -1162,9 +1399,28 @@ try {
             : 200
     );
 
-} catch (
-    Throwable $erro
-) {
+} catch (DomainException $erro) {
+
+    if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    primewayAlunoFalha($erro->getMessage(), 422);
+
+} catch (PDOException $erro) {
+
+    if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+
+    if ((string) $erro->getCode() === '23000') {
+        primewayAlunoFalha('E-mail ou documento já cadastrado.', 409);
+    }
+
+    error_log('PrimeWay Alunos POST: ' . $erro->getMessage());
+    primewayAlunoFalha('Não foi possível salvar o aluno.', 500);
+
+} catch (Throwable $erro) {
 
     if (
         isset(

@@ -757,6 +757,98 @@
 
                 </div>
 
+                <!-- ACESSO DO ALUNO -->
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="studentEmail">
+                            E-mail de acesso
+                        </label>
+
+                        <input
+                            type="email"
+                            id="studentEmail"
+                            required
+                            autocomplete="email"
+                            placeholder="aluno@exemplo.com"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="studentPassword">
+                            Senha inicial
+                        </label>
+
+                        <input
+                            type="password"
+                            id="studentPassword"
+                            minlength="8"
+                            maxlength="200"
+                            autocomplete="new-password"
+                            placeholder="Mínimo de 8 caracteres"
+                        >
+
+                        <small id="studentPasswordHint">
+                            Obrigatória para criar a conta de acesso.
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <!-- DADOS PESSOAIS -->
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="studentPhone">
+                            Telefone
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="studentPhone"
+                            maxlength="30"
+                            autocomplete="tel"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="studentDocument">
+                            Documento
+                        </label>
+
+                        <input
+                            type="text"
+                            id="studentDocument"
+                            maxlength="30"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="studentBirthDate">
+                        Data de nascimento
+                    </label>
+
+                    <input
+                        type="date"
+                        id="studentBirthDate"
+                    >
+
+                </div>
+
 
                 <!-- MATRÍCULA / TURMA -->
 
@@ -1157,8 +1249,8 @@
                         JAVASCRIPT
     =================================================== -->
 
-    <script src="../js/core.js"></script>
-    <script src="../js/alunos.js"></script>
+    <script src="../js/core.js?v=20260914-4"></script>
+    <script src="../js/alunos.js?v=20260914-4"></script>
 
 
 </body>

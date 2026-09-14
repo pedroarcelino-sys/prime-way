@@ -385,6 +385,36 @@ document.addEventListener("DOMContentLoaded", async function () {
             "#studentRegistration"
         );
 
+    const studentEmail =
+        document.querySelector(
+            "#studentEmail"
+        );
+
+    const studentPassword =
+        document.querySelector(
+            "#studentPassword"
+        );
+
+    const studentPasswordHint =
+        document.querySelector(
+            "#studentPasswordHint"
+        );
+
+    const studentPhone =
+        document.querySelector(
+            "#studentPhone"
+        );
+
+    const studentDocument =
+        document.querySelector(
+            "#studentDocument"
+        );
+
+    const studentBirthDate =
+        document.querySelector(
+            "#studentBirthDate"
+        );
+
     const studentClass =
         document.querySelector(
             "#studentClass"
@@ -520,6 +550,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         studentId,
         studentName,
         studentRegistration,
+        studentEmail,
+        studentPassword,
+        studentPasswordHint,
+        studentPhone,
+        studentDocument,
+        studentBirthDate,
         studentClass,
         studentAverage,
         studentAttendance,
@@ -2079,6 +2115,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             ""
         );
 
+        studentEmail.setCustomValidity("");
+        studentPassword.setCustomValidity("");
+
     }
 
 
@@ -2109,6 +2148,26 @@ document.addEventListener("DOMContentLoaded", async function () {
             studentRegistration.value =
                 student.registration;
 
+            studentEmail.value =
+                student.email || "";
+
+            studentPhone.value =
+                student.phone || "";
+
+            studentDocument.value =
+                student.document || "";
+
+            studentBirthDate.value =
+                student.birthDate || "";
+
+            studentPassword.required =
+                !student.hasAccess;
+
+            studentPasswordHint.textContent =
+                student.hasAccess
+                    ? "Deixe em branco para manter a senha atual."
+                    : "Defina uma senha para criar a conta de acesso.";
+
 
             preencherSelectTurmas(
                 student.className
@@ -2134,6 +2193,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             studentId.value =
                 "";
+
+            studentPassword.required = true;
+
+            studentPasswordHint.textContent =
+                "Obrigatória para criar a conta de acesso.";
 
 
             preencherSelectTurmas();
@@ -2174,6 +2238,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             studentRegistration.value
                 .trim();
 
+        const email =
+            studentEmail.value
+                .trim()
+                .toLowerCase();
+
+        const senha =
+            studentPassword.value;
+
 
         studentName.setCustomValidity(
             nome
@@ -2206,10 +2278,40 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         }
 
+        studentEmail.setCustomValidity(
+            email && studentEmail.validity.valid
+                ? ""
+                : "Informe um e-mail de acesso válido."
+        );
+
+        if (!email || !studentEmail.validity.valid) {
+
+            studentEmail.reportValidity();
+
+            return null;
+
+        }
+
+        studentPassword.setCustomValidity(
+            studentPassword.required && senha.length < 8
+                ? "A senha deve ter pelo menos 8 caracteres."
+                : ""
+        );
+
+        if (studentPassword.required && senha.length < 8) {
+
+            studentPassword.reportValidity();
+
+            return null;
+
+        }
+
 
         return {
             nome,
-            matricula
+            matricula,
+            email,
+            senha
         };
 
     }
@@ -2353,6 +2455,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 registration:
                     textos.matricula,
+
+                email:
+                    textos.email,
+
+                password:
+                    textos.senha,
+
+                phone:
+                    studentPhone.value.trim(),
+
+                document:
+                    studentDocument.value.trim(),
+
+                birthDate:
+                    studentBirthDate.value,
 
                 classId:
                     turmaSelecionada

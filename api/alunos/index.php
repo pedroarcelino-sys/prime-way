@@ -99,7 +99,14 @@ try {
                     a.ingresso_em,
 
                     pe.nome,
+                    pe.email_contato,
+                    pe.telefone,
+                    pe.documento,
+                    pe.data_nascimento,
                     pe.ativo AS pessoa_ativa,
+
+                    u.id AS usuario_id,
+                    u.email AS email_acesso,
 
                     m.id AS matricula_turma_id,
                     t.id AS turma_id,
@@ -158,6 +165,10 @@ try {
 
                 INNER JOIN pessoas pe
                     ON pe.id = a.pessoa_id
+
+                LEFT JOIN usuarios u
+                    ON u.pessoa_id = pe.id
+                   AND u.perfil = \'aluno\'
 
                 LEFT JOIN matriculas m
                     ON m.aluno_id = a.id
@@ -270,6 +281,27 @@ try {
                 (string) $linha[
                     'matricula'
                 ],
+
+            'email' =>
+                (string) (
+                    $linha['email_acesso'] ??
+                    $linha['email_contato'] ??
+                    ''
+                ),
+
+            'phone' =>
+                (string) ($linha['telefone'] ?? ''),
+
+            'document' =>
+                (string) ($linha['documento'] ?? ''),
+
+            'birthDate' =>
+                $linha['data_nascimento'] !== null
+                    ? (string) $linha['data_nascimento']
+                    : null,
+
+            'hasAccess' =>
+                $linha['usuario_id'] !== null,
 
             'status' =>
                 $statusExibicao,

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Área do Aluno | PrimeWay School</title>
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/aluno_portal.css?v=20260914-1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" aria-label="Menu do aluno">
+            <div class="sidebar-logo"><img src="../img/logo.png" alt="PrimeWay School"></div>
+            <nav class="sidebar-menu">
+                <a href="#inicio" class="active"><i class="fa-solid fa-house"></i><span>Meu painel</span></a>
+                <a href="#disciplinas"><i class="fa-solid fa-book-open"></i><span>Disciplinas</span></a>
+                <a href="#atividades"><i class="fa-solid fa-list-check"></i><span>Atividades</span></a>
+                <a href="#notas"><i class="fa-solid fa-chart-line"></i><span>Notas</span></a>
+                <a href="#frequencia"><i class="fa-solid fa-user-check"></i><span>Frequência</span></a>
+                <a href="#agenda"><i class="fa-solid fa-calendar-days"></i><span>Agenda</span></a>
+                <a href="#avisos"><i class="fa-solid fa-bell"></i><span>Comunicados</span></a>
+                <a href="#dados"><i class="fa-solid fa-address-card"></i><span>Meus dados</span></a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button type="button" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></button>
+            </div>
+        </aside>
+
+        <main class="student-portal" id="inicio">
+            <header class="portal-header">
+                <div>
+                    <span class="section-label">Área exclusiva do aluno</span>
+                    <h1 id="studentGreeting">Olá!</h1>
+                    <p id="studentContext">Acompanhe sua vida acadêmica em um só lugar.</p>
+                </div>
+                <div class="today"><i class="fa-regular fa-calendar"></i><span id="currentDate">—</span></div>
+            </header>
+
+            <section class="portal-summary" aria-label="Resumo acadêmico">
+                <article><i class="fa-solid fa-chart-simple"></i><div><span>Média geral</span><strong id="averageValue">—</strong></div></article>
+                <article><i class="fa-solid fa-user-check"></i><div><span>Frequência</span><strong id="attendanceValue">—</strong></div></article>
+                <article><i class="fa-solid fa-book"></i><div><span>Disciplinas</span><strong id="subjectsCount">0</strong></div></article>
+                <article><i class="fa-solid fa-clock"></i><div><span>Atividades próximas</span><strong id="activitiesCount">0</strong></div></article>
+            </section>
+
+            <section class="portal-panel" id="disciplinas">
+                <div class="panel-title"><h2>Minhas disciplinas</h2><p>Componentes e professores da sua turma atual.</p></div>
+                <div class="card-grid" id="studentSubjects"><p class="empty-state">Carregando…</p></div>
+            </section>
+
+            <section class="portal-panel" id="atividades">
+                <div class="panel-title"><h2>Atividades</h2><p>Trabalhos e tarefas publicados para sua turma.</p></div>
+                <div class="item-list" id="studentActivities"><p class="empty-state">Carregando…</p></div>
+            </section>
+
+            <div class="portal-columns">
+                <section class="portal-panel" id="notas">
+                    <div class="panel-title"><h2>Notas</h2><p>Avaliações e resultados lançados.</p></div>
+                    <div class="item-list" id="studentGrades"><p class="empty-state">Carregando…</p></div>
+                </section>
+                <section class="portal-panel" id="frequencia">
+                    <div class="panel-title"><h2>Frequência</h2><p>Presença registrada por disciplina.</p></div>
+                    <div class="item-list" id="studentAttendance"><p class="empty-state">Carregando…</p></div>
+                </section>
+            </div>
+
+            <div class="portal-columns">
+                <section class="portal-panel" id="agenda">
+                    <div class="panel-title"><h2>Próximos eventos</h2><p>Agenda geral e da sua turma.</p></div>
+                    <div class="item-list" id="studentEvents"><p class="empty-state">Carregando…</p></div>
+                </section>
+                <section class="portal-panel" id="avisos">
+                    <div class="panel-title"><h2>Comunicados</h2><p>Avisos publicados para os alunos.</p></div>
+                    <div class="item-list" id="studentNotices"><p class="empty-state">Carregando…</p></div>
+                </section>
+            </div>
+
+            <section class="portal-panel" id="dados">
+                <div class="panel-title"><h2>Meus dados</h2><p>Solicite à administração qualquer alteração necessária.</p></div>
+                <dl class="profile-data">
+                    <div><dt>Nome</dt><dd id="studentName">—</dd></div>
+                    <div><dt>E-mail</dt><dd id="studentEmail">—</dd></div>
+                    <div><dt>Matrícula</dt><dd id="studentRegistration">—</dd></div>
+                    <div><dt>Turma</dt><dd id="studentClass">—</dd></div>
+                    <div><dt>Telefone</dt><dd id="studentPhone">—</dd></div>
+                    <div><dt>Documento</dt><dd id="studentDocument">—</dd></div>
+                    <div><dt>Nascimento</dt><dd id="studentBirthDate">—</dd></div>
+                    <div><dt>Ingresso</dt><dd id="studentEntryDate">—</dd></div>
+                    <div><dt>Situação</dt><dd id="studentStatus">—</dd></div>
+                </dl>
+            </section>
+        </main>
+    </div>
+    <script src="../js/core.js?v=20260914-4"></script>
+    <script src="../js/aluno_portal.js?v=20260914-1"></script>
+</body>
+</html>
