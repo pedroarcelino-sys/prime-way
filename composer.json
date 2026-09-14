@@ -1,0 +1,23 @@
+{
+    "name": "primeway/school",
+    "description": "Sistema acadêmico PrimeWay School",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.2",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*"
+    },
+    "scripts": {
+        "lint": "php tests/lint.php",
+        "test": "php tests/run.php",
+        "check": [
+            "@lint",
+            "@test"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

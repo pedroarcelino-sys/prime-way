@@ -1,19 +1,230 @@
-console.log("TURMAS JS CARREGADO");
+/*====================================================
+            TURMAS - PRIMEWAY SCHOOL
+====================================================*/
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    await window.PrimeWayStorage?.ready;
 
     /*====================================================
-                    STORAGE
+                    APIs / SESSÃO
     ====================================================*/
+
+    const CLASSES_API_URL =
+        "../api/turmas/index.php";
+
+    const CLASS_SAVE_API_URL =
+        "../api/turmas/salvar.php";
+
+    const CLASS_DELETE_API_URL =
+        "../api/turmas/excluir.php";
+
+    const CLASS_STUDENTS_API_URL =
+        "../api/turmas/alunos.php";
+
+    const CLASS_ENROLLMENT_API_URL =
+        "../api/turmas/matricula.php";
+
+    const PROFESSORS_API_URL =
+        "../api/professores/index.php";
 
     const CLASSES_STORAGE_KEY =
         "primewayClasses";
 
-    const STUDENTS_STORAGE_KEY =
-        "primewayStudents";
+    const AUTH_SESSION_URL =
+        "../api/auth/session.php";
 
-    const SUBJECTS_STORAGE_KEY =
-        "primewaySubjects";
+    const AUTH_LOGOUT_URL =
+        "../api/auth/logout.php";
+
+    const SESSION_LOGADO_KEY =
+        "primewayLogado";
+
+    const SESSION_USUARIO_KEY =
+        "primewayUsuario";
+
+    const SESSION_PERFIL_KEY =
+        "primewayPerfil";
+
+    const PERFIS_PERMITIDOS =
+        new Set([
+            "admin"
+        ]);
+
+    const PAGINA_LOGIN =
+        "login.html";
+
+    const PAGINA_PROFESSOR =
+        "professor.html";
+
+
+    /*====================================================
+            COMPATIBILIDADE COM FRONT ATUAL
+    ====================================================*/
+
+    function limparSessaoCompatibilidade() {
+
+        sessionStorage.removeItem(
+            SESSION_LOGADO_KEY
+        );
+
+        sessionStorage.removeItem(
+            SESSION_USUARIO_KEY
+        );
+
+        sessionStorage.removeItem(
+            SESSION_PERFIL_KEY
+        );
+    }
+
+
+    function sincronizarSessaoCompatibilidade(
+        usuario
+    ) {
+
+        sessionStorage.setItem(
+            SESSION_LOGADO_KEY,
+            "true"
+        );
+
+        sessionStorage.setItem(
+            SESSION_USUARIO_KEY,
+            String(
+                usuario.email || ""
+            )
+        );
+
+        sessionStorage.setItem(
+            SESSION_PERFIL_KEY,
+            String(
+                usuario.perfil || ""
+            )
+        );
+    }
+
+
+    async function lerJsonSeguro(
+        response
+    ) {
+
+        try {
+
+            return await response.json();
+
+        } catch {
+
+            return null;
+        }
+    }
+
+
+    async function obterSessaoServidor() {
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_SESSION_URL,
+                    {
+                        method: "GET",
+                        credentials: "same-origin",
+                        cache: "no-store",
+                        headers: {
+                            "Accept": "application/json"
+                        }
+                    }
+                );
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+            if (
+                !response.ok ||
+                !data?.authenticated ||
+                !data?.usuario
+            ) {
+
+                limparSessaoCompatibilidade();
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+                return null;
+            }
+
+            const usuario =
+                data.usuario;
+
+            const perfil =
+                String(
+                    usuario.perfil || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+            sincronizarSessaoCompatibilidade(
+                usuario
+            );
+
+            if (
+                !PERFIS_PERMITIDOS.has(
+                    perfil
+                )
+            ) {
+
+                if (
+                    perfil ===
+                    "professor"
+                ) {
+
+                    window.location.replace(
+                        PAGINA_PROFESSOR
+                    );
+
+                } else {
+
+                    window.location.replace(
+                        PAGINA_LOGIN
+                    );
+                }
+
+                return null;
+            }
+
+            return {
+                ...usuario,
+                perfil
+            };
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao validar a sessão de Turmas:",
+                error
+            );
+
+            limparSessaoCompatibilidade();
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+            return null;
+        }
+    }
+
+
+    const usuarioSessao =
+        await obterSessaoServidor();
+
+    if (
+        !usuarioSessao
+    ) {
+
+        return;
+    }
 
 
     /*====================================================
@@ -21,615 +232,1035 @@ document.addEventListener("DOMContentLoaded", function () {
     ====================================================*/
 
     const tableBody =
-        document.querySelector("#classesTableBody");
+        document.querySelector(
+            "#classesTableBody"
+        );
 
     const emptyState =
-        document.querySelector("#classesEmpty");
+        document.querySelector(
+            "#classesEmpty"
+        );
 
     const searchInput =
-        document.querySelector("#classSearch");
+        document.querySelector(
+            "#classSearch"
+        );
 
     const shiftFilter =
-        document.querySelector("#shiftFilter");
+        document.querySelector(
+            "#shiftFilter"
+        );
 
     const statusFilter =
-        document.querySelector("#statusFilter");
-
+        document.querySelector(
+            "#statusFilter"
+        );
 
     const totalClasses =
-        document.querySelector("#totalClasses");
+        document.querySelector(
+            "#totalClasses"
+        );
 
     const activeClasses =
-        document.querySelector("#activeClasses");
+        document.querySelector(
+            "#activeClasses"
+        );
 
     const enrolledStudents =
-        document.querySelector("#enrolledStudents");
+        document.querySelector(
+            "#enrolledStudents"
+        );
 
     const availableSeats =
-        document.querySelector("#availableSeats");
-
-
-    /* TURMA */
+        document.querySelector(
+            "#availableSeats"
+        );
 
     const newClassButton =
-        document.querySelector("#newClassButton");
+        document.querySelector(
+            "#newClassButton"
+        );
 
     const classModal =
-        document.querySelector("#classModal");
+        document.querySelector(
+            "#classModal"
+        );
 
     const classModalOverlay =
-        document.querySelector(".class-modal-overlay");
+        document.querySelector(
+            ".class-modal-overlay"
+        );
 
     const classModalClose =
-        document.querySelector("#classModalClose");
+        document.querySelector(
+            "#classModalClose"
+        );
 
     const classCancelButton =
-        document.querySelector("#classCancelButton");
+        document.querySelector(
+            "#classCancelButton"
+        );
 
     const classModalTitle =
-        document.querySelector("#classModalTitle");
+        document.querySelector(
+            "#classModalTitle"
+        );
 
     const classForm =
-        document.querySelector("#classForm");
+        document.querySelector(
+            "#classForm"
+        );
 
     const classId =
-        document.querySelector("#classId");
+        document.querySelector(
+            "#classId"
+        );
 
     const className =
-        document.querySelector("#className");
+        document.querySelector(
+            "#className"
+        );
 
     const classGrade =
-        document.querySelector("#classGrade");
+        document.querySelector(
+            "#classGrade"
+        );
 
     const classShift =
-        document.querySelector("#classShift");
+        document.querySelector(
+            "#classShift"
+        );
 
     const classRoom =
-        document.querySelector("#classRoom");
+        document.querySelector(
+            "#classRoom"
+        );
 
     const classTeacher =
-        document.querySelector("#classTeacher");
+        document.querySelector(
+            "#classTeacher"
+        );
 
     const classYear =
-        document.querySelector("#classYear");
+        document.querySelector(
+            "#classYear"
+        );
 
     const classCapacity =
-        document.querySelector("#classCapacity");
+        document.querySelector(
+            "#classCapacity"
+        );
 
     const classStudents =
-        document.querySelector("#classStudents");
+        document.querySelector(
+            "#classStudents"
+        );
 
     const classStatus =
-        document.querySelector("#classStatus");
+        document.querySelector(
+            "#classStatus"
+        );
 
     const capacityWarning =
-        document.querySelector("#capacityWarning");
+        document.querySelector(
+            "#capacityWarning"
+        );
 
     const duplicateClassWarning =
-        document.querySelector("#duplicateClassWarning");
-
-
-    /* VISUALIZAÇÃO */
+        document.querySelector(
+            "#duplicateClassWarning"
+        );
 
     const classViewModal =
-        document.querySelector("#classViewModal");
+        document.querySelector(
+            "#classViewModal"
+        );
 
     const classViewOverlay =
-        document.querySelector(".class-view-overlay");
+        document.querySelector(
+            ".class-view-overlay"
+        );
 
     const classViewClose =
-        document.querySelector("#classViewClose");
+        document.querySelector(
+            "#classViewClose"
+        );
 
     const viewClassName =
-        document.querySelector("#viewClassName");
+        document.querySelector(
+            "#viewClassName"
+        );
 
     const viewClassGrade =
-        document.querySelector("#viewClassGrade");
+        document.querySelector(
+            "#viewClassGrade"
+        );
 
     const viewClassShift =
-        document.querySelector("#viewClassShift");
+        document.querySelector(
+            "#viewClassShift"
+        );
 
     const viewClassTeacher =
-        document.querySelector("#viewClassTeacher");
+        document.querySelector(
+            "#viewClassTeacher"
+        );
 
     const viewClassRoom =
-        document.querySelector("#viewClassRoom");
+        document.querySelector(
+            "#viewClassRoom"
+        );
 
     const viewClassStudents =
-        document.querySelector("#viewClassStudents");
+        document.querySelector(
+            "#viewClassStudents"
+        );
 
     const viewClassYear =
-        document.querySelector("#viewClassYear");
+        document.querySelector(
+            "#viewClassYear"
+        );
 
     const viewClassStatus =
-        document.querySelector("#viewClassStatus");
-
-
-    /* GERENCIAMENTO DE ALUNOS */
+        document.querySelector(
+            "#viewClassStatus"
+        );
 
     const studentsManagerModal =
-        document.querySelector("#studentsManagerModal");
+        document.querySelector(
+            "#studentsManagerModal"
+        );
 
     const studentsManagerOverlay =
-        document.querySelector(".students-manager-overlay");
+        document.querySelector(
+            ".students-manager-overlay"
+        );
 
     const studentsManagerClose =
-        document.querySelector("#studentsManagerClose");
+        document.querySelector(
+            "#studentsManagerClose"
+        );
 
     const managerClassName =
-        document.querySelector("#managerClassName");
+        document.querySelector(
+            "#managerClassName"
+        );
 
     const managerCapacityText =
-        document.querySelector("#managerCapacityText");
+        document.querySelector(
+            "#managerCapacityText"
+        );
+
+    const managerCapacityBarContainer =
+        document.querySelector(
+            ".manager-capacity-bar"
+        );
 
     const managerCapacityBar =
-        document.querySelector("#managerCapacityBar");
+        document.querySelector(
+            "#managerCapacityBar"
+        );
 
     const linkedStudentsCounter =
-        document.querySelector("#linkedStudentsCounter");
+        document.querySelector(
+            "#linkedStudentsCounter"
+        );
 
     const linkedStudentsList =
-        document.querySelector("#linkedStudentsList");
+        document.querySelector(
+            "#linkedStudentsList"
+        );
 
     const availableStudentsList =
-        document.querySelector("#availableStudentsList");
+        document.querySelector(
+            "#availableStudentsList"
+        );
 
     const linkedStudentsEmpty =
-        document.querySelector("#linkedStudentsEmpty");
+        document.querySelector(
+            "#linkedStudentsEmpty"
+        );
 
     const availableStudentsEmpty =
-        document.querySelector("#availableStudentsEmpty");
+        document.querySelector(
+            "#availableStudentsEmpty"
+        );
 
     const managerStudentSearch =
-        document.querySelector("#managerStudentSearch");
-
-
-    /* EXCLUSÃO */
+        document.querySelector(
+            "#managerStudentSearch"
+        );
 
     const deleteClassModal =
-        document.querySelector("#deleteClassModal");
+        document.querySelector(
+            "#deleteClassModal"
+        );
 
     const deleteClassOverlay =
-        document.querySelector(".delete-class-overlay");
+        document.querySelector(
+            ".delete-class-overlay"
+        );
 
     const deleteClassCancel =
-        document.querySelector("#deleteClassCancel");
+        document.querySelector(
+            "#deleteClassCancel"
+        );
 
     const deleteClassConfirm =
-        document.querySelector("#deleteClassConfirm");
+        document.querySelector(
+            "#deleteClassConfirm"
+        );
 
     const deleteClassMessage =
-        document.querySelector("#deleteClassMessage");
-
+        document.querySelector(
+            "#deleteClassMessage"
+        );
 
     const logoutButton =
-        document.querySelector("#logoutButton");
+        document.querySelector(
+            "#logoutButton"
+        );
 
 
-    /*====================================================
-                    DADOS PADRÃO
-    ====================================================*/
-
-    const defaultClasses = [
-
-        {
-            id: 1,
-            name: "1º Ano A",
-            grade: "1º Ano",
-            shift: "Manhã",
-            room: "Sala 01",
-            teacher: "Marcos Almeida",
-            capacity: 30,
-            schoolYear: 2026,
-            status: "Ativa"
-        },
-
-        {
-            id: 2,
-            name: "2º Ano B",
-            grade: "2º Ano",
-            shift: "Manhã",
-            room: "Sala 04",
-            teacher: "Juliana Costa",
-            capacity: 30,
-            schoolYear: 2026,
-            status: "Ativa"
-        },
-
-        {
-            id: 3,
-            name: "3º Ano A",
-            grade: "3º Ano",
-            shift: "Tarde",
-            room: "Sala 07",
-            teacher: "Ricardo Lima",
-            capacity: 35,
-            schoolYear: 2026,
-            status: "Ativa"
-        },
-
-        {
-            id: 4,
-            name: "4º Ano B",
-            grade: "4º Ano",
-            shift: "Tarde",
-            room: "Sala 09",
-            teacher: "Fernanda Alves",
-            capacity: 35,
-            schoolYear: 2026,
-            status: "Ativa"
-        }
-
+    const elementosObrigatorios = [
+        tableBody,
+        emptyState,
+        searchInput,
+        shiftFilter,
+        statusFilter,
+        totalClasses,
+        activeClasses,
+        enrolledStudents,
+        availableSeats,
+        newClassButton,
+        classModal,
+        classModalOverlay,
+        classModalClose,
+        classCancelButton,
+        classModalTitle,
+        classForm,
+        classId,
+        className,
+        classGrade,
+        classShift,
+        classRoom,
+        classTeacher,
+        classYear,
+        classCapacity,
+        classStudents,
+        classStatus,
+        capacityWarning,
+        duplicateClassWarning,
+        classViewModal,
+        classViewOverlay,
+        classViewClose,
+        viewClassName,
+        viewClassGrade,
+        viewClassShift,
+        viewClassTeacher,
+        viewClassRoom,
+        viewClassStudents,
+        viewClassYear,
+        viewClassStatus,
+        studentsManagerModal,
+        studentsManagerOverlay,
+        studentsManagerClose,
+        managerClassName,
+        managerCapacityText,
+        managerCapacityBarContainer,
+        managerCapacityBar,
+        linkedStudentsCounter,
+        linkedStudentsList,
+        availableStudentsList,
+        linkedStudentsEmpty,
+        availableStudentsEmpty,
+        managerStudentSearch,
+        deleteClassModal,
+        deleteClassOverlay,
+        deleteClassCancel,
+        deleteClassConfirm,
+        deleteClassMessage
     ];
 
 
-    let classes =
-        carregarTurmas();
+    if (
+        elementosObrigatorios.some(
+            elemento =>
+                !elemento
+        )
+    ) {
 
-    let classToDelete =
-        null;
+        console.error(
+            "Turmas: a estrutura esperada da página não foi encontrada."
+        );
 
-    let managerClassId =
-        null;
+        return;
+    }
 
 
     /*====================================================
-                    HELPERS
+                    ESTADO
     ====================================================*/
 
-    function escapeHtml(value) {
+    let classes = [];
+    let students = [];
+    let professors = [];
+    let activeSchoolYear = null;
 
-        return String(value ?? "")
+    let classToDelete = null;
+    let managerClassId = null;
+    let selectedTeacherId = null;
+    let recarregandoDados = false;
+    let logoutEmAndamento = false;
+
+    const focoAnteriorPorModal =
+        new WeakMap();
+
+
+    /*====================================================
+                    UTILITÁRIOS
+    ====================================================*/
+
+    function normalizarTexto(
+        valor
+    ) {
+
+        return String(
+            valor ?? ""
+        )
+            .normalize("NFD")
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .toLowerCase()
+            .trim();
+    }
+
+
+    function escapeHtml(
+        valor
+    ) {
+
+        return String(
+            valor ?? ""
+        )
             .replaceAll("&", "&amp;")
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;")
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
-
     }
 
 
-    function obterTurmaAluno(aluno) {
-
-        /*
-         * Compatibilidade com versões antigas.
-         */
-
-        return (
-            aluno.className ||
-            aluno.class ||
-            aluno.turma ||
-            ""
-        );
-
-    }
-
-
-    function definirTurmaAluno(
-        aluno,
-        nomeTurma
+    function numeroSeguro(
+        valor,
+        padrao = 0
     ) {
 
-        aluno.className =
-            nomeTurma;
+        const numero =
+            Number(
+                valor
+            );
 
-        /*
-         * Remove propriedades antigas para evitar
-         * divergência de dados.
-         */
+        return Number.isFinite(
+            numero
+        )
+            ? numero
+            : padrao;
+    }
+
+
+    function ordenarPorNome(
+        itens
+    ) {
+
+        return [
+            ...itens
+        ].sort(
+            function (a, b) {
+
+                return String(
+                    a.name ?? ""
+                ).localeCompare(
+                    String(
+                        b.name ?? ""
+                    ),
+                    "pt-BR",
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
+            }
+        );
+    }
+
+
+    function turmaEstaAtiva(
+        turma
+    ) {
+
+        return normalizarTexto(
+            turma?.status
+        ) === "ativa";
+    }
+
+
+    function obterClasseStatus(
+        status
+    ) {
+
+        return turmaEstaAtiva({
+            status
+        })
+            ? "active"
+            : "inactive";
+    }
+
+
+    function quantidadeAlunosTurma(
+        turma
+    ) {
+
+        return Math.max(
+            0,
+            Math.trunc(
+                numeroSeguro(
+                    turma?.studentCount,
+                    0
+                )
+            )
+        );
+    }
+
+
+    function turmaPertenceAnoAtivo(
+        turma
+    ) {
 
         if (
-            Object.prototype.hasOwnProperty.call(
-                aluno,
-                "class"
-            )
+            !activeSchoolYear
         ) {
 
-            delete aluno.class;
-
+            return false;
         }
 
-        if (
-            Object.prototype.hasOwnProperty.call(
-                aluno,
-                "turma"
-            )
-        ) {
+        return Number(
+            turma.schoolYear
+        ) === Number(
+            activeSchoolYear.year
+        );
+    }
 
-            delete aluno.turma;
 
-        }
+    function encontrarTurma(
+        id
+    ) {
 
+        return classes.find(
+            turma =>
+                Number(
+                    turma.id
+                ) === Number(
+                    id
+                )
+        ) || null;
+    }
+
+
+    function encontrarAluno(
+        id
+    ) {
+
+        return students.find(
+            aluno =>
+                Number(
+                    aluno.id
+                ) === Number(
+                    id
+                )
+        ) || null;
     }
 
 
     /*====================================================
-                    STORAGE TURMAS
+                    API
     ====================================================*/
 
-    function carregarTurmas() {
+    async function requisicaoJson(
+        url,
+        opcoes = {}
+    ) {
 
-        try {
+        const {
+            headers:
+                cabecalhosExtras = {},
+            ...opcoesFetch
+        } =
+            opcoes;
 
-            const saved =
-                localStorage.getItem(
-                    CLASSES_STORAGE_KEY
-                );
-
-            if (!saved) {
-
-                return structuredClone
-                    ? structuredClone(defaultClasses)
-                    : JSON.parse(
-                        JSON.stringify(defaultClasses)
-                    );
-
-            }
-
-            const dados =
-                JSON.parse(saved);
-
-            if (!Array.isArray(dados)) {
-
-                return JSON.parse(
-                    JSON.stringify(defaultClasses)
-                );
-
-            }
-
-            /*
-             * Remove contagem manual antiga.
-             */
-
-            return dados.map(
-                function (turma) {
-
-                    const copia = {
-                        ...turma
-                    };
-
-                    delete copia.students;
-
-                    return copia;
-
+        const response =
+            await fetch(
+                url,
+                {
+                    ...opcoesFetch,
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "Accept": "application/json",
+                        ...(opcoesFetch.body
+                            ? {
+                                "Content-Type":
+                                    "application/json"
+                            }
+                            : {}),
+                        ...cabecalhosExtras
+                    }
                 }
             );
 
-        } catch (erro) {
-
-            console.warn(
-                "Erro ao carregar turmas:",
-                erro
+        const data =
+            await lerJsonSeguro(
+                response
             );
 
-            return JSON.parse(
-                JSON.stringify(defaultClasses)
-            );
+        if (
+            response.status ===
+            401
+        ) {
 
+            limparSessaoCompatibilidade();
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
         }
 
+        return {
+            response,
+            data
+        };
     }
 
 
-    function salvarTurmas() {
+    async function carregarTurmasServidor() {
+
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            CLASSES_API_URL,
+            {
+                method: "GET"
+            }
+        );
+
+        if (
+            !response.ok ||
+            !data?.success ||
+            !Array.isArray(
+                data.classes
+            )
+        ) {
+
+            throw new Error(
+                data?.message ||
+                "Não foi possível carregar as turmas."
+            );
+        }
+
+        classes =
+            data.classes;
 
         localStorage.setItem(
             CLASSES_STORAGE_KEY,
             JSON.stringify(classes)
         );
 
+        activeSchoolYear =
+            data.activeSchoolYear ||
+            null;
     }
 
 
-    /*====================================================
-                    STORAGE ALUNOS
-    ====================================================*/
+    async function carregarProfessoresServidor() {
 
-    function carregarAlunos() {
-
-        try {
-
-            const saved =
-                localStorage.getItem(
-                    STUDENTS_STORAGE_KEY
-                );
-
-            if (!saved) {
-
-                return [];
-
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            PROFESSORS_API_URL,
+            {
+                method: "GET"
             }
-
-            const alunos =
-                JSON.parse(saved);
-
-            if (!Array.isArray(alunos)) {
-
-                return [];
-
-            }
-
-            /*
-             * Normaliza dados antigos.
-             */
-
-            let alterou =
-                false;
-
-            alunos.forEach(
-                function (aluno) {
-
-                    if (
-                        !aluno.className &&
-                        (
-                            aluno.class ||
-                            aluno.turma
-                        )
-                    ) {
-
-                        definirTurmaAluno(
-                            aluno,
-                            obterTurmaAluno(aluno)
-                        );
-
-                        alterou =
-                            true;
-
-                    }
-
-                }
-            );
-
-            if (alterou) {
-
-                salvarAlunos(
-                    alunos
-                );
-
-            }
-
-            return alunos;
-
-        } catch (erro) {
-
-            console.warn(
-                "Erro ao carregar alunos:",
-                erro
-            );
-
-            return [];
-
-        }
-
-    }
-
-
-    function salvarAlunos(alunos) {
-
-        localStorage.setItem(
-            STUDENTS_STORAGE_KEY,
-            JSON.stringify(alunos)
         );
 
+        if (
+            !response.ok ||
+            !data?.success ||
+            !Array.isArray(
+                data.professors
+            )
+        ) {
+
+            throw new Error(
+                data?.message ||
+                "Não foi possível carregar os professores."
+            );
+        }
+
+        professors =
+            data.professors;
     }
 
 
-    /*====================================================
-                    DISCIPLINAS
-    ====================================================*/
+    async function carregarAlunosServidor() {
 
-    function atualizarNomeTurmaNasDisciplinas(
-        nomeAntigo,
-        nomeNovo
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            CLASS_STUDENTS_API_URL,
+            {
+                method: "GET"
+            }
+        );
+
+        if (
+            !response.ok ||
+            !data?.success ||
+            !Array.isArray(
+                data.students
+            )
+        ) {
+
+            throw new Error(
+                data?.message ||
+                "Não foi possível carregar os alunos."
+            );
+        }
+
+        students =
+            data.students;
+    }
+
+
+    async function carregarDadosServidor(
+        mostrarErro = true
     ) {
+
+        if (
+            recarregandoDados
+        ) {
+
+            return false;
+        }
+
+        recarregandoDados =
+            true;
 
         try {
 
-            const saved =
-                localStorage.getItem(
-                    SUBJECTS_STORAGE_KEY
+            await Promise.all([
+                carregarTurmasServidor(),
+                carregarProfessoresServidor(),
+                carregarAlunosServidor()
+            ]);
+
+            return true;
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao carregar dados de Turmas:",
+                error
+            );
+
+            if (
+                mostrarErro
+            ) {
+
+                alert(
+                    error?.message ||
+                    "Não foi possível carregar os dados de Turmas."
                 );
-
-            if (!saved) {
-
-                return;
-
             }
 
-            const disciplinas =
-                JSON.parse(saved);
+            return false;
 
-            if (!Array.isArray(disciplinas)) {
+        } finally {
 
-                return;
-
-            }
-
-            let alterou =
+            recarregandoDados =
                 false;
-
-            disciplinas.forEach(
-                function (disciplina) {
-
-                    if (
-                        disciplina.className ===
-                        nomeAntigo
-                    ) {
-
-                        disciplina.className =
-                            nomeNovo;
-
-                        alterou =
-                            true;
-
-                    }
-
-                }
-            );
-
-            if (alterou) {
-
-                localStorage.setItem(
-                    SUBJECTS_STORAGE_KEY,
-                    JSON.stringify(
-                        disciplinas
-                    )
-                );
-
-            }
-
-        } catch (erro) {
-
-            console.warn(
-                "Erro ao atualizar disciplinas:",
-                erro
-            );
-
         }
+    }
 
+
+    async function salvarTurmaServidor(
+        dados
+    ) {
+
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            CLASS_SAVE_API_URL,
+            {
+                method: "POST",
+                body: JSON.stringify(
+                    dados
+                )
+            }
+        );
+
+        return {
+            ok:
+                response.ok &&
+                data?.success === true,
+
+            status:
+                response.status,
+
+            data
+        };
+    }
+
+
+    async function excluirTurmaServidor(
+        id
+    ) {
+
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            CLASS_DELETE_API_URL,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    id
+                })
+            }
+        );
+
+        return {
+            ok:
+                response.ok &&
+                data?.success === true,
+
+            status:
+                response.status,
+
+            data
+        };
+    }
+
+
+    async function alterarMatriculaServidor(
+        action,
+        studentId,
+        classId
+    ) {
+
+        const {
+            response,
+            data
+        } = await requisicaoJson(
+            CLASS_ENROLLMENT_API_URL,
+            {
+                method: "POST",
+                body: JSON.stringify({
+                    action,
+                    studentId,
+                    classId
+                })
+            }
+        );
+
+        return {
+            ok:
+                response.ok &&
+                data?.success === true,
+
+            status:
+                response.status,
+
+            data
+        };
     }
 
 
     /*====================================================
-                ALUNOS POR TURMA
+                PROFESSORES / DATALIST
     ====================================================*/
 
-    function contarAlunosDaTurma(
-        nomeTurma
-    ) {
+    const professoresDatalist =
+        document.createElement(
+            "datalist"
+        );
 
-        return carregarAlunos()
+    professoresDatalist.id =
+        "primewayTeachersList";
+
+    document.body.appendChild(
+        professoresDatalist
+    );
+
+    classTeacher.setAttribute(
+        "list",
+        professoresDatalist.id
+    );
+
+
+    /*
+        professor_id é opcional no banco.
+
+        Enquanto o módulo Professores ainda não possui
+        cadastro conectado, uma turma também pode ser
+        criada sem professor responsável.
+    */
+
+    classTeacher.required =
+        false;
+
+
+    function preencherDatalistProfessores() {
+
+        professoresDatalist.replaceChildren();
+
+        professors
             .filter(
-                function (aluno) {
-
-                    return (
-                        obterTurmaAluno(aluno) ===
-                        nomeTurma
-                    );
-
-                }
+                professor =>
+                    professor.available === true
             )
-            .length;
+            .forEach(
+                function (professor) {
 
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        professor.name;
+
+                    const detalhes = [];
+
+                    if (
+                        professor.registration
+                    ) {
+
+                        detalhes.push(
+                            professor.registration
+                        );
+                    }
+
+                    option.label =
+                        detalhes.join(" • ");
+
+                    professoresDatalist.appendChild(
+                        option
+                    );
+                }
+            );
     }
 
 
-    function pegarAlunosDaTurma(
-        nomeTurma
+    function definirProfessorAtual(
+        turma = null
     ) {
 
-        return carregarAlunos()
-            .filter(
-                function (aluno) {
+        selectedTeacherId =
+            turma?.teacherId ??
+            null;
 
-                    return (
-                        obterTurmaAluno(aluno) ===
-                        nomeTurma
-                    );
+        classTeacher.value =
+            turma?.teacher ||
+            "";
+    }
 
-                }
+
+    function obterProfessorFormulario() {
+
+        const nome =
+            classTeacher.value
+                .trim();
+
+        if (
+            !nome
+        ) {
+
+            return {
+                ok: true,
+                id: null,
+                name: ""
+            };
+        }
+
+        if (
+            selectedTeacherId !==
+            null
+        ) {
+
+            const selecionado =
+                professors.find(
+                    professor =>
+                        Number(
+                            professor.id
+                        ) === Number(
+                            selectedTeacherId
+                        ) &&
+                        professor.name ===
+                            nome
+                );
+
+            if (
+                selecionado
+            ) {
+
+                return {
+                    ok: true,
+                    id: selecionado.id,
+                    name: selecionado.name
+                };
+            }
+        }
+
+        const encontrados =
+            professors.filter(
+                professor =>
+                    professor.available === true &&
+                    normalizarTexto(
+                        professor.name
+                    ) === normalizarTexto(
+                        nome
+                    )
             );
 
+        if (
+            encontrados.length !==
+            1
+        ) {
+
+            return {
+                ok: false,
+                id: null,
+                name: nome
+            };
+        }
+
+        selectedTeacherId =
+            encontrados[0].id;
+
+        classTeacher.value =
+            encontrados[0].name;
+
+        return {
+            ok: true,
+            id: encontrados[0].id,
+            name: encontrados[0].name
+        };
     }
 
 
@@ -639,74 +1270,63 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function atualizarResumo() {
 
-        const alunos =
-            carregarAlunos();
+        totalClasses.textContent =
+            String(
+                classes.length
+            );
 
-        const total =
-            classes.length;
+        activeClasses.textContent =
+            String(
+                classes.filter(
+                    turmaEstaAtiva
+                ).length
+            );
 
-        const ativas =
-            classes.filter(
-                turma =>
-                    turma.status === "Ativa"
-            ).length;
-
-        const enturmados =
-            alunos.filter(
-                function (aluno) {
-
-                    const turmaAluno =
-                        obterTurmaAluno(
-                            aluno
-                        );
-
-                    return classes.some(
-                        turma =>
-                            turma.name ===
-                            turmaAluno
-                    );
-
-                }
-            ).length;
-
-        const vagas =
+        const matriculados =
             classes.reduce(
-                function (
-                    acumulado,
-                    turma
-                ) {
-
-                    const quantidade =
-                        contarAlunosDaTurma(
-                            turma.name
-                        );
-
-                    return (
-                        acumulado +
-                        Math.max(
-                            Number(turma.capacity) -
-                            quantidade,
-                            0
-                        )
-                    );
-
-                },
+                (total, turma) =>
+                    total +
+                    quantidadeAlunosTurma(
+                        turma
+                    ),
                 0
             );
 
-
-        totalClasses.textContent =
-            total;
-
-        activeClasses.textContent =
-            ativas;
-
         enrolledStudents.textContent =
-            enturmados;
+            String(
+                matriculados
+            );
+
+        const vagas =
+            classes
+                .filter(
+                    turmaEstaAtiva
+                )
+                .reduce(
+                    function (
+                        total,
+                        turma
+                    ) {
+
+                        return total +
+                            Math.max(
+                                numeroSeguro(
+                                    turma.capacity,
+                                    0
+                                ) -
+                                quantidadeAlunosTurma(
+                                    turma
+                                ),
+                                0
+                            );
+                    },
+                    0
+                );
 
         availableSeats.textContent =
-            vagas;
-
+            String(
+                vagas
+            );
     }
 
 
@@ -717,9 +1337,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function pegarTurmasFiltradas() {
 
         const termo =
-            searchInput.value
-                .trim()
-                .toLowerCase();
+            normalizarTexto(
+                searchInput.value
+            );
 
         const turno =
             shiftFilter.value;
@@ -727,35 +1347,37 @@ document.addEventListener("DOMContentLoaded", function () {
         const status =
             statusFilter.value;
 
-
         return classes.filter(
             function (turma) {
 
                 const texto =
-                    [
-                        turma.name,
-                        turma.grade,
-                        turma.teacher,
-                        turma.room
-                    ]
-                        .join(" ")
-                        .toLowerCase();
+                    normalizarTexto(
+                        [
+                            turma.name,
+                            turma.grade,
+                            turma.teacher,
+                            turma.room,
+                            turma.schoolYear
+                        ].join(" ")
+                    );
 
                 return (
-                    texto.includes(termo) &&
+                    texto.includes(
+                        termo
+                    ) &&
                     (
                         !turno ||
-                        turma.shift === turno
+                        turma.shift ===
+                            turno
                     ) &&
                     (
                         !status ||
-                        turma.status === status
+                        turma.status ===
+                            status
                     )
                 );
-
             }
         );
-
     }
 
 
@@ -765,8 +1387,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderClasses() {
 
-        tableBody.innerHTML =
-            "";
+        tableBody.replaceChildren();
 
         const filtradas =
             pegarTurmasFiltradas();
@@ -776,59 +1397,85 @@ document.addEventListener("DOMContentLoaded", function () {
             filtradas.length === 0
         );
 
-
         filtradas.forEach(
             function (turma) {
 
                 const quantidade =
-                    contarAlunosDaTurma(
-                        turma.name
+                    quantidadeAlunosTurma(
+                        turma
                     );
 
                 const capacidade =
-                    Number(
-                        turma.capacity
+                    Math.max(
+                        numeroSeguro(
+                            turma.capacity,
+                            1
+                        ),
+                        1
                     );
 
                 const percentual =
-                    capacidade > 0
-                        ? Math.min(
-                            quantidade /
-                            capacidade *
-                            100,
-                            100
-                        )
-                        : 0;
+                    Math.min(
+                        quantidade /
+                        capacidade *
+                        100,
+                        100
+                    );
 
                 const lotada =
-                    quantidade >= capacidade;
+                    quantidade >=
+                    capacidade;
 
                 const statusClass =
-                    turma.status === "Ativa"
-                        ? "active"
-                        : "inactive";
+                    obterClasseStatus(
+                        turma.status
+                    );
 
+                const gerenciavel =
+                    turmaPertenceAnoAtivo(
+                        turma
+                    );
 
                 const row =
                     document.createElement(
                         "tr"
                     );
 
+                const nomeSeguro =
+                    escapeHtml(
+                        turma.name
+                    );
+
+                const idSeguro =
+                    escapeHtml(
+                        turma.id
+                    );
+
+                const professorExibido =
+                    turma.teacher ||
+                    "Sem professor";
+
+                const salaExibida =
+                    turma.room ||
+                    "-";
 
                 row.innerHTML = `
-
                     <td>
 
                         <div class="class-cell">
 
-                            <div class="class-avatar">
-
-                                <i class="fa-solid fa-users"></i>
-
+                            <div
+                                class="class-avatar"
+                                aria-hidden="true"
+                            >
+                                <i
+                                    class="fa-solid fa-users"
+                                    aria-hidden="true"
+                                ></i>
                             </div>
 
                             <strong>
-                                ${escapeHtml(turma.name)}
+                                ${nomeSeguro}
                             </strong>
 
                         </div>
@@ -844,11 +1491,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     </td>
 
                     <td>
-                        ${escapeHtml(turma.teacher)}
+                        ${escapeHtml(professorExibido)}
                     </td>
 
                     <td>
-                        ${escapeHtml(turma.room)}
+                        ${escapeHtml(salaExibida)}
                     </td>
 
                     <td>
@@ -862,7 +1509,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <div class="capacity-bar ${lotada ? "full" : ""}">
 
                                 <span
-                                    style="width:${percentual}%"
+                                    style="width: ${percentual}%"
                                 ></span>
 
                             </div>
@@ -891,71 +1538,198 @@ document.addEventListener("DOMContentLoaded", function () {
                                 type="button"
                                 class="class-action-button"
                                 data-action="view"
-                                data-id="${turma.id}"
+                                data-id="${idSeguro}"
                                 title="Visualizar"
+                                aria-label="Visualizar ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-eye"></i>
+                                <i
+                                    class="fa-solid fa-eye"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                             <button
                                 type="button"
                                 class="class-action-button manage"
                                 data-action="students"
-                                data-id="${turma.id}"
-                                title="Gerenciar alunos"
+                                data-id="${idSeguro}"
+                                title="${gerenciavel
+                                    ? "Gerenciar alunos"
+                                    : "Gerenciamento disponível apenas no ano letivo ativo"
+                                }"
+                                aria-label="Gerenciar alunos da turma ${nomeSeguro}"
+                                ${gerenciavel ? "" : "disabled"}
                             >
-                                <i class="fa-solid fa-user-group"></i>
+                                <i
+                                    class="fa-solid fa-user-group"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                             <button
                                 type="button"
                                 class="class-action-button"
                                 data-action="edit"
-                                data-id="${turma.id}"
+                                data-id="${idSeguro}"
                                 title="Editar"
+                                aria-label="Editar ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-pen"></i>
+                                <i
+                                    class="fa-solid fa-pen"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                             <button
                                 type="button"
                                 class="class-action-button delete"
                                 data-action="delete"
-                                data-id="${turma.id}"
+                                data-id="${idSeguro}"
                                 title="Excluir"
+                                aria-label="Excluir ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-trash"></i>
+                                <i
+                                    class="fa-solid fa-trash"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                         </div>
 
                     </td>
-
                 `;
-
 
                 tableBody.appendChild(
                     row
                 );
-
             }
         );
 
-
         atualizarResumo();
-
     }
 
 
     /*====================================================
-                    MODAL TURMA
+                    MODAIS
     ====================================================*/
 
-    function abrirModalTurma(
-        turma = null
+    function existeModalAtivo() {
+
+        return [
+            classModal,
+            classViewModal,
+            studentsManagerModal,
+            deleteClassModal
+        ].some(
+            modal =>
+                modal.classList.contains(
+                    "active"
+                )
+        );
+    }
+
+
+    function abrirModal(
+        modal,
+        focoInicial = null
     ) {
 
-        classForm.reset();
+        const elementoAtivo =
+            document.activeElement;
+
+        if (
+            elementoAtivo instanceof
+            HTMLElement
+        ) {
+
+            focoAnteriorPorModal.set(
+                modal,
+                elementoAtivo
+            );
+        }
+
+        modal.classList.add(
+            "active"
+        );
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+        if (
+            focoInicial &&
+            typeof focoInicial.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    focoInicial.focus();
+                }
+            );
+        }
+    }
+
+
+    function fecharModal(
+        modal
+    ) {
+
+        modal.classList.remove(
+            "active"
+        );
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        if (
+            !existeModalAtivo()
+        ) {
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+        }
+
+        const focoAnterior =
+            focoAnteriorPorModal.get(
+                modal
+            );
+
+        focoAnteriorPorModal.delete(
+            modal
+        );
+
+        const destinoFoco =
+            focoAnterior &&
+            focoAnterior.isConnected &&
+            typeof focoAnterior.focus ===
+                "function"
+                ? focoAnterior
+                : newClassButton;
+
+        requestAnimationFrame(
+            function () {
+
+                destinoFoco?.focus();
+            }
+        );
+    }
+
+
+    /*====================================================
+                CADASTRO / EDIÇÃO
+    ====================================================*/
+
+    function limparAvisosFormulario() {
 
         capacityWarning.classList.remove(
             "active"
@@ -965,8 +1739,23 @@ document.addEventListener("DOMContentLoaded", function () {
             "active"
         );
 
+        classTeacher.setCustomValidity(
+            ""
+        );
+    }
 
-        if (turma) {
+
+    function abrirModalTurma(
+        turma = null
+    ) {
+
+        classForm.reset();
+
+        limparAvisosFormulario();
+
+        if (
+            turma
+        ) {
 
             classModalTitle.textContent =
                 "Editar turma";
@@ -984,10 +1773,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 turma.shift;
 
             classRoom.value =
-                turma.room;
+                turma.room ||
+                "";
 
-            classTeacher.value =
-                turma.teacher;
+            definirProfessorAtual(
+                turma
+            );
 
             classYear.value =
                 turma.schoolYear;
@@ -996,8 +1787,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 turma.capacity;
 
             classStudents.value =
-                contarAlunosDaTurma(
-                    turma.name
+                quantidadeAlunosTurma(
+                    turma
                 );
 
             classStatus.value =
@@ -1011,8 +1802,11 @@ document.addEventListener("DOMContentLoaded", function () {
             classId.value =
                 "";
 
+            definirProfessorAtual();
+
             classYear.value =
-                new Date().getFullYear();
+                activeSchoolYear?.year ??
+                "";
 
             classCapacity.value =
                 30;
@@ -1022,71 +1816,100 @@ document.addEventListener("DOMContentLoaded", function () {
 
             classStatus.value =
                 "Ativa";
-
         }
 
-
         abrirModal(
-            classModal
+            classModal,
+            className
         );
-
-        className.focus();
-
     }
 
 
-    function salvarTurma(
+    function nomeTurmaDuplicado(
+        nome,
+        ano,
+        idAtual
+    ) {
+
+        const nomeNormalizado =
+            normalizarTexto(
+                nome
+            );
+
+        return classes.some(
+            turma =>
+                Number(
+                    turma.id
+                ) !== Number(
+                    idAtual
+                ) &&
+                Number(
+                    turma.schoolYear
+                ) === Number(
+                    ano
+                ) &&
+                normalizarTexto(
+                    turma.name
+                ) === nomeNormalizado
+        );
+    }
+
+
+    async function salvarTurma(
         event
     ) {
 
         event.preventDefault();
 
+        limparAvisosFormulario();
 
-        capacityWarning.classList.remove(
-            "active"
-        );
+        if (
+            !classForm.checkValidity()
+        ) {
 
-        duplicateClassWarning.classList.remove(
-            "active"
-        );
+            classForm.reportValidity();
 
+            return;
+        }
 
         const id =
             classId.value
-                ? Number(classId.value)
-                : Date.now();
-
-        const novoNome =
-            className.value.trim();
+                ? Number(
+                    classId.value
+                )
+                : null;
 
         const existente =
-            classes.find(
-                turma =>
-                    turma.id === id
+            id !== null
+                ? encontrarTurma(
+                    id
+                )
+                : null;
+
+        const nome =
+            className.value
+                .trim();
+
+        const ano =
+            Number(
+                classYear.value
             );
 
-        const nomeAntigo =
-            existente
-                ? existente.name
-                : "";
-
-        const duplicada =
-            classes.some(
-                function (turma) {
-
-                    return (
-                        turma.id !== id &&
-                        turma.name
-                            .trim()
-                            .toLowerCase() ===
-                        novoNome.toLowerCase()
-                    );
-
-                }
+        const capacidade =
+            Number(
+                classCapacity.value
             );
 
+        if (
+            nomeTurmaDuplicado(
+                nome,
+                ano,
+                id
+            )
+        ) {
 
-        if (duplicada) {
+            duplicateClassWarning.textContent =
+                "Já existe uma turma com esse nome nesse ano letivo.";
 
             duplicateClassWarning.classList.add(
                 "active"
@@ -1095,27 +1918,35 @@ document.addEventListener("DOMContentLoaded", function () {
             className.focus();
 
             return;
-
         }
 
-
-        const alunosVinculados =
+        const quantidadeAtual =
             existente
-                ? contarAlunosDaTurma(
-                    nomeAntigo
+                ? quantidadeAlunosTurma(
+                    existente
                 )
                 : 0;
 
-        const capacidade =
-            Number(
-                classCapacity.value
-            );
+        if (
+            !Number.isInteger(
+                capacidade
+            ) ||
+            capacidade < 1 ||
+            capacidade > 100
+        ) {
 
+            classCapacity.reportValidity();
+
+            return;
+        }
 
         if (
-            alunosVinculados >
-            capacidade
+            capacidade <
+            quantidadeAtual
         ) {
+
+            capacityWarning.textContent =
+                `A turma já possui ${quantidadeAtual} aluno(s).`;
 
             capacityWarning.classList.add(
                 "active"
@@ -1124,16 +1955,34 @@ document.addEventListener("DOMContentLoaded", function () {
             classCapacity.focus();
 
             return;
-
         }
 
+        const professor =
+            obterProfessorFormulario();
+
+        if (
+            !professor.ok
+        ) {
+
+            classTeacher.setCustomValidity(
+                "Selecione um professor já cadastrado ou deixe o campo vazio."
+            );
+
+            classTeacher.reportValidity();
+
+            return;
+        }
+
+        classTeacher.setCustomValidity(
+            ""
+        );
 
         const dados = {
 
             id,
 
             name:
-                novoNome,
+                nome,
 
             grade:
                 classGrade.value,
@@ -1142,112 +1991,140 @@ document.addEventListener("DOMContentLoaded", function () {
                 classShift.value,
 
             room:
-                classRoom.value.trim(),
+                classRoom.value
+                    .trim(),
 
             teacher:
-                classTeacher.value.trim(),
+                professor.name,
+
+            teacherId:
+                professor.id,
 
             capacity:
                 capacidade,
 
             schoolYear:
-                Number(
-                    classYear.value
-                ),
+                ano,
 
             status:
                 classStatus.value
-
         };
 
-
-        const index =
-            classes.findIndex(
-                turma =>
-                    turma.id === id
+        const botaoSubmit =
+            classForm.querySelector(
+                '[type="submit"]'
             );
-
-
-        if (index >= 0) {
-
-            classes[index] =
-                dados;
-
-        } else {
-
-            classes.unshift(
-                dados
-            );
-
-        }
-
-
-        /*
-         * Se renomear a turma,
-         * atualiza alunos e disciplinas.
-         */
 
         if (
-            nomeAntigo &&
-            nomeAntigo !== novoNome
+            botaoSubmit
         ) {
 
-            const alunos =
-                carregarAlunos();
-
-            alunos.forEach(
-                function (aluno) {
-
-                    if (
-                        obterTurmaAluno(aluno) ===
-                        nomeAntigo
-                    ) {
-
-                        definirTurmaAluno(
-                            aluno,
-                            novoNome
-                        );
-
-                    }
-
-                }
-            );
-
-            salvarAlunos(
-                alunos
-            );
-
-            atualizarNomeTurmaNasDisciplinas(
-                nomeAntigo,
-                novoNome
-            );
-
+            botaoSubmit.disabled =
+                true;
         }
 
+        try {
 
-        salvarTurmas();
+            const resultado =
+                await salvarTurmaServidor(
+                    dados
+                );
 
-        renderClasses();
+            if (
+                !resultado.ok
+            ) {
 
-        fecharModal(
-            classModal
-        );
+                const mensagem =
+                    resultado.data?.message ||
+                    "Não foi possível salvar a turma.";
 
+                if (
+                    mensagem
+                        .toLowerCase()
+                        .includes(
+                            "já existe"
+                        )
+                ) {
+
+                    duplicateClassWarning.textContent =
+                        mensagem;
+
+                    duplicateClassWarning.classList.add(
+                        "active"
+                    );
+
+                    return;
+                }
+
+                if (
+                    mensagem
+                        .toLowerCase()
+                        .includes(
+                            "capacidade"
+                        )
+                ) {
+
+                    capacityWarning.textContent =
+                        mensagem;
+
+                    capacityWarning.classList.add(
+                        "active"
+                    );
+
+                    return;
+                }
+
+                alert(
+                    mensagem
+                );
+
+                return;
+            }
+
+            await Promise.all([
+                carregarTurmasServidor(),
+                carregarAlunosServidor()
+            ]);
+
+            preencherDatalistProfessores();
+
+            renderClasses();
+
+            fecharModal(
+                classModal
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao salvar turma:",
+                error
+            );
+
+            alert(
+                "Não foi possível salvar a turma. Tente novamente."
+            );
+
+        } finally {
+
+            if (
+                botaoSubmit
+            ) {
+
+                botaoSubmit.disabled =
+                    false;
+            }
+        }
     }
 
 
     /*====================================================
-                    VISUALIZAR
+                    VISUALIZAÇÃO
     ====================================================*/
 
     function abrirVisualizacao(
         turma
     ) {
-
-        const quantidade =
-            contarAlunosDaTurma(
-                turma.name
-            );
 
         viewClassName.textContent =
             turma.name;
@@ -1259,243 +2136,90 @@ document.addEventListener("DOMContentLoaded", function () {
             turma.shift;
 
         viewClassTeacher.textContent =
-            turma.teacher;
+            turma.teacher ||
+            "Sem professor";
 
         viewClassRoom.textContent =
-            turma.room;
+            turma.room ||
+            "-";
 
         viewClassStudents.textContent =
-            `${quantidade}/${turma.capacity}`;
+            String(
+                quantidadeAlunosTurma(
+                    turma
+                )
+            );
 
         viewClassYear.textContent =
-            turma.schoolYear;
+            String(
+                turma.schoolYear
+            );
 
         viewClassStatus.textContent =
             turma.status;
 
-
         abrirModal(
-            classViewModal
+            classViewModal,
+            classViewClose
         );
-
     }
 
 
     /*====================================================
-                GERENCIAR ALUNOS
+                GERENCIAMENTO DE ALUNOS
     ====================================================*/
 
     function abrirGerenciadorAlunos(
         turma
     ) {
 
+        if (
+            !turmaPertenceAnoAtivo(
+                turma
+            )
+        ) {
+
+            alert(
+                "O gerenciamento de alunos está disponível apenas para turmas do ano letivo ativo."
+            );
+
+            return;
+        }
+
         managerClassId =
-            turma.id;
+            Number(
+                turma.id
+            );
 
         managerStudentSearch.value =
             "";
 
-        managerClassName.textContent =
-            turma.name;
-
         renderGerenciadorAlunos();
 
         abrirModal(
-            studentsManagerModal
+            studentsManagerModal,
+            managerStudentSearch
         );
-
     }
 
 
-    function renderGerenciadorAlunos() {
+    function fecharGerenciadorAlunos() {
 
-        const turma =
-            classes.find(
-                item =>
-                    item.id ===
-                    managerClassId
-            );
+        managerClassId =
+            null;
 
-        if (!turma) {
-
-            return;
-
-        }
-
-
-        const alunos =
-            carregarAlunos();
-
-        const termo =
-            managerStudentSearch.value
-                .trim()
-                .toLowerCase();
-
-
-        const vinculados =
-            alunos.filter(
-                aluno =>
-                    obterTurmaAluno(aluno) ===
-                    turma.name
-            );
-
-
-        const disponiveis =
-            alunos.filter(
-                function (aluno) {
-
-                    const turmaAtual =
-                        obterTurmaAluno(
-                            aluno
-                        );
-
-                    const texto =
-                        (
-                            aluno.name +
-                            " " +
-                            (
-                                aluno.registration ||
-                                ""
-                            )
-                        )
-                            .toLowerCase();
-
-                    return (
-                        turmaAtual !== turma.name &&
-                        texto.includes(termo)
-                    );
-
-                }
-            );
-
-
-        const ocupacao =
-            vinculados.length;
-
-        const capacidade =
-            Number(
-                turma.capacity
-            );
-
-        const cheia =
-            ocupacao >= capacidade;
-
-        const percentual =
-            capacidade > 0
-                ? Math.min(
-                    ocupacao /
-                    capacidade *
-                    100,
-                    100
-                )
-                : 0;
-
-
-        managerCapacityText.textContent =
-            `${ocupacao}/${capacidade}`;
-
-        managerCapacityBar.style.width =
-            `${percentual}%`;
-
-        linkedStudentsCounter.textContent =
-            ocupacao;
-
-
-        /* ALUNOS VINCULADOS */
-
-        linkedStudentsList.innerHTML =
+        managerStudentSearch.value =
             "";
 
-        linkedStudentsEmpty.classList.toggle(
-            "active",
-            vinculados.length === 0
+        fecharModal(
+            studentsManagerModal
         );
-
-
-        vinculados.forEach(
-            function (aluno) {
-
-                const card =
-                    criarCardAluno(
-                        aluno,
-                        `
-                            <button
-                                type="button"
-                                class="manager-student-button remove"
-                                data-manager-action="remove"
-                                data-student-id="${aluno.id}"
-                            >
-                                Remover
-                            </button>
-                        `,
-                        turma.name
-                    );
-
-                linkedStudentsList.appendChild(
-                    card
-                );
-
-            }
-        );
-
-
-        /* ALUNOS DISPONÍVEIS */
-
-        availableStudentsList.innerHTML =
-            "";
-
-        availableStudentsEmpty.classList.toggle(
-            "active",
-            disponiveis.length === 0
-        );
-
-
-        disponiveis.forEach(
-            function (aluno) {
-
-                const turmaAtual =
-                    obterTurmaAluno(
-                        aluno
-                    );
-
-                const textoBotao =
-                    turmaAtual
-                        ? "Transferir"
-                        : "Adicionar";
-
-
-                const card =
-                    criarCardAluno(
-                        aluno,
-                        `
-                            <button
-                                type="button"
-                                class="manager-student-button"
-                                data-manager-action="add"
-                                data-student-id="${aluno.id}"
-                                ${cheia ? "disabled" : ""}
-                            >
-                                ${textoBotao}
-                            </button>
-                        `,
-                        turmaAtual ||
-                        "Sem turma"
-                    );
-
-                availableStudentsList.appendChild(
-                    card
-                );
-
-            }
-        );
-
     }
 
 
     function criarCardAluno(
         aluno,
-        botao,
-        subtitulo
+        configuracao
     ) {
 
         const card =
@@ -1506,141 +2230,408 @@ document.addEventListener("DOMContentLoaded", function () {
         card.className =
             "manager-student-card";
 
+        const nomeSeguro =
+            escapeHtml(
+                aluno.name
+            );
+
+        const matriculaSegura =
+            escapeHtml(
+                aluno.registration ||
+                ""
+            );
+
+        const subtituloSeguro =
+            escapeHtml(
+                configuracao.subtitulo ||
+                ""
+            );
+
+        const idSeguro =
+            escapeHtml(
+                aluno.id
+            );
+
+        const textoBotao =
+            escapeHtml(
+                configuracao.textoBotao
+            );
+
+        const classeBotao =
+            configuracao.remover
+                ? "manager-student-button remove"
+                : "manager-student-button";
+
+        const acao =
+            configuracao.remover
+                ? "remove"
+                : "add";
+
+        const disabled =
+            configuracao.disabled
+                ? "disabled"
+                : "";
+
         card.innerHTML = `
-
-            <div class="manager-student-avatar">
-
-                <i class="fa-solid fa-user-graduate"></i>
-
+            <div
+                class="manager-student-avatar"
+                aria-hidden="true"
+            >
+                <i
+                    class="fa-solid fa-user-graduate"
+                    aria-hidden="true"
+                ></i>
             </div>
 
             <div class="manager-student-info">
 
                 <strong>
-                    ${escapeHtml(aluno.name)}
+                    ${nomeSeguro}
                 </strong>
 
                 <span>
-                    ${escapeHtml(aluno.registration || "")}
-                    ${subtitulo ? " • " + escapeHtml(subtitulo) : ""}
+                    ${matriculaSegura}
+                    ${
+                        subtituloSeguro
+                            ? ` • ${subtituloSeguro}`
+                            : ""
+                    }
                 </span>
 
             </div>
 
-            ${botao}
-
+            <button
+                type="button"
+                class="${classeBotao}"
+                data-manager-action="${acao}"
+                data-student-id="${idSeguro}"
+                aria-label="${
+                    configuracao.remover
+                        ? `Remover ${nomeSeguro} da turma`
+                        : `${textoBotao} ${nomeSeguro}`
+                }"
+                ${disabled}
+            >
+                ${textoBotao}
+            </button>
         `;
 
         return card;
-
     }
 
 
-    function adicionarAlunoNaTurma(
-        alunoId
+    function renderGerenciadorAlunos() {
+
+        const turma =
+            encontrarTurma(
+                managerClassId
+            );
+
+        if (
+            !turma
+        ) {
+
+            if (
+                studentsManagerModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharGerenciadorAlunos();
+            }
+
+            return;
+        }
+
+        managerClassName.textContent =
+            turma.name;
+
+        const termo =
+            normalizarTexto(
+                managerStudentSearch.value
+            );
+
+        const vinculados =
+            ordenarPorNome(
+                students.filter(
+                    aluno =>
+                        Number(
+                            aluno.classId
+                        ) === Number(
+                            turma.id
+                        ) &&
+                        normalizarTexto(
+                            [
+                                aluno.name,
+                                aluno.registration
+                            ].join(" ")
+                        ).includes(
+                            termo
+                        )
+                )
+            );
+
+        const disponiveis =
+            ordenarPorNome(
+                students.filter(
+                    aluno =>
+                        Number(
+                            aluno.classId
+                        ) !== Number(
+                            turma.id
+                        ) &&
+                        normalizarTexto(
+                            [
+                                aluno.name,
+                                aluno.registration,
+                                aluno.className
+                            ].join(" ")
+                        ).includes(
+                            termo
+                        )
+                )
+            );
+
+        const ocupacao =
+            quantidadeAlunosTurma(
+                turma
+            );
+
+        const capacidade =
+            Math.max(
+                numeroSeguro(
+                    turma.capacity,
+                    1
+                ),
+                1
+            );
+
+        const cheia =
+            ocupacao >=
+            capacidade;
+
+        const percentual =
+            Math.min(
+                ocupacao /
+                capacidade *
+                100,
+                100
+            );
+
+        managerCapacityText.textContent =
+            `${ocupacao}/${capacidade}`;
+
+        managerCapacityBar.style.width =
+            `${percentual}%`;
+
+        managerCapacityBarContainer.classList.toggle(
+            "full",
+            cheia
+        );
+
+        linkedStudentsCounter.textContent =
+            String(
+                ocupacao
+            );
+
+        linkedStudentsList.replaceChildren();
+
+        availableStudentsList.replaceChildren();
+
+        linkedStudentsEmpty.classList.toggle(
+            "active",
+            vinculados.length === 0
+        );
+
+        availableStudentsEmpty.classList.toggle(
+            "active",
+            disponiveis.length === 0
+        );
+
+        vinculados.forEach(
+            function (aluno) {
+
+                linkedStudentsList.appendChild(
+                    criarCardAluno(
+                        aluno,
+                        {
+                            remover:
+                                true,
+
+                            textoBotao:
+                                "Remover",
+
+                            subtitulo:
+                                turma.name,
+
+                            disabled:
+                                false
+                        }
+                    )
+                );
+            }
+        );
+
+        disponiveis.forEach(
+            function (aluno) {
+
+                const possuiTurma =
+                    Boolean(
+                        aluno.classId
+                    );
+
+                const podeAlterar =
+                    aluno.available ===
+                        true &&
+                    !cheia;
+
+                availableStudentsList.appendChild(
+                    criarCardAluno(
+                        aluno,
+                        {
+                            remover:
+                                false,
+
+                            textoBotao:
+                                possuiTurma
+                                    ? "Transferir"
+                                    : "Adicionar",
+
+                            subtitulo:
+                                aluno.className ||
+                                (
+                                    aluno.available ===
+                                        false
+                                        ? "Aluno indisponível"
+                                        : "Sem turma"
+                                ),
+
+                            disabled:
+                                !podeAlterar
+                        }
+                    )
+                );
+            }
+        );
+    }
+
+
+    async function processarAcaoAluno(
+        botao
     ) {
 
         const turma =
-            classes.find(
-                item =>
-                    item.id ===
-                    managerClassId
+            encontrarTurma(
+                managerClassId
             );
-
-        if (!turma) {
-
-            return;
-
-        }
-
-
-        const ocupacao =
-            contarAlunosDaTurma(
-                turma.name
-            );
-
 
         if (
-            ocupacao >=
-            Number(turma.capacity)
+            !turma
         ) {
 
             return;
-
         }
 
-
-        const alunos =
-            carregarAlunos();
-
-        const aluno =
-            alunos.find(
-                item =>
-                    Number(item.id) ===
-                    Number(alunoId)
+        const alunoId =
+            Number(
+                botao.dataset.studentId
             );
 
-
-        if (!aluno) {
-
-            return;
-
-        }
-
-
-        definirTurmaAluno(
-            aluno,
-            turma.name
-        );
-
-
-        salvarAlunos(
-            alunos
-        );
-
-        renderGerenciadorAlunos();
-
-        renderClasses();
-
-    }
-
-
-    function removerAlunoDaTurma(
-        alunoId
-    ) {
-
-        const alunos =
-            carregarAlunos();
-
         const aluno =
-            alunos.find(
-                item =>
-                    Number(item.id) ===
-                    Number(alunoId)
+            encontrarAluno(
+                alunoId
             );
 
-
-        if (!aluno) {
+        if (
+            !aluno
+        ) {
 
             return;
-
         }
 
+        const acao =
+            botao.dataset.managerAction ===
+            "remove"
+                ? "remove"
+                : "assign";
 
-        definirTurmaAluno(
-            aluno,
-            ""
-        );
+        botao.disabled =
+            true;
 
+        try {
 
-        salvarAlunos(
-            alunos
-        );
+            const resultado =
+                await alterarMatriculaServidor(
+                    acao,
+                    aluno.id,
+                    turma.id
+                );
 
-        renderGerenciadorAlunos();
+            if (
+                !resultado.ok
+            ) {
 
-        renderClasses();
+                alert(
+                    resultado.data?.message ||
+                    "Não foi possível alterar a matrícula do aluno."
+                );
 
+                return;
+            }
+
+            await Promise.all([
+                carregarTurmasServidor(),
+                carregarAlunosServidor()
+            ]);
+
+            renderClasses();
+
+            renderGerenciadorAlunos();
+
+            if (
+                classModal.classList.contains(
+                    "active"
+                ) &&
+                classId.value
+            ) {
+
+                const turmaEditada =
+                    encontrarTurma(
+                        classId.value
+                    );
+
+                if (
+                    turmaEditada
+                ) {
+
+                    classStudents.value =
+                        quantidadeAlunosTurma(
+                            turmaEditada
+                        );
+                }
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao alterar matrícula:",
+                error
+            );
+
+            alert(
+                "Não foi possível alterar a matrícula do aluno. Tente novamente."
+            );
+
+        } finally {
+
+            if (
+                botao.isConnected
+            ) {
+
+                botao.disabled =
+                    false;
+            }
+        }
     }
 
 
@@ -1652,42 +2643,40 @@ document.addEventListener("DOMContentLoaded", function () {
         turma
     ) {
 
-        const quantidade =
-            contarAlunosDaTurma(
-                turma.name
+        classToDelete =
+            Number(
+                turma.id
             );
 
-        classToDelete =
-            turma.id;
+        deleteClassMessage.textContent =
+            `Deseja realmente excluir a turma "${turma.name}"? ` +
+            "Se houver histórico vinculado, o sistema impedirá a exclusão e pedirá a inativação.";
 
-
-        if (quantidade > 0) {
-
-            deleteClassMessage.textContent =
-                `A turma "${turma.name}" possui ${quantidade} aluno(s) vinculado(s). Remova ou transfira os alunos antes de excluir.`;
-
-            deleteClassConfirm.style.display =
-                "none";
-
-        } else {
-
-            deleteClassMessage.textContent =
-                `Deseja realmente excluir a turma "${turma.name}"?`;
-
-            deleteClassConfirm.style.display =
-                "";
-
-        }
-
+        deleteClassConfirm.hidden =
+            false;
 
         abrirModal(
-            deleteClassModal
+            deleteClassModal,
+            deleteClassCancel
         );
-
     }
 
 
-    function confirmarExclusao() {
+    function fecharExclusao() {
+
+        classToDelete =
+            null;
+
+        deleteClassConfirm.hidden =
+            false;
+
+        fecharModal(
+            deleteClassModal
+        );
+    }
+
+
+    async function confirmarExclusao() {
 
         if (
             classToDelete ===
@@ -1695,136 +2684,121 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
+        const id =
+            classToDelete;
 
-        const turma =
-            classes.find(
-                item =>
-                    item.id ===
-                    classToDelete
+        deleteClassConfirm.disabled =
+            true;
+
+        try {
+
+            const resultado =
+                await excluirTurmaServidor(
+                    id
+                );
+
+            if (
+                !resultado.ok
+            ) {
+
+                deleteClassMessage.textContent =
+                    resultado.data?.message ||
+                    "Não foi possível excluir a turma.";
+
+                if (
+                    resultado.status ===
+                    409
+                ) {
+
+                    deleteClassConfirm.hidden =
+                        true;
+                }
+
+                return;
+            }
+
+            classToDelete =
+                null;
+
+            await Promise.all([
+                carregarTurmasServidor(),
+                carregarAlunosServidor()
+            ]);
+
+            renderClasses();
+
+            deleteClassConfirm.hidden =
+                false;
+
+            fecharModal(
+                deleteClassModal
             );
 
+        } catch (error) {
 
-        if (!turma) {
-
-            return;
-
-        }
-
-
-        if (
-            contarAlunosDaTurma(
-                turma.name
-            ) > 0
-        ) {
-
-            return;
-
-        }
-
-
-        classes =
-            classes.filter(
-                item =>
-                    item.id !==
-                    classToDelete
+            console.error(
+                "Erro ao excluir turma:",
+                error
             );
 
+            deleteClassMessage.textContent =
+                "Não foi possível excluir a turma. Tente novamente.";
 
-        salvarTurmas();
+        } finally {
 
-        renderClasses();
-
-        classToDelete =
-            null;
-
-        fecharModal(
-            deleteClassModal
-        );
-
+            deleteClassConfirm.disabled =
+                false;
+        }
     }
 
 
     /*====================================================
-                    MODAIS GENÉRICOS
-    ====================================================*/
-
-    function abrirModal(
-        modal
-    ) {
-
-        modal.classList.add(
-            "active"
-        );
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-    }
-
-
-    function fecharModal(
-        modal
-    ) {
-
-        modal.classList.remove(
-            "active"
-        );
-
-        modal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
-    }
-
-
-    /*====================================================
-                    EVENTOS
+                AÇÕES DA TABELA
     ====================================================*/
 
     tableBody.addEventListener(
         "click",
         function (event) {
 
+            if (
+                !(
+                    event.target instanceof
+                    Element
+                )
+            ) {
+
+                return;
+            }
+
             const button =
                 event.target.closest(
                     "[data-action]"
                 );
 
-            if (!button) {
+            if (
+                !button ||
+                !tableBody.contains(
+                    button
+                ) ||
+                button.disabled
+            ) {
 
                 return;
-
             }
-
 
             const turma =
-                classes.find(
-                    item =>
-                        Number(item.id) ===
-                        Number(button.dataset.id)
+                encontrarTurma(
+                    button.dataset.id
                 );
 
-
-            if (!turma) {
+            if (
+                !turma
+            ) {
 
                 return;
-
             }
-
 
             switch (
                 button.dataset.action
@@ -1864,19 +2838,75 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
                     break;
-
             }
-
         }
     );
 
+
+    function tratarCliqueGerenciador(
+        event
+    ) {
+
+        if (
+            !(
+                event.target instanceof
+                Element
+            )
+        ) {
+
+            return;
+        }
+
+        const button =
+            event.target.closest(
+                "[data-manager-action]"
+            );
+
+        if (
+            !button ||
+            button.disabled
+        ) {
+
+            return;
+        }
+
+        processarAcaoAluno(
+            button
+        );
+    }
+
+
+    linkedStudentsList.addEventListener(
+        "click",
+        tratarCliqueGerenciador
+    );
+
+    availableStudentsList.addEventListener(
+        "click",
+        tratarCliqueGerenciador
+    );
+
+
+    /*====================================================
+                    EVENTOS
+    ====================================================*/
 
     newClassButton.addEventListener(
         "click",
         function () {
 
-            abrirModalTurma();
+            if (
+                !activeSchoolYear
+            ) {
 
+                alert(
+                    "Nenhum ano letivo ativo foi encontrado."
+                );
+
+                return;
+            }
+
+            abrirModalTurma();
         }
     );
 
@@ -1887,64 +2917,33 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
-    managerStudentSearch.addEventListener(
+    searchInput.addEventListener(
         "input",
-        renderGerenciadorAlunos
-    );
-
-
-    studentsManagerModal.addEventListener(
-        "click",
-        function (event) {
-
-            const button =
-                event.target.closest(
-                    "[data-manager-action]"
-                );
-
-            if (!button) {
-
-                return;
-
-            }
-
-
-            const alunoId =
-                Number(
-                    button.dataset.studentId
-                );
-
-
-            if (
-                button.dataset.managerAction ===
-                "add"
-            ) {
-
-                adicionarAlunoNaTurma(
-                    alunoId
-                );
-
-            }
-
-
-            if (
-                button.dataset.managerAction ===
-                "remove"
-            ) {
-
-                removerAlunoDaTurma(
-                    alunoId
-                );
-
-            }
-
-        }
+        renderClasses
     );
 
 
     searchInput.addEventListener(
-        "input",
-        renderClasses
+        "keydown",
+        function (event) {
+
+            if (
+                event.key !==
+                    "Escape" ||
+                searchInput.value ===
+                    ""
+            ) {
+
+                return;
+            }
+
+            event.stopPropagation();
+
+            searchInput.value =
+                "";
+
+            renderClasses();
+        }
     );
 
 
@@ -1960,96 +2959,168 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    managerStudentSearch.addEventListener(
+        "input",
+        renderGerenciadorAlunos
+    );
+
+
+    managerStudentSearch.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key !==
+                    "Escape" ||
+                managerStudentSearch.value ===
+                    ""
+            ) {
+
+                return;
+            }
+
+            event.stopPropagation();
+
+            managerStudentSearch.value =
+                "";
+
+            renderGerenciadorAlunos();
+        }
+    );
+
+
+    className.addEventListener(
+        "input",
+        function () {
+
+            duplicateClassWarning.classList.remove(
+                "active"
+            );
+        }
+    );
+
+
+    classCapacity.addEventListener(
+        "input",
+        function () {
+
+            capacityWarning.classList.remove(
+                "active"
+            );
+        }
+    );
+
+
+    classTeacher.addEventListener(
+        "input",
+        function () {
+
+            selectedTeacherId =
+                null;
+
+            classTeacher.setCustomValidity(
+                ""
+            );
+        }
+    );
+
+
+    classTeacher.addEventListener(
+        "change",
+        function () {
+
+            const professor =
+                obterProfessorFormulario();
+
+            classTeacher.setCustomValidity(
+                professor.ok
+                    ? ""
+                    : "Selecione um professor já cadastrado ou deixe o campo vazio."
+            );
+        }
+    );
+
+
+    /*====================================================
+                    FECHAR MODAIS
+    ====================================================*/
+
     classModalClose.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 classModal
-            )
+            );
+        }
     );
 
 
     classCancelButton.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 classModal
-            )
+            );
+        }
     );
 
 
     classModalOverlay.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 classModal
-            )
+            );
+        }
     );
 
 
     classViewClose.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 classViewModal
-            )
+            );
+        }
     );
 
 
     classViewOverlay.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 classViewModal
-            )
+            );
+        }
     );
 
 
     studentsManagerClose.addEventListener(
         "click",
-        () =>
-            fecharModal(
-                studentsManagerModal
-            )
+        fecharGerenciadorAlunos
     );
 
 
     studentsManagerOverlay.addEventListener(
         "click",
-        () =>
-            fecharModal(
-                studentsManagerModal
-            )
+        fecharGerenciadorAlunos
     );
 
 
     deleteClassCancel.addEventListener(
         "click",
-        function () {
-
-            classToDelete =
-                null;
-
-            fecharModal(
-                deleteClassModal
-            );
-
-        }
+        fecharExclusao
     );
 
 
     deleteClassOverlay.addEventListener(
         "click",
-        function () {
-
-            classToDelete =
-                null;
-
-            fecharModal(
-                deleteClassModal
-            );
-
-        }
+        fecharExclusao
     );
 
 
@@ -2059,74 +3130,264 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    /*====================================================
+                        ESC
+    ====================================================*/
+
     document.addEventListener(
         "keydown",
         function (event) {
 
             if (
-                event.key !== "Escape"
+                event.key !==
+                "Escape"
             ) {
 
                 return;
-
             }
 
+            if (
+                deleteClassModal.classList.contains(
+                    "active"
+                )
+            ) {
 
-            [
-                classModal,
-                classViewModal,
-                studentsManagerModal,
-                deleteClassModal
-            ].forEach(
-                function (modal) {
+                fecharExclusao();
 
-                    if (
-                        modal.classList.contains(
-                            "active"
-                        )
-                    ) {
+                return;
+            }
 
-                        fecharModal(
-                            modal
-                        );
+            if (
+                studentsManagerModal.classList.contains(
+                    "active"
+                )
+            ) {
 
-                    }
+                fecharGerenciadorAlunos();
 
-                }
-            );
+                return;
+            }
 
+            if (
+                classViewModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharModal(
+                    classViewModal
+                );
+
+                return;
+            }
+
+            if (
+                classModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharModal(
+                    classModal
+                );
+            }
         }
     );
 
 
-    if (logoutButton) {
+    /*====================================================
+                    LOGOUT PHP
+    ====================================================*/
 
-        logoutButton.addEventListener(
-            "click",
-            function () {
+    async function fazerLogout() {
 
-                sessionStorage.removeItem(
-                    "primewayLogado"
-                );
+        if (
+            logoutEmAndamento
+        ) {
 
-                sessionStorage.removeItem(
-                    "primewayUsuario"
-                );
+            return;
+        }
 
-                window.location.href =
-                    "login.html";
+        logoutEmAndamento =
+            true;
 
+        if (
+            logoutButton
+        ) {
+
+            logoutButton.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+            if (
+                "disabled" in
+                logoutButton
+            ) {
+
+                logoutButton.disabled =
+                    true;
             }
-        );
+        }
 
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_LOGOUT_URL,
+                    {
+                        method: "POST",
+                        credentials: "same-origin",
+                        cache: "no-store",
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+            if (
+                !response.ok ||
+                !data?.success
+            ) {
+
+                throw new Error(
+                    data?.message ||
+                    "O servidor não confirmou o logout."
+                );
+            }
+
+            limparSessaoCompatibilidade();
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Erro ao encerrar a sessão:",
+                error
+            );
+
+            alert(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
+
+            logoutEmAndamento =
+                false;
+
+            if (
+                logoutButton
+            ) {
+
+                logoutButton.setAttribute(
+                    "aria-busy",
+                    "false"
+                );
+
+                if (
+                    "disabled" in
+                    logoutButton
+                ) {
+
+                    logoutButton.disabled =
+                        false;
+                }
+            }
+        }
     }
+
+
+    logoutButton?.addEventListener(
+        "click",
+        fazerLogout
+    );
+
+
+    /*====================================================
+            ATUALIZAÇÃO ENTRE ABAS / RETORNO
+    ====================================================*/
+
+    async function atualizarAoRetomar() {
+
+        if (
+            document.visibilityState !==
+                "visible" ||
+            recarregandoDados ||
+            existeModalAtivo()
+        ) {
+
+            return;
+        }
+
+        const carregou =
+            await carregarDadosServidor(
+                false
+            );
+
+        if (
+            carregou
+        ) {
+
+            preencherDatalistProfessores();
+
+            renderClasses();
+        }
+    }
+
+
+    document.addEventListener(
+        "visibilitychange",
+        atualizarAoRetomar
+    );
 
 
     /*====================================================
                     INICIALIZAÇÃO
     ====================================================*/
 
-    salvarTurmas();
+    /*
+        O ano da nova turma passa a vir do
+        ano letivo ativo cadastrado no banco.
+    */
+
+    classYear.readOnly =
+        true;
+
+    classYear.setAttribute(
+        "aria-readonly",
+        "true"
+    );
+
+
+    classStudents.readOnly =
+        true;
+
+    classStudents.setAttribute(
+        "aria-readonly",
+        "true"
+    );
+
+
+    const carregou =
+        await carregarDadosServidor();
+
+
+    if (
+        !carregou
+    ) {
+
+        return;
+    }
+
+
+    preencherDatalistProfessores();
 
     renderClasses();
 

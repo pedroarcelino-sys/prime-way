@@ -1,468 +1,647 @@
-:root {
-    --principal: #FFFFE4;
-    --secundaria: #1E3A8A;
-    --primaria: #D3AF37;
-    --texto: #1F2937;
-}
+/*====================================================
+            ALUNOS - PRIMEWAY SCHOOL
+====================================================*/
 
 
-/*====================================================*
-* BASE
-*====================================================*/
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    background: var(--principal);
-    color: var(--texto);
-}
-
-button,
-input,
-select {
-    font: inherit;
-}
-
-
-/*====================================================*
-* LAYOUT
-*====================================================*/
-
-.app-layout {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 230px 1fr;
-}
-
-
-/*====================================================*
-* SIDEBAR
-*====================================================*/
-
-.sidebar {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: var(--secundaria);
-}
-
-.sidebar-logo {
-    padding: 26px 20px;
-    text-align: center;
-}
-
-.sidebar-logo img {
-    max-width: 145px;
-    width: 100%;
-}
-
-.sidebar-menu {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 0 12px;
-}
-
-.sidebar-menu a {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 12px 14px;
-    border-radius: 10px;
-    color: rgba(255,255,255,.8);
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    text-decoration: none;
-    transition: .25s ease;
-}
-
-.sidebar-menu a i {
-    width: 20px;
-    text-align: center;
-}
-
-.sidebar-menu a:hover,
-.sidebar-menu a.active {
-    background: rgba(255,255,255,.12);
-    color: #FFFFFF;
-}
-
-.sidebar-menu a.active {
-    border-left: 3px solid var(--primaria);
-}
-
-.sidebar-bottom {
-    margin-top: auto;
-    padding: 20px 12px;
-}
-
-.sidebar-bottom button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 10px;
-    background: transparent;
-    color: rgba(255,255,255,.8);
-    font-family: Arial, sans-serif;
-    cursor: pointer;
-}
-
-.sidebar-bottom button:hover {
-    background: rgba(255,255,255,.12);
-    color: #FFFFFF;
-}
-
-
-/*====================================================*
-* CONTEÚDO
-*====================================================*/
+/*====================================================
+                    PÁGINA
+====================================================*/
 
 .students-page {
-    padding: 35px 42px;
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+
+    padding:
+        30px
+        32px
+        45px;
+
+    background: var(--principal);
 }
 
 
-/*====================================================*
-* CABEÇALHO
-*====================================================*/
+/*====================================================
+                    CABEÇALHO
+====================================================*/
 
 .students-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-    margin-bottom: 28px;
+
+    gap: 24px;
+
+    margin-bottom: 25px;
 }
 
+
+.students-header > div:first-child {
+    min-width: 0;
+}
+
+
 .students-header h1 {
-    margin: 4px 0 5px;
+    margin: 4px 0 6px;
+
     color: var(--secundaria);
+
     font-size: 27px;
     font-weight: 600;
 }
 
+
 .students-header p {
     margin: 0;
-    color: #6B7280;
+
+    color: var(--texto-secundario);
+
     font-family: Arial, sans-serif;
-    font-size: 12px;
+    font-size: 11px;
+
+    line-height: 1.6;
 }
+
+
+/*====================================================
+                NOVO ALUNO
+====================================================*/
 
 .new-student-button {
     min-height: 42px;
-    display: flex;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+
     gap: 8px;
-    padding: 0 18px;
+
+    padding:
+        0
+        17px;
+
     border: none;
     border-radius: 10px;
+
     background: var(--secundaria);
-    color: #FFFFFF;
+
+    color: var(--branco);
+
     font-family: Arial, sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
+
     cursor: pointer;
-    transition: .25s ease;
+
+    box-shadow:
+        0
+        6px
+        16px
+        rgba(
+            30,
+            58,
+            138,
+            .10
+        );
+
+    transition:
+        background var(--transicao),
+        transform var(--transicao),
+        box-shadow var(--transicao);
 }
+
 
 .new-student-button:hover {
     background: var(--primaria);
-    transform: translateY(-2px);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0
+        8px
+        20px
+        rgba(
+            211,
+            175,
+            55,
+            .16
+        );
 }
 
 
-/*====================================================*
-* CARDS
-*====================================================*/
+/*====================================================
+                RESUMO DE ALUNOS
+====================================================*/
 
 .students-summary {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 17px;
-    margin-bottom: 25px;
-}
 
-.summary-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 20px;
-    border-radius: 15px;
-    background: #FFFFFF;
-    box-shadow: 0 8px 25px rgba(0,0,0,.05);
-}
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
 
-.summary-icon {
-    width: 46px;
-    height: 46px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    background: #EEF4FF;
-    color: var(--secundaria);
-    font-size: 17px;
-}
+    gap: 16px;
 
-.summary-icon.warning {
-    background: #FFF8E1;
-    color: var(--primaria);
-}
-
-.summary-card div:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.summary-card span {
-    color: #9CA3AF;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-}
-
-.summary-card strong {
-    color: var(--secundaria);
-    font-size: 21px;
+    margin-bottom: 22px;
 }
 
 
-/*====================================================*
-* PAINEL
-*====================================================*/
+/*
+    A estrutura base de:
+
+    .summary-card
+    .summary-icon
+    .summary-icon.warning
+
+    é controlada por components.css.
+*/
+
+.students-summary .summary-card strong {
+    font-size: 19px;
+}
+
+
+/*====================================================
+                    PAINEL
+====================================================*/
 
 .students-panel {
+    min-width: 0;
+
     overflow: hidden;
+
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
+
     border-radius: 16px;
-    background: #FFFFFF;
-    box-shadow: 0 8px 30px rgba(0,0,0,.05);
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
 }
+
+
+/*====================================================
+                CABEÇALHO DO PAINEL
+====================================================*/
 
 .students-panel-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    gap: 25px;
-    padding: 22px 24px;
-    border-bottom: 1px solid #EEEEEE;
+
+    gap: 24px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        var(--borda-clara);
 }
 
-.students-panel-header h2 {
-    margin: 0 0 5px;
-    color: var(--secundaria);
-    font-size: 17px;
+
+.students-panel-header > div:first-child {
+    min-width: 0;
 }
+
+
+.students-panel-header h2 {
+    margin: 0 0 4px;
+
+    color: var(--secundaria);
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
 
 .students-panel-header p {
     margin: 0;
-    color: #9CA3AF;
+
+    color: var(--texto-claro);
+
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 9px;
+
+    line-height: 1.5;
 }
 
+
+/*====================================================
+                AÇÕES / FILTROS
+====================================================*/
+
 .students-actions {
+    min-width: 0;
+
+    flex-shrink: 0;
+
     display: flex;
     align-items: center;
-    gap: 9px;
+
+    gap: 8px;
 }
+
+
+/*====================================================
+                    PESQUISA
+====================================================*/
 
 .students-search {
     position: relative;
+
     width: 220px;
 }
 
+
 .students-search i {
     position: absolute;
+
     top: 50%;
     left: 12px;
+
+    z-index: 1;
+
     transform: translateY(-50%);
-    color: #9CA3AF;
-    font-size: 11px;
+
+    color: var(--texto-claro);
+
+    font-size: 10px;
+
+    pointer-events: none;
 }
+
 
 .students-search input,
 .students-actions select {
     height: 38px;
-    border: 1px solid #E5E7EB;
+
+    border:
+        1px solid
+        var(--borda);
+
     border-radius: 9px;
+
     outline: none;
-    background: #F9FAFB;
+
+    background: var(--cinza-50);
+
     color: #374151;
+
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 9px;
+
+    transition:
+        border-color var(--transicao),
+        background var(--transicao),
+        box-shadow var(--transicao);
 }
+
 
 .students-search input {
     width: 100%;
-    padding: 0 12px 0 34px;
+
+    padding:
+        0
+        12px
+        0
+        33px;
 }
 
+
 .students-actions select {
-    padding: 0 10px;
+    min-width: 120px;
+
+    padding:
+        0
+        28px
+        0
+        10px;
+
+    cursor: pointer;
 }
+
+
+.students-search input::placeholder {
+    color: var(--texto-claro);
+}
+
 
 .students-search input:focus,
 .students-actions select:focus {
     border-color: var(--primaria);
-    background: #FFFFFF;
+
+    background: var(--branco);
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+            211,
+            175,
+            55,
+            .10
+        );
 }
 
 
-/*====================================================*
-* TABELA
-*====================================================*/
+/*====================================================
+                    TABELA
+====================================================*/
 
 .students-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+
     overflow-x: auto;
 }
 
+
 .students-table {
     width: 100%;
-    border-collapse: collapse;
     min-width: 850px;
+
+    border-collapse: collapse;
 }
+
 
 .students-table th {
-    padding: 13px 18px;
+    padding:
+        12px
+        16px;
+
     background: #FAFAFA;
-    color: #6B7280;
+
+    color: var(--texto-secundario);
+
     font-family: Arial, sans-serif;
-    font-size: 9px;
+    font-size: 8px;
+    font-weight: 700;
+
     text-align: left;
+
     text-transform: uppercase;
+
     letter-spacing: .5px;
+
+    white-space: nowrap;
 }
+
 
 .students-table td {
-    padding: 14px 18px;
-    border-top: 1px solid #F3F4F6;
+    padding:
+        13px
+        16px;
+
+    border-top:
+        1px solid
+        var(--cinza-100);
+
     color: #4B5563;
+
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 9px;
+
+    vertical-align: middle;
 }
 
+
+.students-table tbody tr {
+    transition: background var(--transicao);
+}
+
+
+.students-table tbody tr:hover {
+    background: #FFFEF7;
+}
+
+
+/*====================================================
+                CÉLULA DO ALUNO
+====================================================*/
+
 .student-cell {
+    min-width: 0;
+
     display: flex;
     align-items: center;
+
     gap: 10px;
 }
+
 
 .student-avatar {
     width: 34px;
     height: 34px;
+
     flex-shrink: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: #EEF4FF;
-    color: var(--secundaria);
-}
 
-.student-cell strong {
-    color: #374151;
+    border-radius: 50%;
+
+    background: #EEF4FF;
+
+    color: var(--secundaria);
+
     font-size: 11px;
 }
 
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 8px;
-    border-radius: 20px;
-    font-size: 9px;
+
+.student-cell > div:last-child {
+    min-width: 0;
+}
+
+
+.student-cell strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: #374151;
+
+    font-size: 10px;
     font-weight: 600;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-.status-badge.active {
-    background: #ECFDF5;
-    color: #047857;
-}
 
-.status-badge.pending {
-    background: #FFF7ED;
-    color: #C2410C;
-}
+/*====================================================
+                STATUS DO ALUNO
+====================================================*/
+
+/*
+    .status-badge e seus estados:
+
+    .active
+    .pending
+    .inactive
+
+    são controlados globalmente por components.css.
+*/
+
+
+/*====================================================
+                AÇÕES DO ALUNO
+====================================================*/
 
 .student-actions {
     display: flex;
+    align-items: center;
+
     gap: 5px;
 }
+
 
 .student-action-button {
     width: 30px;
     height: 30px;
-    display: flex;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    padding: 0;
+
     border: none;
     border-radius: 7px;
-    background: #F3F4F6;
-    color: #6B7280;
+
+    background: var(--cinza-100);
+
+    color: var(--texto-secundario);
+
+    font-size: 10px;
+
     cursor: pointer;
-    transition: .2s ease;
+
+    transition:
+        background var(--transicao),
+        color var(--transicao),
+        transform var(--transicao);
 }
+
 
 .student-action-button:hover {
     background: #EEF4FF;
+
     color: var(--secundaria);
+
+    transform: translateY(-1px);
 }
 
+
 .student-action-button.delete:hover {
-    background: #FEF2F2;
-    color: #B91C1C;
+    background: var(--erro-fundo);
+
+    color: var(--erro);
 }
+
+
+/*====================================================
+                ESTADO VAZIO
+====================================================*/
 
 .students-empty {
     display: none;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+
     gap: 8px;
-    padding: 45px 20px;
+
+    padding:
+        45px
+        20px;
+
+    color: var(--texto-secundario);
+
     text-align: center;
 }
+
 
 .students-empty.active {
     display: flex;
 }
 
+
 .students-empty i {
-    color: #D1D5DB;
-    font-size: 30px;
+    margin-bottom: 3px;
+
+    color: var(--cinza-300);
+
+    font-size: 28px;
 }
+
 
 .students-empty strong {
     color: #4B5563;
-    font-size: 13px;
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
 }
+
 
 .students-empty span {
-    color: #9CA3AF;
+    color: var(--texto-claro);
+
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 9px;
 }
 
 
-/*====================================================*
-* MODAIS
-*====================================================*/
+/*====================================================
+                    MODAIS
+====================================================*/
 
 .student-modal,
 .student-view-modal,
 .delete-student-modal {
     position: fixed;
+
     inset: 0;
+
     z-index: 1000;
+
     display: none;
     align-items: center;
     justify-content: center;
+
     padding: 15px;
 }
+
+
+.student-view-modal {
+    z-index: 1100;
+}
+
+
+.delete-student-modal {
+    z-index: 1200;
+}
+
 
 .student-modal.active,
 .student-view-modal.active,
@@ -470,331 +649,631 @@ select {
     display: flex;
 }
 
+
+/*====================================================
+                OVERLAYS DOS MODAIS
+====================================================*/
+
 .student-modal-overlay,
 .student-view-overlay,
 .delete-student-overlay {
     position: absolute;
+
     inset: 0;
-    background: rgba(20,27,45,.48);
+
+    background:
+        rgba(
+            20,
+            27,
+            45,
+            .48
+        );
+
     backdrop-filter: blur(3px);
 }
+
+
+/*====================================================
+                CAIXAS DOS MODAIS
+====================================================*/
 
 .student-modal-box,
 .student-view-box,
 .delete-student-box {
     position: relative;
+
     z-index: 2;
-    width: min(500px, 100%);
-    border-radius: 18px;
-    background: #FFFFFF;
-    box-shadow: 0 20px 60px rgba(0,0,0,.18);
+
+    width:
+        min(
+            500px,
+            100%
+        );
+
+    max-height:
+        calc(
+            100vh -
+            30px
+        );
+
+    overflow-y: auto;
+
+    border-radius: var(--raio-xl);
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-g);
 }
+
+
+/*====================================================
+            CABEÇALHOS DOS MODAIS
+====================================================*/
 
 .student-modal-header,
 .student-view-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 15px;
-    padding: 22px 24px;
-    border-bottom: 1px solid #EEEEEE;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        var(--borda-clara);
 }
+
+
+.student-modal-header > div,
+.student-view-header > div {
+    min-width: 0;
+}
+
 
 .student-modal-header h2,
 .student-view-header h2 {
     margin: 4px 0 0;
+
     color: var(--secundaria);
-    font-size: 18px;
+
+    font-size: 17px;
+    font-weight: 600;
 }
+
+
+/*====================================================
+                FECHAR MODAIS
+====================================================*/
 
 .student-modal-close,
 .student-view-close {
     width: 34px;
     height: 34px;
-    display: flex;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    padding: 0;
+
     border: none;
     border-radius: 9px;
-    background: #F3F4F6;
-    color: #6B7280;
+
+    background: var(--cinza-100);
+
+    color: var(--texto-secundario);
+
     cursor: pointer;
+
+    transition:
+        background var(--transicao),
+        color var(--transicao);
 }
+
+
+.student-modal-close:hover,
+.student-view-close:hover {
+    background: var(--cinza-200);
+
+    color: var(--secundaria);
+}
+
+
+/*====================================================
+                FORMULÁRIO DO ALUNO
+====================================================*/
 
 .student-form {
-    padding: 24px;
+    padding: 22px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    margin-bottom: 15px;
+
+/*
+    .form-group, inputs, selects e .form-grid
+    possuem suas estruturas base em components.css.
+*/
+
+.student-form > .form-group {
+    margin-bottom: 14px;
 }
 
-.form-group label {
-    color: #4B5563;
-    font-family: Arial, sans-serif;
+
+.student-form > .form-grid {
+    margin-bottom: 14px;
+}
+
+
+.student-form .form-grid .form-group {
+    margin-bottom: 0;
+}
+
+
+.student-form input,
+.student-form select {
+    min-height: 40px;
+
     font-size: 10px;
-    font-weight: 600;
 }
 
-.form-group input,
-.form-group select {
-    width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    border: 1px solid #E5E7EB;
-    border-radius: 9px;
-    outline: none;
-    background: #F9FAFB;
-    color: #374151;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-}
 
-.form-group input:focus,
-.form-group select:focus {
-    border-color: var(--primaria);
-    background: #FFFFFF;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
+/*====================================================
+            AÇÕES DO FORMULÁRIO
+====================================================*/
 
 .student-form-actions,
 .delete-student-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
     gap: 10px;
-    margin-top: 20px;
-}
 
-.secondary-button,
-.primary-button,
-.delete-button {
-    min-height: 40px;
-    border: none;
-    border-radius: 9px;
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.secondary-button {
-    background: #F3F4F6;
-    color: #4B5563;
-}
-
-.primary-button {
-    background: var(--secundaria);
-    color: #FFFFFF;
-}
-
-.delete-button {
-    background: #B91C1C;
-    color: #FFFFFF;
+    margin-top: 19px;
 }
 
 
-/*====================================================*
-* VISUALIZAÇÃO
-*====================================================*/
+/*====================================================
+                VISUALIZAR ALUNO
+====================================================*/
 
 .student-view-header {
     justify-content: flex-start;
 }
 
+
 .student-view-avatar {
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 50%;
+
     background: #EEF4FF;
+
     color: var(--secundaria);
-    font-size: 19px;
+
+    font-size: 17px;
 }
+
 
 .student-view-close {
     margin-left: auto;
 }
 
+
+/*====================================================
+            CONTEÚDO DA VISUALIZAÇÃO
+====================================================*/
+
 .student-view-content {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 24px;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 11px;
+
+    padding: 22px;
 }
 
+
 .student-view-item {
-    padding: 14px;
-    border: 1px solid #EEEEEE;
+    min-width: 0;
+
+    padding: 13px;
+
+    border:
+        1px solid
+        var(--borda-clara);
+
     border-radius: 10px;
+
     background: #FAFAFA;
 }
 
+
 .student-view-item.full {
-    grid-column: 1 / -1;
+    grid-column:
+        1 /
+        -1;
 }
+
 
 .student-view-item span {
     display: block;
+
     margin-bottom: 5px;
-    color: #9CA3AF;
+
+    color: var(--texto-claro);
+
     font-family: Arial, sans-serif;
-    font-size: 9px;
+    font-size: 8px;
 }
+
 
 .student-view-item strong {
+    display: block;
+
+    overflow-wrap: anywhere;
+
     color: #374151;
+
     font-family: Arial, sans-serif;
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 600;
 }
 
 
-/*====================================================*
-* EXCLUSÃO
-*====================================================*/
+/*====================================================
+                EXCLUSÃO
+====================================================*/
 
 .delete-student-box {
-    width: min(380px, 100%);
-    padding: 28px 24px;
+    width:
+        min(
+            380px,
+            100%
+        );
+
+    padding:
+        27px
+        23px;
+
     text-align: center;
 }
 
+
 .delete-student-icon {
-    width: 56px;
-    height: 56px;
-    margin: 0 auto 15px;
+    width: 55px;
+    height: 55px;
+
+    margin:
+        0
+        auto
+        14px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border-radius: 50%;
-    background: #FEF2F2;
-    color: #B91C1C;
-    font-size: 20px;
+
+    background: var(--erro-fundo);
+
+    color: var(--erro);
+
+    font-size: 19px;
 }
+
 
 .delete-student-box h2 {
     margin: 0 0 8px;
+
     color: var(--secundaria);
-    font-size: 18px;
+
+    font-size: 17px;
+    font-weight: 600;
 }
+
 
 .delete-student-box p {
     margin: 0;
-    color: #6B7280;
+
+    color: var(--texto-secundario);
+
     font-family: Arial, sans-serif;
-    font-size: 10px;
+    font-size: 9px;
+
     line-height: 1.6;
 }
 
-body.modal-open {
-    overflow: hidden;
+
+/*====================================================
+                DESKTOP MENOR
+====================================================*/
+
+@media (max-width: 1200px) {
+
+    .students-page {
+        padding:
+            28px
+            26px
+            40px;
+    }
+
+
+    .students-summary {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
 }
 
 
-/*====================================================*
-* RESPONSIVIDADE
-*====================================================*/
+/*====================================================
+                    TABLET
+====================================================*/
 
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
 
-    .students-summary {
-        grid-template-columns: repeat(2, 1fr);
+    .students-page {
+        padding:
+            25px
+            22px
+            38px;
     }
+
 
     .students-panel-header {
         flex-direction: column;
+        align-items: stretch;
+
+        gap: 15px;
     }
 
+
     .students-actions {
+        width: 100%;
+
         flex-wrap: wrap;
     }
 
-}
 
+    .students-search {
+        flex:
+            1
+            1
+            220px;
 
-@media (max-width: 800px) {
-
-    .app-layout {
-        grid-template-columns: 75px 1fr;
+        width: auto;
     }
 
-    .sidebar-logo img {
-        max-width: 45px;
-    }
 
-    .sidebar-menu a span,
-    .sidebar-bottom span {
-        display: none;
-    }
-
-    .sidebar-menu a,
-    .sidebar-bottom button {
-        justify-content: center;
-    }
-
-    .students-page {
-        padding: 25px;
+    .students-actions select {
+        flex:
+            1
+            1
+            130px;
     }
 
 }
 
 
-@media (max-width: 600px) {
+/*====================================================
+                    MOBILE
+====================================================*/
 
-    .app-layout {
-        display: block;
-    }
+@media (max-width: 750px) {
 
-    .sidebar {
-        display: none;
-    }
+    /*
+        .app-layout e a sidebar administrativa são
+        controlados globalmente por components.css.
+    */
 
     .students-page {
-        padding: 18px 12px;
+        padding:
+            20px
+            18px
+            35px;
     }
+
 
     .students-header {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+
+        gap: 15px;
     }
+
+
+    .students-header h1 {
+        font-size: 23px;
+    }
+
 
     .new-student-button {
         width: 100%;
-        justify-content: center;
     }
+
 
     .students-summary {
         grid-template-columns: 1fr;
     }
 
+
     .students-actions {
-        width: 100%;
         flex-direction: column;
         align-items: stretch;
     }
 
-    .students-search {
-        width: 100%;
-    }
 
+    .students-search,
     .students-actions select {
         width: 100%;
     }
 
-    .form-grid,
+
+    .students-panel-header {
+        padding:
+            18px
+            16px;
+    }
+
+
+    .student-form {
+        padding: 18px;
+    }
+
+
+    .student-view-content {
+        padding: 18px;
+    }
+
+}
+
+
+/*====================================================
+                CELULAR PEQUENO
+====================================================*/
+
+@media (max-width: 500px) {
+
+    .students-page {
+        padding:
+            18px
+            12px
+            30px;
+    }
+
+
+    .students-header h1 {
+        font-size: 21px;
+    }
+
+
+    .students-header p {
+        font-size: 10px;
+    }
+
+
+    .students-panel-header h2 {
+        font-size: 15px;
+    }
+
+
+    .students-table {
+        min-width: 780px;
+    }
+
+
+    .students-table th {
+        padding:
+            11px
+            13px;
+    }
+
+
+    .students-table td {
+        padding:
+            12px
+            13px;
+    }
+
+
+    .student-modal-box,
+    .student-view-box {
+        border-radius: 14px;
+    }
+
+
+    .student-modal-header,
+    .student-view-header {
+        padding:
+            17px
+            16px;
+    }
+
+
+    .student-form {
+        padding: 16px;
+    }
+
+
     .student-view-content,
     .student-form-actions,
     .delete-student-actions {
         grid-template-columns: 1fr;
+    }
+
+
+    .student-view-content {
+        padding: 16px;
+    }
+
+
+    .delete-student-box {
+        padding:
+            24px
+            18px;
+    }
+
+}
+
+
+/*====================================================
+                TELAS MUITO PEQUENAS
+====================================================*/
+
+@media (max-width: 360px) {
+
+    .students-page {
+        padding:
+            15px
+            9px
+            25px;
+    }
+
+
+    .students-panel-header {
+        padding:
+            15px
+            12px;
+    }
+
+
+    .student-form,
+    .student-view-content {
+        padding: 13px;
     }
 
 }

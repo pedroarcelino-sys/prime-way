@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Configurações | PrimeWay School</title>
+
+
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../css/configuracoes.css"
+    >
+
+
+    <!-- ==================================================
+                    GOOGLE FONTS
+    =================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
+
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
+
+
+            <!-- LOGO -->
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+
+            </div>
+
+
+            <!-- MENU -->
+
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
+
+
+                <!-- INÍCIO -->
+
+                <a href="dashboard.html">
+
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Início
+                    </span>
+
+                </a>
+
+
+                <!-- PROFESSOR -->
+
+                <a href="professores.html">
+
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Professores
+                    </span>
+
+                </a>
+
+
+                <!-- ALUNOS -->
+
+                <a href="alunos.html">
+
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Alunos
+                    </span>
+
+                </a>
+
+
+                <!-- RESPONSÁVEIS -->
+
+                <a href="responsaveis.html">
+
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Responsáveis
+                    </span>
+
+                </a>
+
+
+                <!-- TURMAS -->
+
+                <a href="turmas.html">
+
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Turmas
+                    </span>
+
+                </a>
+
+
+                <!-- DISCIPLINAS -->
+
+                <a href="disciplinas.html">
+
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Disciplinas
+                    </span>
+
+                </a>
+
+
+                <!-- CHAT -->
+
+                <a href="chat-professor.html">
+
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Chat
+                    </span>
+
+                </a>
+
+
+                <!-- CALENDÁRIO -->
+
+                <a href="calendario.html">
+
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Calendário
+                    </span>
+
+                </a>
+
+
+                <!-- NOTIFICAÇÕES -->
+
+                <a href="notificacoes.html">
+
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Notificações
+                    </span>
+
+                </a>
+
+
+                <!-- CONFIGURAÇÕES -->
+
+                <a
+                    href="configuracoes.html"
+                    class="active"
+                    aria-current="page"
+                >
+
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Configurações
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Sair
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
+
+        <main class="settings-page">
+
+
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
+
+            <header class="settings-header">
+
+
+                <div>
+
+                    <span class="section-label">
+                        Administração
+                    </span>
+
+                    <h1>
+                        Configurações
+                    </h1>
+
+                    <p>
+                        Gerencie informações institucionais,
+                        parâmetros acadêmicos e preferências do sistema.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="save-settings-top"
+                    id="saveSettingsButton"
+                    aria-controls="settingsForm"
+                >
+
+                    <i
+                        class="fa-solid fa-floppy-disk"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Salvar alterações
+                    </span>
+
+                </button>
+
+
+            </header>
+
+
+            <!-- ==================================================
+                            RESUMO
+            =================================================== -->
+
+            <section
+                class="settings-summary"
+                aria-label="Resumo das configurações"
+            >
+
+
+                <!-- ANO LETIVO -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-calendar-days"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Ano letivo
+                        </span>
+
+                        <strong id="currentAcademicYear">
+                            2026
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- MÉDIA -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-chart-line"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Média para aprovação
+                        </span>
+
+                        <strong id="currentPassingAverage">
+                            6,0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- FREQUÊNCIA -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-user-check"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Frequência mínima
+                        </span>
+
+                        <strong id="currentMinAttendance">
+                            75%
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <!-- NOTIFICAÇÕES -->
+
+                <article class="summary-card">
+
+                    <div class="summary-icon warning">
+
+                        <i
+                            class="fa-solid fa-bell"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Notificações
+                        </span>
+
+                        <strong id="currentNotificationsStatus">
+                            Ativas
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- ==================================================
+                        FORMULÁRIO PRINCIPAL
+            =================================================== -->
+
+            <form
+                class="settings-form"
+                id="settingsForm"
+            >
+
+
+                <!-- ==================================================
+                        DADOS DA ESCOLA
+                =================================================== -->
+
+                <section
+                    class="settings-card"
+                    aria-labelledby="schoolDataTitle"
+                >
+
+
+                    <div class="settings-card-header">
+
+
+                        <div class="settings-card-icon">
+
+                            <i
+                                class="fa-solid fa-school"
+                                aria-hidden="true"
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2 id="schoolDataTitle">
+                                Dados da Escola
+                            </h2>
+
+                            <p>
+                                Informações institucionais utilizadas pelo sistema.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="settings-card-content">
+
+
+                        <!-- NOME / RAZÃO SOCIAL -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="schoolName">
+                                    Nome da escola
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolName"
+                                    required
+                                    maxlength="80"
+                                    autocomplete="organization"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolLegalName">
+                                    Razão social
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolLegalName"
+                                    maxlength="100"
+                                    autocomplete="organization"
+                                >
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- DOCUMENTO / DIREÇÃO -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="schoolDocument">
+                                    CNPJ / documento
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolDocument"
+                                    maxlength="30"
+                                    autocomplete="off"
+                                    placeholder="00.000.000/0000-00"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolDirector">
+                                    Diretor(a)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolDirector"
+                                    maxlength="80"
+                                    autocomplete="name"
+                                    placeholder="Nome do responsável pela direção"
+                                >
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- E-MAIL / TELEFONE -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="schoolEmail">
+                                    E-mail institucional
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="schoolEmail"
+                                    maxlength="100"
+                                    autocomplete="email"
+                                    placeholder="contato@primewayschool.com"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolPhone">
+                                    Telefone
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="schoolPhone"
+                                    maxlength="25"
+                                    autocomplete="tel"
+                                    inputmode="tel"
+                                    placeholder="(00) 0000-0000"
+                                >
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- ENDEREÇO -->
+
+                        <div class="form-group">
+
+                            <label for="schoolAddress">
+                                Endereço
+                            </label>
+
+                            <input
+                                type="text"
+                                id="schoolAddress"
+                                maxlength="120"
+                                autocomplete="street-address"
+                                placeholder="Rua, número e complemento"
+                            >
+
+                        </div>
+
+
+                        <!-- CIDADE / UF / CEP -->
+
+                        <div class="form-grid form-grid-address">
+
+
+                            <div class="form-group">
+
+                                <label for="schoolCity">
+                                    Cidade
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolCity"
+                                    maxlength="60"
+                                    autocomplete="address-level2"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolState">
+                                    UF
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolState"
+                                    maxlength="2"
+                                    autocomplete="address-level1"
+                                    autocapitalize="characters"
+                                    placeholder="SP"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolZip">
+                                    CEP
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="schoolZip"
+                                    maxlength="15"
+                                    autocomplete="postal-code"
+                                    inputmode="numeric"
+                                    placeholder="00000-000"
+                                >
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ==================================================
+                        CONFIGURAÇÕES ACADÊMICAS
+                =================================================== -->
+
+                <section
+                    class="settings-card"
+                    aria-labelledby="academicSettingsTitle"
+                >
+
+
+                    <div class="settings-card-header">
+
+
+                        <div class="settings-card-icon academic">
+
+                            <i
+                                class="fa-solid fa-graduation-cap"
+                                aria-hidden="true"
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2 id="academicSettingsTitle">
+                                Configurações Acadêmicas
+                            </h2>
+
+                            <p>
+                                Defina os parâmetros gerais do ano letivo.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="settings-card-content">
+
+
+                        <!-- ANO / PERÍODO -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="academicYear">
+                                    Ano letivo
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="academicYear"
+                                    min="2020"
+                                    max="2100"
+                                    step="1"
+                                    inputmode="numeric"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="academicPeriod">
+                                    Organização do período
+                                </label>
+
+                                <select
+                                    id="academicPeriod"
+                                    required
+                                >
+
+                                    <option value="Bimestral">
+                                        Bimestral
+                                    </option>
+
+                                    <option value="Trimestral">
+                                        Trimestral
+                                    </option>
+
+                                    <option value="Semestral">
+                                        Semestral
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- MÉDIA / FREQUÊNCIA -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="passingAverage">
+                                    Média para aprovação
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="passingAverage"
+                                    min="0"
+                                    max="10"
+                                    step="0.1"
+                                    inputmode="decimal"
+                                    required
+                                    aria-describedby="passingAverageHint"
+                                >
+
+                                <small
+                                    class="field-hint"
+                                    id="passingAverageHint"
+                                >
+                                    Valor entre 0 e 10.
+                                </small>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="minAttendance">
+                                    Frequência mínima (%)
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="minAttendance"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    inputmode="numeric"
+                                    required
+                                    aria-describedby="minAttendanceHint"
+                                >
+
+                                <small
+                                    class="field-hint"
+                                    id="minAttendanceHint"
+                                >
+                                    Percentual mínimo definido pela escola.
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- DURAÇÃO / DIAS LETIVOS -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="classDuration">
+                                    Duração padrão da aula
+                                </label>
+
+                                <div class="input-with-suffix">
+
+                                    <input
+                                        type="number"
+                                        id="classDuration"
+                                        min="20"
+                                        max="180"
+                                        step="5"
+                                        inputmode="numeric"
+                                        required
+                                    >
+
+                                    <span aria-hidden="true">
+                                        minutos
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="schoolDays">
+                                    Dias letivos planejados
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="schoolDays"
+                                    min="1"
+                                    max="365"
+                                    step="1"
+                                    inputmode="numeric"
+                                    required
+                                >
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- TURNO PADRÃO -->
+
+                        <div class="form-group">
+
+                            <label for="defaultShift">
+                                Turno padrão para novas turmas
+                            </label>
+
+                            <select id="defaultShift">
+
+                                <option value="Manhã">
+                                    Manhã
+                                </option>
+
+                                <option value="Tarde">
+                                    Tarde
+                                </option>
+
+                                <option value="Integral">
+                                    Integral
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ==================================================
+                        NOTIFICAÇÕES
+                =================================================== -->
+
+                <section
+                    class="settings-card"
+                    aria-labelledby="notificationSettingsTitle"
+                >
+
+
+                    <div class="settings-card-header">
+
+
+                        <div class="settings-card-icon notifications">
+
+                            <i
+                                class="fa-solid fa-bell"
+                                aria-hidden="true"
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2 id="notificationSettingsTitle">
+                                Preferências de Notificações
+                            </h2>
+
+                            <p>
+                                Defina quais acontecimentos devem gerar notificações.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="settings-card-content notification-settings">
+
+
+                        <!-- CALENDÁRIO -->
+
+                        <label class="setting-toggle-row">
+
+
+                            <div class="setting-toggle-info">
+
+
+                                <div class="setting-toggle-icon">
+
+                                    <i
+                                        class="fa-solid fa-calendar-check"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Eventos do calendário
+                                    </strong>
+
+                                    <span>
+                                        Gerar notificação quando um evento
+                                        for criado ou alterado.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <span class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="notifyCalendar"
+                                    aria-label="Ativar notificações de eventos do calendário"
+                                >
+
+                                <span
+                                    class="switch-slider"
+                                    aria-hidden="true"
+                                ></span>
+
+                            </span>
+
+
+                        </label>
+
+
+                        <!-- AVISOS -->
+
+                        <label class="setting-toggle-row">
+
+
+                            <div class="setting-toggle-info">
+
+
+                                <div class="setting-toggle-icon">
+
+                                    <i
+                                        class="fa-solid fa-bullhorn"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Comunicados e avisos
+                                    </strong>
+
+                                    <span>
+                                        Permitir notificações de novos
+                                        comunicados da escola.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <span class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="notifyAnnouncements"
+                                    aria-label="Ativar notificações de comunicados e avisos"
+                                >
+
+                                <span
+                                    class="switch-slider"
+                                    aria-hidden="true"
+                                ></span>
+
+                            </span>
+
+
+                        </label>
+
+
+                        <!-- NOTAS -->
+
+                        <label class="setting-toggle-row">
+
+
+                            <div class="setting-toggle-info">
+
+
+                                <div class="setting-toggle-icon">
+
+                                    <i
+                                        class="fa-solid fa-file-pen"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Notas e avaliações
+                                    </strong>
+
+                                    <span>
+                                        Permitir notificações relacionadas
+                                        a lançamentos acadêmicos.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <span class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="notifyGrades"
+                                    aria-label="Ativar notificações de notas e avaliações"
+                                >
+
+                                <span
+                                    class="switch-slider"
+                                    aria-hidden="true"
+                                ></span>
+
+                            </span>
+
+
+                        </label>
+
+
+                        <!-- FREQUÊNCIA -->
+
+                        <label class="setting-toggle-row">
+
+
+                            <div class="setting-toggle-info">
+
+
+                                <div class="setting-toggle-icon">
+
+                                    <i
+                                        class="fa-solid fa-user-check"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Frequência
+                                    </strong>
+
+                                    <span>
+                                        Permitir alertas relacionados
+                                        à frequência escolar.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <span class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="notifyAttendance"
+                                    aria-label="Ativar notificações de frequência"
+                                >
+
+                                <span
+                                    class="switch-slider"
+                                    aria-hidden="true"
+                                ></span>
+
+                            </span>
+
+
+                        </label>
+
+
+                        <!-- RESPONSÁVEIS -->
+
+                        <label class="setting-toggle-row">
+
+
+                            <div class="setting-toggle-info">
+
+
+                                <div class="setting-toggle-icon">
+
+                                    <i
+                                        class="fa-solid fa-people-roof"
+                                        aria-hidden="true"
+                                    ></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <strong>
+                                        Comunicação com responsáveis
+                                    </strong>
+
+                                    <span>
+                                        Permitir avisos relacionados aos
+                                        responsáveis e alunos vinculados.
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+
+                            <span class="switch">
+
+                                <input
+                                    type="checkbox"
+                                    id="notifyGuardians"
+                                    aria-label="Ativar notificações relacionadas aos responsáveis"
+                                >
+
+                                <span
+                                    class="switch-slider"
+                                    aria-hidden="true"
+                                ></span>
+
+                            </span>
+
+
+                        </label>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ==================================================
+                        PREFERÊNCIAS DO SISTEMA
+                =================================================== -->
+
+                <section
+                    class="settings-card"
+                    aria-labelledby="systemSettingsTitle"
+                >
+
+
+                    <div class="settings-card-header">
+
+
+                        <div class="settings-card-icon system">
+
+                            <i
+                                class="fa-solid fa-sliders"
+                                aria-hidden="true"
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <h2 id="systemSettingsTitle">
+                                Preferências do Sistema
+                            </h2>
+
+                            <p>
+                                Defina comportamentos padrão da plataforma.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="settings-card-content">
+
+
+                        <!-- DATA / PÁGINA INICIAL -->
+
+                        <div class="form-grid">
+
+
+                            <div class="form-group">
+
+                                <label for="dateFormat">
+                                    Formato de data
+                                </label>
+
+                                <select id="dateFormat">
+
+                                    <option value="DD/MM/YYYY">
+                                        DD/MM/AAAA
+                                    </option>
+
+                                    <option value="YYYY-MM-DD">
+                                        AAAA-MM-DD
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="defaultPage">
+                                    Página inicial
+                                </label>
+
+                                <select id="defaultPage">
+
+                                    <option value="dashboard.html">
+                                        Início
+                                    </option>
+
+                                    <option value="calendario.html">
+                                        Calendário
+                                    </option>
+
+                                    <option value="notificacoes.html">
+                                        Notificações
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- FUSO HORÁRIO -->
+
+                        <div class="form-group">
+
+                            <label for="schoolTimezone">
+                                Fuso horário
+                            </label>
+
+                            <select id="schoolTimezone">
+
+                                <option value="America/Sao_Paulo">
+                                    Brasília — América/São Paulo
+                                </option>
+
+                                <option value="America/Manaus">
+                                    Manaus — América/Manaus
+                                </option>
+
+                                <option value="America/Rio_Branco">
+                                    Rio Branco — América/Rio Branco
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- SEGURANÇA -->
+
+                        <div
+                            class="settings-security-note"
+                            role="note"
+                        >
+
+                            <i
+                                class="fa-solid fa-shield-halved"
+                                aria-hidden="true"
+                            ></i>
+
+
+                            <div>
+
+                                <strong>
+                                    Segurança e contas
+                                </strong>
+
+                                <p>
+                                    Senhas, permissões, autenticação e
+                                    configurações de segurança não são
+                                    armazenadas nesta página durante o
+                                    protótipo. Esses recursos serão
+                                    controlados pelo backend.
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                </section>
+
+
+                <!-- ==================================================
+                            AÇÕES FINAIS
+                =================================================== -->
+
+                <section
+                    class="settings-actions"
+                    aria-label="Ações das configurações"
+                >
+
+
+                    <button
+                        type="button"
+                        class="reset-settings-button"
+                        id="resetSettingsButton"
+                        aria-haspopup="dialog"
+                        aria-controls="resetSettingsModal"
+                    >
+
+                        <i
+                            class="fa-solid fa-arrow-rotate-left"
+                            aria-hidden="true"
+                        ></i>
+
+                        Restaurar padrões
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-settings-button"
+                    >
+
+                        <i
+                            class="fa-solid fa-floppy-disk"
+                            aria-hidden="true"
+                        ></i>
+
+                        Salvar configurações
+
+                    </button>
+
+
+                </section>
+
+
+            </form>
+
+
+        </main>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                CONFIRMAR RESTAURAÇÃO
+    =================================================== -->
+
+    <div
+        class="reset-settings-modal"
+        id="resetSettingsModal"
+        aria-hidden="true"
+    >
+
+
+        <div
+            class="reset-settings-overlay"
+            aria-hidden="true"
+        ></div>
+
+
+        <div
+            class="reset-settings-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="resetSettingsTitle"
+            aria-describedby="resetSettingsMessage"
+        >
+
+
+            <div class="reset-settings-icon">
+
+                <i
+                    class="fa-solid fa-arrow-rotate-left"
+                    aria-hidden="true"
+                ></i>
+
+            </div>
+
+
+            <h2 id="resetSettingsTitle">
+                Restaurar configurações
+            </h2>
+
+
+            <p id="resetSettingsMessage">
+                Deseja restaurar as configurações padrão do
+                PrimeWay School? As alterações salvas nesta
+                página serão substituídas.
+            </p>
+
+
+            <div class="reset-settings-actions">
+
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="resetSettingsCancel"
+                >
+
+                    Cancelar
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="reset-confirm-button"
+                    id="resetSettingsConfirm"
+                >
+
+                    Restaurar
+
+                </button>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+                        TOAST
+    =================================================== -->
+
+    <div
+        class="settings-toast"
+        id="settingsToast"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+    >
+
+        <i
+            class="fa-solid fa-circle-check"
+            aria-hidden="true"
+        ></i>
+
+        <span>
+            Configurações salvas com sucesso.
+        </span>
+
+    </div>
+
+
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/core.js"></script>
+    <script src="../js/configuracoes.js"></script>
+
+
+</body>
+
+</html>

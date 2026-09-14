@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Área do Responsável | PrimeWay School</title>
+    <link rel="stylesheet" href="../css/components.css"><link rel="stylesheet" href="../css/responsavel.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" aria-label="Menu do responsável">
+            <div class="sidebar-logo"><img src="../img/logo.png" alt="PrimeWay School"></div>
+            <nav class="sidebar-menu">
+                <a href="#inicio" class="active"><i class="fa-solid fa-house"></i><span>Meu painel</span></a>
+                <a href="#alunos"><i class="fa-solid fa-user-graduate"></i><span>Meus alunos</span></a>
+                <a href="#agenda"><i class="fa-solid fa-calendar-days"></i><span>Agenda</span></a>
+                <a href="#avisos"><i class="fa-solid fa-bell"></i><span>Comunicados</span></a>
+                <a href="#dados"><i class="fa-solid fa-address-card"></i><span>Meus dados</span></a>
+            </nav>
+            <div class="sidebar-bottom"><button type="button" id="logoutButton"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></button></div>
+        </aside>
+        <main class="guardian-portal" id="inicio">
+            <header class="portal-header">
+                <div><span class="section-label">Área exclusiva do responsável</span><h1 id="guardianGreeting">Olá!</h1><p>Acompanhe apenas os estudantes vinculados à sua conta.</p></div>
+                <div class="today"><i class="fa-regular fa-calendar"></i><span id="currentDate">—</span></div>
+            </header>
+
+            <section class="portal-summary" aria-label="Resumo">
+                <article><i class="fa-solid fa-user-graduate"></i><div><span>Alunos vinculados</span><strong id="linkedStudentsCount">0</strong></div></article>
+                <article><i class="fa-solid fa-list-check"></i><div><span>Atividades próximas</span><strong id="activitiesCount">0</strong></div></article>
+                <article><i class="fa-solid fa-calendar-check"></i><div><span>Eventos futuros</span><strong id="eventsCount">0</strong></div></article>
+                <article><i class="fa-solid fa-bullhorn"></i><div><span>Comunicados</span><strong id="noticesCount">0</strong></div></article>
+            </section>
+
+            <section class="portal-panel" id="alunos">
+                <div class="panel-title"><h2>Meus alunos</h2><p>Desempenho e informações acadêmicas disponíveis no banco.</p></div>
+                <div class="student-grid" id="guardianStudents"><p class="empty-state">Carregando…</p></div>
+            </section>
+
+            <div class="portal-columns">
+                <section class="portal-panel" id="agenda"><div class="panel-title"><h2>Próximos eventos</h2><p>Agenda geral e das turmas vinculadas.</p></div><div class="item-list" id="guardianEvents"><p class="empty-state">Carregando…</p></div></section>
+                <section class="portal-panel" id="avisos"><div class="panel-title"><h2>Comunicados</h2><p>Avisos publicados para responsáveis.</p></div><div class="item-list" id="guardianNotices"><p class="empty-state">Carregando…</p></div></section>
+            </div>
+
+            <section class="portal-panel" id="dados">
+                <div class="panel-title"><h2>Meus dados</h2><p>Solicite à administração qualquer alteração necessária.</p></div>
+                <dl class="profile-data"><div><dt>Nome</dt><dd id="guardianName">—</dd></div><div><dt>E-mail</dt><dd id="guardianEmail">—</dd></div><div><dt>Telefone</dt><dd id="guardianPhone">—</dd></div><div><dt>Documento</dt><dd id="guardianDocument">—</dd></div><div><dt>Nascimento</dt><dd id="guardianBirthDate">—</dd></div><div><dt>Situação</dt><dd id="guardianStatus">—</dd></div></dl>
+            </section>
+        </main>
+    </div>
+    <script src="../js/core.js?v=20260914-3"></script><script src="../js/responsavel.js?v=20260914-3"></script>
+</body>
+</html>

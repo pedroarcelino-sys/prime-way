@@ -1,150 +1,12 @@
-console.log("DISCIPLINAS JS CARREGADO");
+/*====================================================
+        DISCIPLINAS - PRIMEWAY SCHOOL
+====================================================*/
 
-document.addEventListener("DOMContentLoaded", function () {
-
-    /*====================================================
-                    ELEMENTOS
-    ====================================================*/
-
-    const tableBody =
-        document.querySelector("#subjectsTableBody");
-
-    const emptyState =
-        document.querySelector("#subjectsEmpty");
-
-    const searchInput =
-        document.querySelector("#subjectSearch");
-
-    const areaFilter =
-        document.querySelector("#areaFilter");
-
-    const statusFilter =
-        document.querySelector("#statusFilter");
-
-    const newSubjectButton =
-        document.querySelector("#newSubjectButton");
-
-
-    /* CARDS */
-
-    const totalSubjects =
-        document.querySelector("#totalSubjects");
-
-    const activeSubjects =
-        document.querySelector("#activeSubjects");
-
-    const totalHours =
-        document.querySelector("#totalHours");
-
-    const linkedClasses =
-        document.querySelector("#linkedClasses");
-
-
-    /* MODAL */
-
-    const subjectModal =
-        document.querySelector("#subjectModal");
-
-    const subjectModalOverlay =
-        document.querySelector(".subject-modal-overlay");
-
-    const subjectModalClose =
-        document.querySelector("#subjectModalClose");
-
-    const subjectCancelButton =
-        document.querySelector("#subjectCancelButton");
-
-    const subjectModalTitle =
-        document.querySelector("#subjectModalTitle");
-
-    const subjectForm =
-        document.querySelector("#subjectForm");
-
-
-    /* CAMPOS */
-
-    const subjectId =
-        document.querySelector("#subjectId");
-
-    const subjectName =
-        document.querySelector("#subjectName");
-
-    const subjectCode =
-        document.querySelector("#subjectCode");
-
-    const subjectArea =
-        document.querySelector("#subjectArea");
-
-    const subjectHours =
-        document.querySelector("#subjectHours");
-
-    const subjectTeacher =
-        document.querySelector("#subjectTeacher");
-
-    const subjectClass =
-        document.querySelector("#subjectClass");
-
-    const subjectStatus =
-        document.querySelector("#subjectStatus");
-
-
-    /* VISUALIZAÇÃO */
-
-    const subjectViewModal =
-        document.querySelector("#subjectViewModal");
-
-    const subjectViewOverlay =
-        document.querySelector(".subject-view-overlay");
-
-    const subjectViewClose =
-        document.querySelector("#subjectViewClose");
-
-    const viewSubjectName =
-        document.querySelector("#viewSubjectName");
-
-    const viewSubjectCode =
-        document.querySelector("#viewSubjectCode");
-
-    const viewSubjectArea =
-        document.querySelector("#viewSubjectArea");
-
-    const viewSubjectTeacher =
-        document.querySelector("#viewSubjectTeacher");
-
-    const viewSubjectClass =
-        document.querySelector("#viewSubjectClass");
-
-    const viewSubjectHours =
-        document.querySelector("#viewSubjectHours");
-
-    const viewSubjectStatus =
-        document.querySelector("#viewSubjectStatus");
-
-
-    /* EXCLUSÃO */
-
-    const deleteSubjectModal =
-        document.querySelector("#deleteSubjectModal");
-
-    const deleteSubjectOverlay =
-        document.querySelector(".delete-subject-overlay");
-
-    const deleteSubjectCancel =
-        document.querySelector("#deleteSubjectCancel");
-
-    const deleteSubjectConfirm =
-        document.querySelector("#deleteSubjectConfirm");
-
-    const deleteSubjectMessage =
-        document.querySelector("#deleteSubjectMessage");
-
-
-    const logoutButton =
-        document.querySelector("#logoutButton");
-
+document.addEventListener("DOMContentLoaded", async function () {
+    await window.PrimeWayStorage?.ready;
 
     /*====================================================
-                    STORAGE
+                STORAGE / AUTENTICAÇÃO
     ====================================================*/
 
     const SUBJECTS_STORAGE_KEY =
@@ -154,9 +16,590 @@ document.addEventListener("DOMContentLoaded", function () {
         "primewayClasses";
 
 
+    const AUTH_SESSION_URL =
+        "../api/auth/session.php";
+
+    const AUTH_LOGOUT_URL =
+        "../api/auth/logout.php";
+
+
+    const SESSION_LOGADO_KEY =
+        "primewayLogado";
+
+    const SESSION_USUARIO_KEY =
+        "primewayUsuario";
+
+    const SESSION_PERFIL_KEY =
+        "primewayPerfil";
+
+
+    const PERFIS_PERMITIDOS =
+        new Set([
+            "admin"
+        ]);
+
+
+    const PAGINA_LOGIN =
+        "login.html";
+
+    const PAGINA_PROFESSOR =
+        "professor.html";
+
+
     /*====================================================
-                DADOS INICIAIS
+            COMPATIBILIDADE COM O FRONT-END ATUAL
     ====================================================*/
+
+    /*
+        A sessão PHP é a fonte de verdade.
+
+        O sessionStorage continua sendo mantido
+        temporariamente apenas para compatibilidade
+        com páginas que ainda não foram migradas.
+    */
+
+    function limparSessaoCompatibilidade() {
+
+        sessionStorage.removeItem(
+            SESSION_LOGADO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_USUARIO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_PERFIL_KEY
+        );
+    }
+
+
+    function sincronizarSessaoCompatibilidade(
+        usuario
+    ) {
+
+        sessionStorage.setItem(
+            SESSION_LOGADO_KEY,
+            "true"
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_USUARIO_KEY,
+            String(
+                usuario.email || ""
+            )
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_PERFIL_KEY,
+            String(
+                usuario.perfil || ""
+            )
+        );
+    }
+
+
+    /*====================================================
+                RESPOSTA JSON SEGURA
+    ====================================================*/
+
+    async function lerJsonSeguro(
+        response
+    ) {
+
+        try {
+
+            return await response.json();
+
+        } catch {
+
+            return null;
+        }
+    }
+
+
+    /*====================================================
+                VERIFICAÇÃO DE SESSÃO PHP
+    ====================================================*/
+
+    /*
+        O gerenciamento estrutural de Disciplinas fica
+        reservado ao perfil Admin nesta etapa.
+
+        A sessão é validada no servidor. Caso um
+        Professor autenticado tente abrir esta página,
+        ele é redirecionado para sua área sem encerrar
+        a sessão PHP.
+    */
+
+    async function obterSessaoServidor() {
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_SESSION_URL,
+                    {
+                        method:
+                            "GET",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.authenticated ||
+                !data?.usuario
+            ) {
+
+                limparSessaoCompatibilidade();
+
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+
+                return null;
+            }
+
+
+            const usuario =
+                data.usuario;
+
+
+            const perfil =
+                String(
+                    usuario.perfil || ""
+                ).trim();
+
+
+            sincronizarSessaoCompatibilidade(
+                usuario
+            );
+
+
+            if (
+                !PERFIS_PERMITIDOS.has(
+                    perfil
+                )
+            ) {
+
+                if (
+                    perfil ===
+                    "professor"
+                ) {
+
+                    window.location.replace(
+                        PAGINA_PROFESSOR
+                    );
+
+                } else {
+
+                    window.location.replace(
+                        PAGINA_LOGIN
+                    );
+                }
+
+
+                return null;
+            }
+
+
+            return {
+                ...usuario,
+                perfil
+            };
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao validar a sessão de Disciplinas:",
+                error
+            );
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+
+            return null;
+        }
+    }
+
+
+    const usuarioSessao =
+        await obterSessaoServidor();
+
+
+    if (
+        !usuarioSessao
+    ) {
+
+        return;
+    }
+
+
+    /*====================================================
+                    ELEMENTOS
+    ====================================================*/
+
+    const tableBody =
+        document.querySelector(
+            "#subjectsTableBody"
+        );
+
+    const emptyState =
+        document.querySelector(
+            "#subjectsEmpty"
+        );
+
+    const searchInput =
+        document.querySelector(
+            "#subjectSearch"
+        );
+
+    const areaFilter =
+        document.querySelector(
+            "#areaFilter"
+        );
+
+    const statusFilter =
+        document.querySelector(
+            "#statusFilter"
+        );
+
+    const newSubjectButton =
+        document.querySelector(
+            "#newSubjectButton"
+        );
+
+
+    /* CARDS */
+
+    const totalSubjects =
+        document.querySelector(
+            "#totalSubjects"
+        );
+
+    const activeSubjects =
+        document.querySelector(
+            "#activeSubjects"
+        );
+
+    const totalHours =
+        document.querySelector(
+            "#totalHours"
+        );
+
+    const linkedClasses =
+        document.querySelector(
+            "#linkedClasses"
+        );
+
+
+    /* MODAL CADASTRO / EDIÇÃO */
+
+    const subjectModal =
+        document.querySelector(
+            "#subjectModal"
+        );
+
+    const subjectModalOverlay =
+        document.querySelector(
+            ".subject-modal-overlay"
+        );
+
+    const subjectModalClose =
+        document.querySelector(
+            "#subjectModalClose"
+        );
+
+    const subjectCancelButton =
+        document.querySelector(
+            "#subjectCancelButton"
+        );
+
+    const subjectModalTitle =
+        document.querySelector(
+            "#subjectModalTitle"
+        );
+
+    const subjectForm =
+        document.querySelector(
+            "#subjectForm"
+        );
+
+
+    /* CAMPOS */
+
+    const subjectId =
+        document.querySelector(
+            "#subjectId"
+        );
+
+    const subjectName =
+        document.querySelector(
+            "#subjectName"
+        );
+
+    const subjectCode =
+        document.querySelector(
+            "#subjectCode"
+        );
+
+    const subjectArea =
+        document.querySelector(
+            "#subjectArea"
+        );
+
+    const subjectHours =
+        document.querySelector(
+            "#subjectHours"
+        );
+
+    const subjectTeacher =
+        document.querySelector(
+            "#subjectTeacher"
+        );
+
+    const subjectClass =
+        document.querySelector(
+            "#subjectClass"
+        );
+
+    const subjectStatus =
+        document.querySelector(
+            "#subjectStatus"
+        );
+
+
+    /* VISUALIZAÇÃO */
+
+    const subjectViewModal =
+        document.querySelector(
+            "#subjectViewModal"
+        );
+
+    const subjectViewOverlay =
+        document.querySelector(
+            ".subject-view-overlay"
+        );
+
+    const subjectViewClose =
+        document.querySelector(
+            "#subjectViewClose"
+        );
+
+    const viewSubjectName =
+        document.querySelector(
+            "#viewSubjectName"
+        );
+
+    const viewSubjectCode =
+        document.querySelector(
+            "#viewSubjectCode"
+        );
+
+    const viewSubjectArea =
+        document.querySelector(
+            "#viewSubjectArea"
+        );
+
+    const viewSubjectTeacher =
+        document.querySelector(
+            "#viewSubjectTeacher"
+        );
+
+    const viewSubjectClass =
+        document.querySelector(
+            "#viewSubjectClass"
+        );
+
+    const viewSubjectHours =
+        document.querySelector(
+            "#viewSubjectHours"
+        );
+
+    const viewSubjectStatus =
+        document.querySelector(
+            "#viewSubjectStatus"
+        );
+
+
+    /* EXCLUSÃO */
+
+    const deleteSubjectModal =
+        document.querySelector(
+            "#deleteSubjectModal"
+        );
+
+    const deleteSubjectOverlay =
+        document.querySelector(
+            ".delete-subject-overlay"
+        );
+
+    const deleteSubjectCancel =
+        document.querySelector(
+            "#deleteSubjectCancel"
+        );
+
+    const deleteSubjectConfirm =
+        document.querySelector(
+            "#deleteSubjectConfirm"
+        );
+
+    const deleteSubjectMessage =
+        document.querySelector(
+            "#deleteSubjectMessage"
+        );
+
+
+    /* LOGOUT */
+
+    const logoutButton =
+        document.querySelector(
+            "#logoutButton"
+        );
+
+
+    /*====================================================
+                VALIDAÇÃO DA ESTRUTURA
+    ====================================================*/
+
+    const elementosObrigatorios = [
+
+        tableBody,
+        emptyState,
+
+        searchInput,
+        areaFilter,
+        statusFilter,
+
+        newSubjectButton,
+
+        totalSubjects,
+        activeSubjects,
+        totalHours,
+        linkedClasses,
+
+        subjectModal,
+        subjectModalOverlay,
+        subjectModalClose,
+        subjectCancelButton,
+        subjectModalTitle,
+        subjectForm,
+
+        subjectId,
+        subjectName,
+        subjectCode,
+        subjectArea,
+        subjectHours,
+        subjectTeacher,
+        subjectClass,
+        subjectStatus,
+
+        subjectViewModal,
+        subjectViewOverlay,
+        subjectViewClose,
+
+        viewSubjectName,
+        viewSubjectCode,
+        viewSubjectArea,
+        viewSubjectTeacher,
+        viewSubjectClass,
+        viewSubjectHours,
+        viewSubjectStatus,
+
+        deleteSubjectModal,
+        deleteSubjectOverlay,
+        deleteSubjectCancel,
+        deleteSubjectConfirm,
+        deleteSubjectMessage
+
+    ];
+
+
+    if (
+        elementosObrigatorios.some(
+            elemento =>
+                !elemento
+        )
+    ) {
+
+        console.error(
+            "Disciplinas: a estrutura esperada da página não foi encontrada."
+        );
+
+
+        return;
+
+    }
+
+
+    /*====================================================
+                TURMAS PADRÃO
+    ====================================================*/
+
+    const defaultClasses = [
+
+        {
+            id: 1,
+            name: "1º Ano A",
+            status: "Ativa"
+        },
+
+        {
+            id: 2,
+            name: "2º Ano B",
+            status: "Ativa"
+        },
+
+        {
+            id: 3,
+            name: "3º Ano A",
+            status: "Ativa"
+        },
+
+        {
+            id: 4,
+            name: "4º Ano B",
+            status: "Ativa"
+        }
+
+    ];
+
+
+    /*====================================================
+                DISCIPLINAS PADRÃO
+                    ====================================================*/
 
     const defaultSubjects = [
 
@@ -166,6 +609,7 @@ document.addEventListener("DOMContentLoaded", function () {
             code: "MAT01",
             area: "Matemática",
             teacher: "Marcos Almeida",
+            classId: 1,
             className: "1º Ano A",
             hours: 160,
             status: "Ativa"
@@ -177,6 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
             code: "POR01",
             area: "Linguagens",
             teacher: "Juliana Costa",
+            classId: 2,
             className: "2º Ano B",
             hours: 160,
             status: "Ativa"
@@ -188,6 +633,7 @@ document.addEventListener("DOMContentLoaded", function () {
             code: "CIE01",
             area: "Ciências da Natureza",
             teacher: "Ricardo Lima",
+            classId: 3,
             className: "3º Ano A",
             hours: 120,
             status: "Ativa"
@@ -199,6 +645,7 @@ document.addEventListener("DOMContentLoaded", function () {
             code: "HIS01",
             area: "Ciências Humanas",
             teacher: "Fernanda Alves",
+            classId: 4,
             className: "4º Ano B",
             hours: 100,
             status: "Ativa"
@@ -210,6 +657,7 @@ document.addEventListener("DOMContentLoaded", function () {
             code: "ART01",
             area: "Artes",
             teacher: "Patrícia Souza",
+            classId: 1,
             className: "1º Ano A",
             hours: 80,
             status: "Ativa"
@@ -218,38 +666,566 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
-    let subjects =
-        carregarDisciplinas();
+    /*====================================================
+                    UTILITÁRIOS
+    ====================================================*/
+
+    function normalizarTexto(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .normalize(
+                "NFD"
+            )
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .toLowerCase()
+            .trim();
+
+    }
 
 
-    let subjectToDelete =
-        null;
+    function normalizarCodigo(
+        value
+    ) {
+
+        return normalizarTexto(
+            value
+        )
+            .replace(
+                /\s+/g,
+                ""
+            );
+
+    }
+
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
+    }
+
+
+    function numeroSeguro(
+        value,
+        fallback = 0
+    ) {
+
+        const numero =
+            Number(
+                value
+            );
+
+
+        return Number.isFinite(
+            numero
+        )
+            ? numero
+            : fallback;
+
+    }
+
+
+    function normalizarIdOpcional(
+        value
+    ) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+
+            return null;
+
+        }
+
+
+        const id =
+            Number(
+                value
+            );
+
+
+        return (
+            Number.isFinite(
+                id
+            ) &&
+            id > 0
+        )
+            ? id
+            : null;
+
+    }
+
+
+    function clonarTurmasPadrao() {
+
+        return [];
+
+    }
+
+
+    function clonarDisciplinasPadrao() {
+
+        return [];
+
+    }
+
+
+    function normalizarStatusDisciplina(
+        status
+    ) {
+
+        const normalizado =
+            normalizarTexto(
+                status
+            );
+
+
+        if (
+            normalizado === "inativa" ||
+            normalizado === "inativo"
+        ) {
+
+            return "Inativa";
+
+        }
+
+
+        return "Ativa";
+
+    }
+
+
+    function turmaEstaAtiva(
+        turma
+    ) {
+
+        const status =
+            normalizarTexto(
+                turma?.status
+            );
+
+
+        /*
+            Dados antigos que não possuíam status
+            continuam disponíveis.
+        */
+
+        return (
+            !status ||
+            status === "ativa" ||
+            status === "ativo"
+        );
+
+    }
+
+
+    function obterClasseStatus(
+        status
+    ) {
+
+        return normalizarStatusDisciplina(
+            status
+        ) === "Ativa"
+            ? "active"
+            : "inactive";
+
+    }
+
+
+    function ordenarTurmas(
+        turmas
+    ) {
+
+        return [
+            ...turmas
+        ].sort(
+            function (
+                a,
+                b
+            ) {
+
+                return String(
+                    a.name ?? ""
+                ).localeCompare(
+                    String(
+                        b.name ?? ""
+                    ),
+                    "pt-BR",
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
+
+            }
+        );
+
+    }
 
 
     /*====================================================
-                    STORAGE
+                STORAGE - TURMAS
     ====================================================*/
 
-    function salvarDisciplinas() {
+    function normalizarTurma(
+        turma,
+        index = 0
+    ) {
+
+        if (
+            !turma ||
+            typeof turma !==
+                "object"
+        ) {
+
+            return null;
+
+        }
+
+
+        const nome =
+            String(
+                turma.name ??
+                ""
+            ).trim();
+
+
+        if (!nome) {
+
+            return null;
+
+        }
+
+
+        const id =
+            normalizarIdOpcional(
+                turma.id
+            );
+
+
+        return {
+
+            ...turma,
+
+            /*
+                Disciplinas não deve inventar um ID para
+                uma turma antiga que ainda não possua ID.
+
+                O módulo Turmas é o responsável por gerar
+                e persistir o identificador estável.
+            */
+
+            id,
+
+            name:
+                nome,
+
+            status:
+                String(
+                    turma.status ??
+                    ""
+                ).trim()
+
+        };
+
+    }
+
+
+    function carregarTurmas() {
 
         try {
 
-            localStorage.setItem(
-                SUBJECTS_STORAGE_KEY,
-                JSON.stringify(subjects)
-            );
+            const saved =
+                localStorage.getItem(
+                    CLASSES_STORAGE_KEY
+                );
+
+
+            /*
+                Disciplinas apenas consulta Turmas.
+
+                Se o módulo Turmas ainda não tiver
+                sido inicializado, usamos a lista
+                padrão sem criar primewayClasses.
+            */
+
+            if (!saved) {
+
+                return clonarTurmasPadrao();
+
+            }
+
+
+            const dados =
+                JSON.parse(
+                    saved
+                );
+
+
+            if (
+                !Array.isArray(
+                    dados
+                )
+            ) {
+
+                return clonarTurmasPadrao();
+
+            }
+
+
+            return dados
+                .map(
+                    normalizarTurma
+                )
+                .filter(
+                    Boolean
+                );
 
         } catch (erro) {
 
             console.warn(
-                "Erro ao salvar disciplinas:",
+                "Erro ao carregar turmas:",
                 erro
             );
+
+
+            return clonarTurmasPadrao();
 
         }
 
     }
 
+
+    function localizarTurmaDaDisciplina(
+        disciplina,
+        turmas = carregarTurmas()
+    ) {
+
+        const classId =
+            normalizarIdOpcional(
+                disciplina?.classId
+            );
+
+
+        if (
+            classId !==
+            null
+        ) {
+
+            const porId =
+                turmas.find(
+                    turma =>
+                        Number(
+                            turma.id
+                        ) ===
+                        classId
+                );
+
+
+            if (porId) {
+
+                return porId;
+
+            }
+
+        }
+
+
+        const nome =
+            normalizarTexto(
+                disciplina?.className ||
+                disciplina?.class ||
+                disciplina?.turma
+            );
+
+
+        if (!nome) {
+
+            return null;
+
+        }
+
+
+        return (
+            turmas.find(
+                turma =>
+                    normalizarTexto(
+                        turma.name
+                    ) ===
+                    nome
+            ) ||
+            null
+        );
+
+    }
+
+
+    /*====================================================
+            NORMALIZAÇÃO DE DISCIPLINAS
+    ====================================================*/
+
+    function normalizarDisciplina(
+        disciplina,
+        index = 0,
+        turmas = carregarTurmas()
+    ) {
+
+        if (
+            !disciplina ||
+            typeof disciplina !==
+                "object"
+        ) {
+
+            return null;
+
+        }
+
+
+        const id =
+            Number(
+                disciplina.id
+            );
+
+
+        const turmaVinculada =
+            localizarTurmaDaDisciplina(
+                disciplina,
+                turmas
+            );
+
+
+        const classIdOriginal =
+            normalizarIdOpcional(
+                disciplina.classId
+            );
+
+
+        const classNameOriginal =
+            String(
+                disciplina.className ||
+                disciplina.class ||
+                disciplina.turma ||
+                ""
+            ).trim();
+
+
+        const normalizada = {
+
+            ...disciplina,
+
+            id:
+                Number.isFinite(
+                    id
+                )
+                    ? id
+                    : Date.now() + index,
+
+            name:
+                String(
+                    disciplina.name ??
+                    ""
+                ).trim(),
+
+            code:
+                String(
+                    disciplina.code ??
+                    ""
+                ).trim(),
+
+            area:
+                String(
+                    disciplina.area ??
+                    ""
+                ).trim(),
+
+            teacher:
+                String(
+                    disciplina.teacher ??
+                    ""
+                ).trim(),
+
+            classId:
+                turmaVinculada
+                    ? normalizarIdOpcional(
+                        turmaVinculada.id
+                    )
+                    : classIdOriginal,
+
+            className:
+                turmaVinculada
+                    ? turmaVinculada.name
+                    : classNameOriginal,
+
+            hours:
+                Math.min(
+                    1000,
+                    Math.max(
+                        1,
+                        numeroSeguro(
+                            disciplina.hours,
+                            1
+                        )
+                    )
+                ),
+
+            status:
+                normalizarStatusDisciplina(
+                    disciplina.status
+                )
+
+        };
+
+
+        /*
+            Consolida propriedades antigas.
+        */
+
+        delete normalizada.class;
+
+        delete normalizada.turma;
+
+
+        return normalizada;
+
+    }
+
+
+    /*====================================================
+            STORAGE - DISCIPLINAS
+    ====================================================*/
 
     function carregarDisciplinas() {
 
@@ -263,14 +1239,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!saved) {
 
-                return JSON.parse(
-                    JSON.stringify(defaultSubjects)
-                );
+                return clonarDisciplinasPadrao();
 
             }
 
 
-            return JSON.parse(saved);
+            const dados =
+                JSON.parse(
+                    saved
+                );
+
+
+            if (
+                !Array.isArray(
+                    dados
+                )
+            ) {
+
+                return clonarDisciplinasPadrao();
+
+            }
+
+
+            const turmas =
+                carregarTurmas();
+
+
+            return dados
+                .map(
+                    function (
+                        disciplina,
+                        index
+                    ) {
+
+                        return normalizarDisciplina(
+                            disciplina,
+                            index,
+                            turmas
+                        );
+
+                    }
+                )
+                .filter(
+                    Boolean
+                );
 
         } catch (erro) {
 
@@ -280,9 +1292,38 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            return JSON.parse(
-                JSON.stringify(defaultSubjects)
+            return clonarDisciplinasPadrao();
+
+        }
+
+    }
+
+
+    function salvarDisciplinas(
+        lista = subjects
+    ) {
+
+        try {
+
+            localStorage.setItem(
+                SUBJECTS_STORAGE_KEY,
+                JSON.stringify(
+                    lista
+                )
             );
+
+
+            return true;
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao salvar disciplinas:",
+                erro
+            );
+
+
+            return false;
 
         }
 
@@ -290,80 +1331,128 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    CARREGAR TURMAS
+                    ESTADO
     ====================================================*/
 
-    function carregarTurmas() {
+    let subjects =
+        carregarDisciplinas();
 
-        const saved =
-            localStorage.getItem(
-                CLASSES_STORAGE_KEY
+
+    let subjectToDelete =
+        null;
+
+
+    const focoAnteriorPorModal =
+        new WeakMap();
+
+
+    function gerarNovoId() {
+
+        const maiorId =
+            subjects.reduce(
+                function (
+                    maior,
+                    disciplina
+                ) {
+
+                    const idAtual =
+                        Number(
+                            disciplina.id
+                        );
+
+
+                    return Number.isFinite(
+                        idAtual
+                    )
+                        ? Math.max(
+                            maior,
+                            idAtual
+                        )
+                        : maior;
+
+                },
+                0
             );
 
 
-        if (!saved) {
-
-            return [
-                "1º Ano A",
-                "2º Ano B",
-                "3º Ano A",
-                "4º Ano B"
-            ];
-
-        }
-
-
-        try {
-
-            const classes =
-                JSON.parse(saved);
-
-
-            return classes.map(
-                function (item) {
-
-                    return item.name;
-
-                }
-            );
-
-        } catch (erro) {
-
-            console.warn(
-                "Erro ao carregar turmas:",
-                erro
-            );
-
-            return [];
-
-        }
+        return Math.max(
+            Date.now(),
+            maiorId + 1
+        );
 
     }
 
 
-    function preencherSelectTurmas() {
+    /*====================================================
+                SELECT DE TURMAS
+    ====================================================*/
 
-        if (!subjectClass) {
+    function obterValorOpcaoTurma(
+        turma
+    ) {
 
-            return;
+        const id =
+            normalizarIdOpcional(
+                turma?.id
+            );
+
+
+        if (
+            id !== null
+        ) {
+
+            return `class:${id}`;
 
         }
 
 
+        return `name:${normalizarTexto(
+            turma?.name
+        )}`;
+
+    }
+
+
+    function preencherSelectTurmas(
+        disciplinaAtual = null
+    ) {
+
         const turmas =
-            carregarTurmas();
+            ordenarTurmas(
+                carregarTurmas()
+            );
 
 
-        subjectClass.innerHTML =
-            `
-                <option value="">
-                    Selecione uma turma
-                </option>
-            `;
+        const turmasAtivas =
+            turmas.filter(
+                turmaEstaAtiva
+            );
 
 
-        turmas.forEach(
-            function (nome) {
+        subjectClass.replaceChildren();
+
+
+        const placeholder =
+            document.createElement(
+                "option"
+            );
+
+
+        placeholder.value =
+            "";
+
+
+        placeholder.textContent =
+            "Selecione uma turma";
+
+
+        subjectClass.appendChild(
+            placeholder
+        );
+
+
+        turmasAtivas.forEach(
+            function (turma) {
 
                 const option =
                     document.createElement(
@@ -372,11 +1461,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 option.value =
-                    nome;
+                    obterValorOpcaoTurma(
+                        turma
+                    );
 
 
                 option.textContent =
-                    nome;
+                    turma.name;
+
+
+                const idTurma =
+                    normalizarIdOpcional(
+                        turma.id
+                    );
+
+
+                if (
+                    idTurma !== null
+                ) {
+
+                    option.dataset.classId =
+                        String(
+                            idTurma
+                        );
+
+                }
+
+
+                option.dataset.className =
+                    turma.name;
 
 
                 subjectClass.appendChild(
@@ -386,26 +1499,165 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+
+        if (!disciplinaAtual) {
+
+            subjectClass.value =
+                "";
+
+
+            return;
+
+        }
+
+
+        const turmaAtual =
+            localizarTurmaDaDisciplina(
+                disciplinaAtual,
+                turmas
+            );
+
+
+        if (
+            turmaAtual &&
+            turmaEstaAtiva(
+                turmaAtual
+            )
+        ) {
+
+            subjectClass.value =
+                obterValorOpcaoTurma(
+                    turmaAtual
+                );
+
+
+            return;
+
+        }
+
+
+        /*
+            Se a turma estiver inativa ou não estiver
+            mais disponível, a edição não pode apagar
+            silenciosamente o vínculo existente.
+        */
+
+        const nomeAtual =
+            turmaAtual
+                ? turmaAtual.name
+                : disciplinaAtual.className;
+
+
+        if (nomeAtual) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            const idAtual =
+                turmaAtual
+                    ? normalizarIdOpcional(
+                        turmaAtual.id
+                    )
+                    : normalizarIdOpcional(
+                        disciplinaAtual.classId
+                    );
+
+
+            option.value =
+                `legacy:${disciplinaAtual.id}`;
+
+
+            option.textContent =
+                `${nomeAtual} (indisponível)`;
+
+
+            option.dataset.className =
+                nomeAtual;
+
+
+            if (
+                idAtual !==
+                null
+            ) {
+
+                option.dataset.classId =
+                    String(
+                        idAtual
+                    );
+
+            }
+
+
+            subjectClass.appendChild(
+                option
+            );
+
+
+            subjectClass.value =
+                option.value;
+
+        }
+
     }
 
 
-    /*====================================================
-                    SEGURANÇA HTML
-    ====================================================*/
+    function obterTurmaSelecionada() {
 
-    function escapeHtml(value) {
+        const option =
+            subjectClass.options[
+                subjectClass.selectedIndex
+            ];
 
-        return String(value)
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+
+        if (
+            !option ||
+            !subjectClass.value
+        ) {
+
+            return null;
+
+        }
+
+
+        const id =
+            normalizarIdOpcional(
+                option.dataset.classId
+            );
+
+
+        const name =
+            String(
+                option.dataset.className ||
+                option.textContent ||
+                ""
+            )
+                .replace(
+                    /\s+\(indisponível\)$/,
+                    ""
+                )
+                .trim();
+
+
+        if (!name) {
+
+            return null;
+
+        }
+
+
+        return {
+
+            id,
+
+            name
+
+        };
 
     }
-
-
-    /*====================================================
+        /*====================================================
                     RESUMO
     ====================================================*/
 
@@ -418,7 +1670,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const ativas =
             subjects.filter(
                 item =>
-                    item.status ===
+                    normalizarStatusDisciplina(
+                        item.status
+                    ) ===
                     "Ativa"
             ).length;
 
@@ -432,7 +1686,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     return (
                         totalAtual +
-                        Number(item.hours)
+                        numeroSeguro(
+                            item.hours
+                        )
                     );
 
                 },
@@ -440,50 +1696,72 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
+        /*
+            Usa ID da turma quando disponível.
+
+            Para registros antigos sem classId,
+            utiliza o nome como fallback.
+        */
+
         const turmasVinculadas =
             new Set(
                 subjects
                     .filter(
-                        item =>
-                            item.className
+                        function (item) {
+
+                            return (
+                                normalizarIdOpcional(
+                                    item.classId
+                                ) !==
+                                    null ||
+                                Boolean(
+                                    item.className
+                                )
+                            );
+
+                        }
                     )
                     .map(
-                        item =>
-                            item.className
+                        function (item) {
+
+                            const classId =
+                                normalizarIdOpcional(
+                                    item.classId
+                                );
+
+
+                            return classId !==
+                                null
+                                ? `id:${classId}`
+                                : `name:${normalizarTexto(
+                                    item.className
+                                )}`;
+
+                        }
                     )
             ).size;
 
 
-        if (totalSubjects) {
-
-            totalSubjects.textContent =
-                total;
-
-        }
+        totalSubjects.textContent =
+            String(
+                total
+            );
 
 
-        if (activeSubjects) {
-
-            activeSubjects.textContent =
-                ativas;
-
-        }
+        activeSubjects.textContent =
+            String(
+                ativas
+            );
 
 
-        if (totalHours) {
-
-            totalHours.textContent =
-                `${horas}h`;
-
-        }
+        totalHours.textContent =
+            `${horas}h`;
 
 
-        if (linkedClasses) {
-
-            linkedClasses.textContent =
-                turmasVinculadas;
-
-        }
+        linkedClasses.textContent =
+            String(
+                turmasVinculadas
+            );
 
     }
 
@@ -495,62 +1773,51 @@ document.addEventListener("DOMContentLoaded", function () {
     function pegarDisciplinasFiltradas() {
 
         const termo =
-            searchInput
-                ? searchInput
-                    .value
-                    .toLowerCase()
-                    .trim()
-                : "";
+            normalizarTexto(
+                searchInput.value
+            );
 
 
         const area =
-            areaFilter
-                ? areaFilter.value
-                : "";
+            areaFilter.value;
 
 
         const status =
-            statusFilter
-                ? statusFilter.value
-                : "";
+            statusFilter.value;
 
 
         return subjects.filter(
             function (item) {
 
                 const texto =
-                    (
-                        item.name +
-                        " " +
-                        item.code +
-                        " " +
-                        item.teacher +
-                        " " +
-                        item.className
-                    )
-                        .toLowerCase();
-
-
-                const matchSearch =
-                    texto.includes(
-                        termo
+                    normalizarTexto(
+                        [
+                            item.name,
+                            item.code,
+                            item.area,
+                            item.teacher,
+                            item.className,
+                            item.hours
+                        ].join(
+                            " "
+                        )
                     );
 
 
-                const matchArea =
-                    area === "" ||
-                    item.area === area;
-
-
-                const matchStatus =
-                    status === "" ||
-                    item.status === status;
-
-
                 return (
-                    matchSearch &&
-                    matchArea &&
-                    matchStatus
+                    texto.includes(
+                        termo
+                    ) &&
+                    (
+                        !area ||
+                        item.area ===
+                            area
+                    ) &&
+                    (
+                        !status ||
+                        item.status ===
+                            status
+                    )
                 );
 
             }
@@ -560,34 +1827,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    RENDERIZAR
+                    RENDERIZAÇÃO
     ====================================================*/
 
     function renderSubjects() {
 
-        if (!tableBody) {
-
-            return;
-
-        }
+        tableBody.replaceChildren();
 
 
         const filtered =
             pegarDisciplinasFiltradas();
 
 
-        tableBody.innerHTML =
-            "";
-
-
-        if (emptyState) {
-
-            emptyState.classList.toggle(
-                "active",
-                filtered.length === 0
-            );
-
-        }
+        emptyState.classList.toggle(
+            "active",
+            filtered.length === 0
+        );
 
 
         filtered.forEach(
@@ -600,10 +1855,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                 const statusClass =
-                    item.status ===
-                    "Ativa"
-                        ? "active"
-                        : "inactive";
+                    obterClasseStatus(
+                        item.status
+                    );
+
+
+                const nomeSeguro =
+                    escapeHtml(
+                        item.name
+                    );
+
+
+                const idSeguro =
+                    escapeHtml(
+                        item.id
+                    );
 
 
                 row.innerHTML = `
@@ -612,14 +1878,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <div class="subject-cell">
 
-                            <div class="subject-avatar">
+                            <div
+                                class="subject-avatar"
+                                aria-hidden="true"
+                            >
 
-                                <i class="fa-solid fa-book-open"></i>
+                                <i
+                                    class="fa-solid fa-book-open"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
                             <strong>
-                                ${escapeHtml(item.name)}
+                                ${nomeSeguro}
                             </strong>
 
                         </div>
@@ -643,12 +1915,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     <td>
-                        ${escapeHtml(item.className)}
+                        ${
+                            item.className
+                                ? escapeHtml(
+                                    item.className
+                                )
+                                : "Sem turma"
+                        }
                     </td>
 
 
                     <td>
-                        ${Number(item.hours)}h
+                        ${numeroSeguro(item.hours)}h
                     </td>
 
 
@@ -665,16 +1943,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <div class="subject-actions-buttons">
 
-
                             <button
                                 type="button"
                                 class="subject-action-button"
                                 data-action="view"
-                                data-id="${item.id}"
-                                aria-label="Visualizar disciplina"
+                                data-id="${idSeguro}"
+                                title="Visualizar"
+                                aria-label="Visualizar ${nomeSeguro}"
                             >
 
-                                <i class="fa-solid fa-eye"></i>
+                                <i
+                                    class="fa-solid fa-eye"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
@@ -683,11 +1964,15 @@ document.addEventListener("DOMContentLoaded", function () {
                                 type="button"
                                 class="subject-action-button"
                                 data-action="edit"
-                                data-id="${item.id}"
-                                aria-label="Editar disciplina"
+                                data-id="${idSeguro}"
+                                title="Editar"
+                                aria-label="Editar ${nomeSeguro}"
                             >
 
-                                <i class="fa-solid fa-pen"></i>
+                                <i
+                                    class="fa-solid fa-pen"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
@@ -696,14 +1981,17 @@ document.addEventListener("DOMContentLoaded", function () {
                                 type="button"
                                 class="subject-action-button delete"
                                 data-action="delete"
-                                data-id="${item.id}"
-                                aria-label="Excluir disciplina"
+                                data-id="${idSeguro}"
+                                title="Excluir"
+                                aria-label="Excluir ${nomeSeguro}"
                             >
 
-                                <i class="fa-solid fa-trash"></i>
+                                <i
+                                    class="fa-solid fa-trash"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
-
 
                         </div>
 
@@ -726,24 +2014,194 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    ABRIR MODAL
+                    MODAIS
+    ====================================================*/
+
+    function existeModalAtivo() {
+
+        return [
+            subjectModal,
+            subjectViewModal,
+            deleteSubjectModal
+        ].some(
+            modal =>
+                modal.classList.contains(
+                    "active"
+                )
+        );
+
+    }
+
+
+    function abrirModal(
+        modal,
+        focoInicial = null
+    ) {
+
+        const elementoAtivo =
+            document.activeElement;
+
+
+        if (
+            elementoAtivo instanceof
+            HTMLElement
+        ) {
+
+            focoAnteriorPorModal.set(
+                modal,
+                elementoAtivo
+            );
+
+        }
+
+
+        modal.classList.add(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+
+        if (
+            focoInicial &&
+            typeof focoInicial.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    focoInicial.focus();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    function fecharModal(
+        modal
+    ) {
+
+        modal.classList.remove(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (
+            !existeModalAtivo()
+        ) {
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        const focoAnterior =
+            focoAnteriorPorModal.get(
+                modal
+            );
+
+
+        focoAnteriorPorModal.delete(
+            modal
+        );
+
+
+        const destinoFoco =
+            (
+                focoAnterior &&
+                focoAnterior.isConnected &&
+                typeof focoAnterior.focus ===
+                    "function"
+            )
+                ? focoAnterior
+                : newSubjectButton;
+
+
+        if (
+            destinoFoco &&
+            typeof destinoFoco.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    destinoFoco.focus();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /*====================================================
+                LIMPAR VALIDAÇÕES
+    ====================================================*/
+
+    function limparValidacoesFormulario() {
+
+        subjectName.setCustomValidity(
+            ""
+        );
+
+
+        subjectCode.setCustomValidity(
+            ""
+        );
+
+
+        subjectClass.setCustomValidity(
+            ""
+        );
+
+
+        subjectHours.setCustomValidity(
+            ""
+        );
+
+    }
+
+
+    /*====================================================
+                ABRIR CADASTRO / EDIÇÃO
     ====================================================*/
 
     function abrirModalDisciplina(
         item = null
     ) {
 
-        if (!subjectModal) {
-
-            return;
-
-        }
-
-
         subjectForm.reset();
 
 
-        preencherSelectTurmas();
+        limparValidacoesFormulario();
+
+
+        preencherSelectTurmas(
+            item
+        );
 
 
         if (item) {
@@ -776,10 +2234,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 item.teacher;
 
 
-            subjectClass.value =
-                item.className;
-
-
             subjectStatus.value =
                 item.status;
 
@@ -799,145 +2253,387 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        subjectModal.classList.add(
-            "active"
+        abrirModal(
+            subjectModal,
+            subjectName
         );
-
-
-        subjectModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-
-        subjectName.focus();
 
     }
 
 
     function fecharModalDisciplina() {
 
-        if (!subjectModal) {
-
-            return;
-
-        }
-
-
-        subjectModal.classList.remove(
-            "active"
-        );
-
-
-        subjectModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        document.body.classList.remove(
-            "modal-open"
+        fecharModal(
+            subjectModal
         );
 
     }
 
 
     /*====================================================
-                    SALVAR
+                    VALIDAÇÃO
     ====================================================*/
 
-    if (subjectForm) {
+    function codigoJaExisteNaTurma(
+        codigo,
+        turma,
+        idAtual
+    ) {
 
-        subjectForm.addEventListener(
-            "submit",
-            function (event) {
-
-                event.preventDefault();
-
-
-                const id =
-                    subjectId.value
-                        ? Number(
-                            subjectId.value
-                        )
-                        : Date.now();
+        const codigoNormalizado =
+            normalizarCodigo(
+                codigo
+            );
 
 
-                const data = {
+        return subjects.some(
+            function (item) {
 
-                    id:
-                        id,
-
-                    name:
-                        subjectName
-                            .value
-                            .trim(),
-
-                    code:
-                        subjectCode
-                            .value
-                            .trim(),
-
-                    area:
-                        subjectArea.value,
-
-                    teacher:
-                        subjectTeacher
-                            .value
-                            .trim(),
-
-                    className:
-                        subjectClass.value,
-
-                    hours:
-                        Number(
-                            subjectHours.value
-                        ),
-
-                    status:
-                        subjectStatus.value
-
-                };
-
-
-                const index =
-                    subjects.findIndex(
-                        item =>
-                            item.id === id
+                const mesmaDisciplina =
+                    Number(
+                        item.id
+                    ) ===
+                    Number(
+                        idAtual
                     );
 
 
-                if (index >= 0) {
+                if (mesmaDisciplina) {
 
-                    subjects[index] =
-                        data;
-
-                } else {
-
-                    subjects.unshift(
-                        data
-                    );
+                    return false;
 
                 }
 
 
-                salvarDisciplinas();
+                const mesmoCodigo =
+                    normalizarCodigo(
+                        item.code
+                    ) ===
+                    codigoNormalizado;
 
 
-                renderSubjects();
+                const turmaId =
+                    normalizarIdOpcional(
+                        turma.id
+                    );
 
 
-                fecharModalDisciplina();
+                const itemTurmaId =
+                    normalizarIdOpcional(
+                        item.classId
+                    );
+
+
+                /*
+                    Se os dois registros possuem ID de turma,
+                    o ID é a referência principal.
+
+                    O nome só é usado como fallback quando
+                    pelo menos um dos lados ainda é legado.
+                */
+
+                const mesmaTurma =
+                    turmaId !==
+                        null &&
+                    itemTurmaId !==
+                        null
+                        ? turmaId ===
+                            itemTurmaId
+                        : normalizarTexto(
+                            item.className
+                        ) ===
+                            normalizarTexto(
+                                turma.name
+                            );
+
+
+                return (
+                    mesmoCodigo &&
+                    mesmaTurma
+                );
 
             }
         );
 
     }
+
+
+    function validarFormularioDisciplina() {
+
+        const nome =
+            subjectName.value
+                .trim();
+
+
+        const codigo =
+            subjectCode.value
+                .trim();
+
+
+        const professor =
+            subjectTeacher.value
+                .trim();
+
+
+        const horas =
+            Number(
+                subjectHours.value
+            );
+
+
+        const turma =
+            obterTurmaSelecionada();
+
+
+        subjectName.setCustomValidity(
+            nome
+                ? ""
+                : "Informe o nome da disciplina."
+        );
+
+
+        if (!nome) {
+
+            subjectName.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        subjectCode.setCustomValidity(
+            codigo
+                ? ""
+                : "Informe o código da disciplina."
+        );
+
+
+        if (!codigo) {
+
+            subjectCode.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        if (!turma) {
+
+            subjectClass.setCustomValidity(
+                "Selecione uma turma."
+            );
+
+
+            subjectClass.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        subjectClass.setCustomValidity(
+            ""
+        );
+
+
+        if (
+            !Number.isFinite(
+                horas
+            ) ||
+            horas < 1 ||
+            horas > 1000
+        ) {
+
+            subjectHours.setCustomValidity(
+                "Informe uma carga horária entre 1 e 1000 horas."
+            );
+
+
+            subjectHours.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        subjectHours.setCustomValidity(
+            ""
+        );
+
+
+        if (!professor) {
+
+            subjectTeacher.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        return {
+
+            nome,
+            codigo,
+            professor,
+            horas,
+            turma
+
+        };
+
+    }
+        /*====================================================
+                    SALVAR
+    ====================================================*/
+
+    subjectForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const validacao =
+                validarFormularioDisciplina();
+
+
+            if (!validacao) {
+
+                return;
+
+            }
+
+
+            const id =
+                subjectId.value
+                    ? Number(
+                        subjectId.value
+                    )
+                    : gerarNovoId();
+
+
+            if (
+                codigoJaExisteNaTurma(
+                    validacao.codigo,
+                    validacao.turma,
+                    id
+                )
+            ) {
+
+                subjectCode.setCustomValidity(
+                    "Já existe uma disciplina com este código nesta turma."
+                );
+
+
+                subjectCode.reportValidity();
+
+
+                return;
+
+            }
+
+
+            subjectCode.setCustomValidity(
+                ""
+            );
+
+
+            const data = {
+
+                id,
+
+                name:
+                    validacao.nome,
+
+                code:
+                    validacao.codigo,
+
+                area:
+                    subjectArea.value,
+
+                teacher:
+                    validacao.professor,
+
+                classId:
+                    validacao.turma.id,
+
+                className:
+                    validacao.turma.name,
+
+                hours:
+                    validacao.horas,
+
+                status:
+                    subjectStatus.value
+
+            };
+
+
+            const novaLista =
+                subjects.map(
+                    item => ({
+                        ...item
+                    })
+                );
+
+
+            const index =
+                novaLista.findIndex(
+                    item =>
+                        Number(
+                            item.id
+                        ) ===
+                        id
+                );
+
+
+            if (
+                index >= 0
+            ) {
+
+                novaLista[index] =
+                    data;
+
+            } else {
+
+                novaLista.unshift(
+                    data
+                );
+
+            }
+
+
+            if (
+                !salvarDisciplinas(
+                    novaLista
+                )
+            ) {
+
+                alert(
+                    "Não foi possível salvar a disciplina. Tente novamente."
+                );
+
+
+                return;
+
+            }
+
+
+            subjects =
+                novaLista;
+
+
+            fecharModalDisciplina();
+
+
+            renderSubjects();
+
+        }
+    );
 
 
     /*====================================================
@@ -947,13 +2643,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function abrirVisualizacao(
         item
     ) {
-
-        if (!subjectViewModal) {
-
-            return;
-
-        }
-
 
         viewSubjectName.textContent =
             item.name;
@@ -972,30 +2661,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         viewSubjectClass.textContent =
-            item.className;
+            item.className ||
+            "Turma indisponível";
 
 
         viewSubjectHours.textContent =
-            `${item.hours}h`;
+            `${numeroSeguro(item.hours)}h`;
 
 
         viewSubjectStatus.textContent =
             item.status;
 
 
-        subjectViewModal.classList.add(
-            "active"
-        );
-
-
-        subjectViewModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
+        abrirModal(
+            subjectViewModal,
+            subjectViewClose
         );
 
     }
@@ -1003,26 +2683,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function fecharVisualizacao() {
 
-        if (!subjectViewModal) {
-
-            return;
-
-        }
-
-
-        subjectViewModal.classList.remove(
-            "active"
-        );
-
-
-        subjectViewModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        document.body.classList.remove(
-            "modal-open"
+        fecharModal(
+            subjectViewModal
         );
 
     }
@@ -1036,34 +2698,19 @@ document.addEventListener("DOMContentLoaded", function () {
         item
     ) {
 
-        if (!deleteSubjectModal) {
-
-            return;
-
-        }
-
-
         subjectToDelete =
-            item.id;
+            Number(
+                item.id
+            );
 
 
         deleteSubjectMessage.textContent =
             `Deseja realmente excluir a disciplina "${item.name}"?`;
 
 
-        deleteSubjectModal.classList.add(
-            "active"
-        );
-
-
-        deleteSubjectModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
+        abrirModal(
+            deleteSubjectModal,
+            deleteSubjectCancel
         );
 
     }
@@ -1071,276 +2718,360 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function fecharModalExclusao() {
 
-        if (!deleteSubjectModal) {
+        subjectToDelete =
+            null;
+
+
+        fecharModal(
+            deleteSubjectModal
+        );
+
+    }
+
+
+    function confirmarExclusao() {
+
+        if (
+            subjectToDelete ===
+            null
+        ) {
 
             return;
 
         }
 
 
-        deleteSubjectModal.classList.remove(
-            "active"
-        );
+        const novaLista =
+            subjects.filter(
+                item =>
+                    Number(
+                        item.id
+                    ) !==
+                    Number(
+                        subjectToDelete
+                    )
+            );
 
 
-        deleteSubjectModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+        if (
+            !salvarDisciplinas(
+                novaLista
+            )
+        ) {
+
+            alert(
+                "Não foi possível excluir a disciplina. Tente novamente."
+            );
 
 
-        document.body.classList.remove(
-            "modal-open"
-        );
+            return;
+
+        }
+
+
+        subjects =
+            novaLista;
 
 
         subjectToDelete =
             null;
 
+
+        fecharModal(
+            deleteSubjectModal
+        );
+
+
+        renderSubjects();
+
     }
 
 
     /*====================================================
-                    AÇÕES DA TABELA
+                AÇÕES DA TABELA
     ====================================================*/
 
-    if (tableBody) {
+    tableBody.addEventListener(
+        "click",
+        function (event) {
 
-        tableBody.addEventListener(
-            "click",
-            function (event) {
+            if (
+                !(
+                    event.target instanceof
+                    Element
+                )
+            ) {
 
-                const button =
-                    event.target.closest(
-                        "[data-action]"
-                    );
+                return;
 
-
-                if (!button) {
-
-                    return;
-
-                }
+            }
 
 
-                const id =
-                    Number(
-                        button.dataset.id
-                    );
+            const button =
+                event.target.closest(
+                    "[data-action]"
+                );
 
 
-                const item =
-                    subjects.find(
-                        subject =>
-                            subject.id === id
-                    );
+            if (
+                !button ||
+                !tableBody.contains(
+                    button
+                )
+            ) {
+
+                return;
+
+            }
 
 
-                if (!item) {
-
-                    return;
-
-                }
-
-
-                const action =
-                    button.dataset.action;
+            const id =
+                Number(
+                    button.dataset.id
+                );
 
 
-                if (action === "view") {
+            const item =
+                subjects.find(
+                    subject =>
+                        Number(
+                            subject.id
+                        ) ===
+                        id
+                );
+
+
+            if (!item) {
+
+                return;
+
+            }
+
+
+            switch (
+                button.dataset.action
+            ) {
+
+                case "view":
 
                     abrirVisualizacao(
                         item
                     );
 
-                }
+                    break;
 
 
-                if (action === "edit") {
+                case "edit":
 
                     abrirModalDisciplina(
                         item
                     );
 
-                }
+                    break;
 
 
-                if (action === "delete") {
+                case "delete":
 
                     abrirModalExclusao(
                         item
                     );
 
-                }
+                    break;
 
             }
-        );
 
-    }
+        }
+    );
 
 
     /*====================================================
-                    BOTÕES
+                    EVENTOS
     ====================================================*/
 
-    if (newSubjectButton) {
+    newSubjectButton.addEventListener(
+        "click",
+        function () {
 
-        newSubjectButton.addEventListener(
-            "click",
-            function () {
+            abrirModalDisciplina();
 
-                abrirModalDisciplina();
-
-            }
-        );
-
-    }
+        }
+    );
 
 
-    if (subjectModalClose) {
-
-        subjectModalClose.addEventListener(
-            "click",
-            fecharModalDisciplina
-        );
-
-    }
+    searchInput.addEventListener(
+        "input",
+        renderSubjects
+    );
 
 
-    if (subjectCancelButton) {
+    searchInput.addEventListener(
+        "keydown",
+        function (event) {
 
-        subjectCancelButton.addEventListener(
-            "click",
-            fecharModalDisciplina
-        );
+            if (
+                event.key !==
+                    "Escape" ||
+                searchInput.value ===
+                    ""
+            ) {
 
-    }
-
-
-    if (subjectModalOverlay) {
-
-        subjectModalOverlay.addEventListener(
-            "click",
-            fecharModalDisciplina
-        );
-
-    }
-
-
-    if (subjectViewClose) {
-
-        subjectViewClose.addEventListener(
-            "click",
-            fecharVisualizacao
-        );
-
-    }
-
-
-    if (subjectViewOverlay) {
-
-        subjectViewOverlay.addEventListener(
-            "click",
-            fecharVisualizacao
-        );
-
-    }
-
-
-    if (deleteSubjectCancel) {
-
-        deleteSubjectCancel.addEventListener(
-            "click",
-            fecharModalExclusao
-        );
-
-    }
-
-
-    if (deleteSubjectOverlay) {
-
-        deleteSubjectOverlay.addEventListener(
-            "click",
-            fecharModalExclusao
-        );
-
-    }
-
-
-    if (deleteSubjectConfirm) {
-
-        deleteSubjectConfirm.addEventListener(
-            "click",
-            function () {
-
-                if (
-                    subjectToDelete ===
-                    null
-                ) {
-
-                    return;
-
-                }
-
-
-                subjects =
-                    subjects.filter(
-                        item =>
-                            item.id !==
-                            subjectToDelete
-                    );
-
-
-                salvarDisciplinas();
-
-
-                renderSubjects();
-
-
-                fecharModalExclusao();
+                return;
 
             }
-        );
 
-    }
+
+            searchInput.value =
+                "";
+
+
+            renderSubjects();
+
+        }
+    );
+
+
+    areaFilter.addEventListener(
+        "change",
+        renderSubjects
+    );
+
+
+    statusFilter.addEventListener(
+        "change",
+        renderSubjects
+    );
 
 
     /*====================================================
-                    FILTROS
+            LIMPAR VALIDAÇÕES AO EDITAR
     ====================================================*/
 
-    if (searchInput) {
+    subjectName.addEventListener(
+        "input",
+        function () {
 
-        searchInput.addEventListener(
-            "input",
-            renderSubjects
-        );
+            subjectName.setCustomValidity(
+                ""
+            );
 
-    }
-
-
-    if (areaFilter) {
-
-        areaFilter.addEventListener(
-            "change",
-            renderSubjects
-        );
-
-    }
+        }
+    );
 
 
-    if (statusFilter) {
+    subjectCode.addEventListener(
+        "input",
+        function () {
 
-        statusFilter.addEventListener(
-            "change",
-            renderSubjects
-        );
+            /*
+                Remove a mensagem de código duplicado
+                assim que o usuário começa a corrigi-lo.
+            */
 
-    }
+            subjectCode.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    subjectClass.addEventListener(
+        "change",
+        function () {
+
+            subjectClass.setCustomValidity(
+                ""
+            );
+
+
+            /*
+                A duplicidade depende também da turma.
+                Portanto, uma mudança de turma invalida
+                qualquer aviso anterior no código.
+            */
+
+            subjectCode.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    subjectHours.addEventListener(
+        "input",
+        function () {
+
+            subjectHours.setCustomValidity(
+                ""
+            );
+
+        }
+    );
 
 
     /*====================================================
-                    ESC
+                FECHAR MODAL CADASTRO
+    ====================================================*/
+
+    subjectModalClose.addEventListener(
+        "click",
+        fecharModalDisciplina
+    );
+
+
+    subjectCancelButton.addEventListener(
+        "click",
+        fecharModalDisciplina
+    );
+
+
+    subjectModalOverlay.addEventListener(
+        "click",
+        fecharModalDisciplina
+    );
+
+
+    /*====================================================
+                FECHAR VISUALIZAÇÃO
+    ====================================================*/
+
+    subjectViewClose.addEventListener(
+        "click",
+        fecharVisualizacao
+    );
+
+
+    subjectViewOverlay.addEventListener(
+        "click",
+        fecharVisualizacao
+    );
+
+
+    /*====================================================
+                FECHAR EXCLUSÃO
+    ====================================================*/
+
+    deleteSubjectCancel.addEventListener(
+        "click",
+        fecharModalExclusao
+    );
+
+
+    deleteSubjectOverlay.addEventListener(
+        "click",
+        fecharModalExclusao
+    );
+
+
+    deleteSubjectConfirm.addEventListener(
+        "click",
+        confirmarExclusao
+    );
+
+
+    /*====================================================
+                        ESC
     ====================================================*/
 
     document.addEventListener(
@@ -1357,50 +3088,379 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            fecharModalDisciplina();
+            /*
+                Fecha somente o modal de maior
+                prioridade que estiver aberto.
+            */
 
-            fecharVisualizacao();
+            if (
+                deleteSubjectModal.classList.contains(
+                    "active"
+                )
+            ) {
 
-            fecharModalExclusao();
+                fecharModalExclusao();
+
+
+                return;
+
+            }
+
+
+            if (
+                subjectViewModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharVisualizacao();
+
+
+                return;
+
+            }
+
+
+            if (
+                subjectModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharModalDisciplina();
+
+            }
 
         }
+    );
+        /*====================================================
+                    LOGOUT PHP
+    ====================================================*/
+
+    let logoutEmAndamento =
+        false;
+
+
+    async function fazerLogout() {
+
+        if (
+            logoutEmAndamento
+        ) {
+
+            return;
+        }
+
+
+        logoutEmAndamento =
+            true;
+
+
+        if (
+            logoutButton
+        ) {
+
+            logoutButton.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+
+            if (
+                "disabled" in
+                logoutButton
+            ) {
+
+                logoutButton.disabled =
+                    true;
+            }
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_LOGOUT_URL,
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.success
+            ) {
+
+                throw new Error(
+                    data?.message ||
+                    "O servidor não confirmou o logout."
+                );
+            }
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao encerrar a sessão:",
+                error
+            );
+
+
+            alert(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
+
+
+            logoutEmAndamento =
+                false;
+
+
+            if (
+                logoutButton
+            ) {
+
+                logoutButton.setAttribute(
+                    "aria-busy",
+                    "false"
+                );
+
+
+                if (
+                    "disabled" in
+                    logoutButton
+                ) {
+
+                    logoutButton.disabled =
+                        false;
+                }
+            }
+        }
+    }
+
+
+    logoutButton?.addEventListener(
+        "click",
+        fazerLogout
     );
 
 
     /*====================================================
-                    LOGOUT
+            SINCRONIZAR VÍNCULOS COM TURMAS
     ====================================================*/
 
-    if (logoutButton) {
+    function sincronizarVinculosComTurmas() {
 
-        logoutButton.addEventListener(
-            "click",
-            function () {
+        const turmas =
+            carregarTurmas();
 
-                sessionStorage.removeItem(
-                    "primewayLogado"
+
+        const normalizadas =
+            subjects
+                .map(
+                    function (
+                        disciplina,
+                        index
+                    ) {
+
+                        return normalizarDisciplina(
+                            disciplina,
+                            index,
+                            turmas
+                        );
+
+                    }
+                )
+                .filter(
+                    Boolean
                 );
 
 
-                sessionStorage.removeItem(
-                    "primewayUsuario"
-                );
+        const houveMudanca =
+            JSON.stringify(
+                normalizadas
+            ) !==
+            JSON.stringify(
+                subjects
+            );
 
 
-                window.location.href =
-                    "login.html";
+        subjects =
+            normalizadas;
 
-            }
-        );
+
+        if (houveMudanca) {
+
+            salvarDisciplinas();
+
+        }
 
     }
 
 
     /*====================================================
+            SINCRONIZAÇÃO ENTRE ABAS
+    ====================================================*/
+
+    window.addEventListener(
+        "storage",
+        function (event) {
+
+            /*================================================
+                    DISCIPLINAS ALTERADAS
+            ================================================*/
+
+            if (
+                event.key ===
+                SUBJECTS_STORAGE_KEY
+            ) {
+
+                subjects =
+                    carregarDisciplinas();
+
+
+                renderSubjects();
+
+
+                return;
+
+            }
+
+
+            /*================================================
+                        TURMAS ALTERADAS
+            ================================================*/
+
+            if (
+                event.key ===
+                CLASSES_STORAGE_KEY
+            ) {
+
+                /*
+                    Atualiza nomes pelo classId quando
+                    possível e mantém registros antigos
+                    compatíveis pelo className.
+                */
+
+                sincronizarVinculosComTurmas();
+
+
+                renderSubjects();
+
+
+                /*
+                    Se o formulário estiver aberto,
+                    reconstrói o select preservando a
+                    disciplina atualmente editada.
+                */
+
+                if (
+                    subjectModal.classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    const idAtual =
+                        subjectId.value
+                            ? Number(
+                                subjectId.value
+                            )
+                            : null;
+
+
+                    const itemAtual =
+                        idAtual !==
+                            null
+                            ? subjects.find(
+                                item =>
+                                    Number(
+                                        item.id
+                                    ) ===
+                                    idAtual
+                            ) ||
+                            null
+                            : null;
+
+
+                    const selecaoAtual =
+                        obterTurmaSelecionada();
+
+
+                    preencherSelectTurmas(
+                        itemAtual ||
+                        (
+                            selecaoAtual
+                                ? {
+                                    id:
+                                        "temp",
+                                    classId:
+                                        selecaoAtual.id,
+                                    className:
+                                        selecaoAtual.name
+                                }
+                                : null
+                        )
+                    );
+
+                }
+
+            }
+
+        }
+    );
+        /*====================================================
                     INICIALIZAÇÃO
     ====================================================*/
 
-    preencherSelectTurmas();
+    /*
+        Migra dados antigos que utilizavam apenas:
+
+        className
+        class
+        turma
+
+        mantendo className para compatibilidade e
+        acrescentando classId quando a turma puder
+        ser identificada.
+    */
+
+    sincronizarVinculosComTurmas();
+
+
+    /*
+        Persiste os dados padrão na primeira abertura
+        e eventuais migrações realizadas acima.
+    */
+
+    salvarDisciplinas();
+
 
     renderSubjects();
 

@@ -1,0 +1,1377 @@
+/*====================================================
+        CONFIGURAÇÕES - PRIMEWAY SCHOOL
+====================================================*/
+
+
+/*====================================================
+                    PÁGINA
+====================================================*/
+
+.settings-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+
+    padding:
+        30px
+        32px
+        45px;
+
+    background: var(--principal);
+}
+
+
+/*====================================================
+                    CABEÇALHO
+====================================================*/
+
+.settings-header {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 25px;
+}
+
+
+.settings-header > div:first-child {
+    min-width: 0;
+}
+
+
+/*
+    .section-label
+    vem do components.css.
+*/
+
+
+.settings-header h1 {
+    margin:
+        0
+        0
+        6px;
+
+    color: var(--secundaria);
+
+    font-size: 27px;
+    font-weight: 600;
+}
+
+
+.settings-header p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+/*====================================================
+            SALVAR - TOPO DA PÁGINA
+====================================================*/
+
+.save-settings-top {
+    min-height: 42px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        0
+        17px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--secundaria);
+
+    color: var(--branco);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0
+        6px
+        16px
+        rgba(
+            30,
+            58,
+            138,
+            .10
+        );
+
+    transition:
+        background var(--transicao),
+        transform var(--transicao),
+        box-shadow var(--transicao);
+}
+
+
+.save-settings-top:hover {
+    background: var(--primaria);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0
+        8px
+        20px
+        rgba(
+            211,
+            175,
+            55,
+            .16
+        );
+}
+
+
+/*====================================================
+            RESUMO DAS CONFIGURAÇÕES
+====================================================*/
+
+.settings-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 16px;
+
+    margin-bottom: 22px;
+}
+
+
+/*
+    A estrutura completa de:
+
+    .summary-card
+    .summary-card > div:last-child
+    .summary-card span
+    .summary-card strong
+    .summary-icon
+    .summary-icon.warning
+
+    é controlada por components.css.
+*/
+
+
+/*====================================================
+            FORMULÁRIO DE CONFIGURAÇÕES
+====================================================*/
+
+.settings-form {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/*====================================================
+            CARTÃO DE CONFIGURAÇÃO
+====================================================*/
+
+.settings-card {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .06
+        );
+
+    border-radius: 16px;
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
+}
+
+
+/*====================================================
+        CABEÇALHO DO CARTÃO
+====================================================*/
+
+.settings-card-header {
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding:
+        19px
+        21px;
+
+    border-bottom:
+        1px solid
+        #F0F0F0;
+}
+
+
+.settings-card-header > div:last-child {
+    min-width: 0;
+}
+
+
+/*====================================================
+            ÍCONE DO CARTÃO
+====================================================*/
+
+.settings-card-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #EEF4FF;
+
+    color: var(--secundaria);
+
+    font-size: 14px;
+}
+
+
+.settings-card-icon.academic {
+    background: #F4F1FF;
+
+    color: #6D4CC7;
+}
+
+
+.settings-card-icon.notifications {
+    background: #FFF8E1;
+
+    color: var(--primaria);
+}
+
+
+.settings-card-icon.system {
+    background: var(--sucesso-fundo);
+
+    color: #047857;
+}
+
+
+/*====================================================
+            TÍTULO DO CARTÃO
+====================================================*/
+
+.settings-card-header h2 {
+    margin:
+        0
+        0
+        4px;
+
+    color: var(--secundaria);
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.settings-card-header p {
+    margin: 0;
+
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/*====================================================
+            CONTEÚDO DO CARTÃO
+====================================================*/
+
+.settings-card-content {
+    min-width: 0;
+
+    padding: 21px;
+}
+
+
+/*
+    .form-grid
+    .form-group
+    input
+    select
+    textarea
+    .field-hint
+
+    vêm do components.css.
+*/
+
+
+.settings-card-content .form-grid {
+    margin-bottom: 15px;
+}
+
+
+.settings-card-content .form-grid:last-child {
+    margin-bottom: 0;
+}
+
+
+/*====================================================
+                GRID DE ENDEREÇO
+====================================================*/
+
+.form-grid-address {
+    grid-template-columns:
+        minmax(
+            0,
+            1.5fr
+        )
+        minmax(
+            100px,
+            .4fr
+        )
+        minmax(
+            140px,
+            .7fr
+        );
+}
+
+
+/*====================================================
+                INPUT COM SUFIXO
+====================================================*/
+
+.input-with-suffix {
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(
+            0,
+            1fr
+        )
+        auto;
+
+    align-items: stretch;
+}
+
+
+.input-with-suffix input {
+    min-width: 0;
+
+    border-radius:
+        9px
+        0
+        0
+        9px;
+}
+
+
+.input-with-suffix span {
+    min-width: 47px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        0
+        11px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-left: none;
+
+    border-radius:
+        0
+        9px
+        9px
+        0;
+
+    background: var(--cinza-50);
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    white-space: nowrap;
+}
+
+
+/*====================================================
+        CONFIGURAÇÕES DE NOTIFICAÇÃO
+====================================================*/
+
+.notification-settings {
+    min-width: 0;
+
+    padding:
+        5px
+        0;
+}
+
+
+/*====================================================
+            LINHA DE CONFIGURAÇÃO
+====================================================*/
+
+.setting-toggle-row {
+    width: 100%;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        14px
+        4px;
+
+    border-bottom:
+        1px solid
+        var(--cinza-100);
+
+    cursor: pointer;
+
+    transition: background var(--transicao);
+}
+
+
+.setting-toggle-row:last-child {
+    border-bottom: none;
+}
+
+
+.setting-toggle-row:hover {
+    background: #FFFEF7;
+}
+
+
+/*====================================================
+        INFORMAÇÕES DO INTERRUPTOR
+====================================================*/
+
+.setting-toggle-info {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+
+/*====================================================
+            ÍCONE DA PREFERÊNCIA
+====================================================*/
+
+.setting-toggle-icon {
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: var(--cinza-50);
+
+    color: var(--secundaria);
+
+    font-size: 12px;
+}
+
+
+.setting-toggle-info > div:last-child {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.setting-toggle-info strong {
+    color: #374151;
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.setting-toggle-info span {
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/*====================================================
+                    SWITCH
+====================================================*/
+
+/*
+    Componente específico da página Configurações.
+
+    Não deve ser substituído por um checkbox visual
+    comum, porque o HTML e o JavaScript trabalham
+    com esta estrutura:
+
+    .switch
+        input
+        .switch-slider
+*/
+
+.switch {
+    position: relative;
+
+    width: 42px;
+    height: 23px;
+
+    flex-shrink: 0;
+
+    display: inline-block;
+
+    cursor: pointer;
+}
+
+
+.switch input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+.switch-slider {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 30px;
+
+    background: var(--cinza-300);
+
+    cursor: pointer;
+
+    transition: background var(--transicao);
+}
+
+
+.switch-slider::before {
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+    left: 3px;
+
+    width: 17px;
+    height: 17px;
+
+    border-radius: 50%;
+
+    background: var(--branco);
+
+    box-shadow:
+        0
+        2px
+        5px
+        rgba(
+            0,
+            0,
+            0,
+            .12
+        );
+
+    transition: transform var(--transicao);
+}
+
+
+.switch input:checked + .switch-slider {
+    background: var(--secundaria);
+}
+
+
+.switch input:checked + .switch-slider::before {
+    transform: translateX(19px);
+}
+
+
+.switch input:focus-visible + .switch-slider {
+    outline:
+        2px solid
+        var(--primaria);
+
+    outline-offset: 2px;
+}
+
+
+/*====================================================
+            AVISO DE SEGURANÇA
+====================================================*/
+
+.settings-security-note {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 12px;
+
+    margin-top: 17px;
+
+    padding: 15px;
+
+    border:
+        1px solid
+        #DBEAFE;
+
+    border-radius: 10px;
+
+    background: #F5F8FF;
+}
+
+
+.settings-security-note > i {
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    color: var(--secundaria);
+
+    font-size: 15px;
+}
+
+
+.settings-security-note > div {
+    min-width: 0;
+}
+
+
+.settings-security-note strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--secundaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.settings-security-note p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+
+/*====================================================
+            AÇÕES DAS CONFIGURAÇÕES
+====================================================*/
+
+.settings-actions {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding-top: 3px;
+}
+
+
+/*====================================================
+            RESTAURAR PADRÕES
+====================================================*/
+
+.reset-settings-button {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        0
+        17px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius: 10px;
+
+    background: var(--branco);
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        border-color var(--transicao),
+        background var(--transicao),
+        color var(--transicao);
+}
+
+
+.reset-settings-button:hover {
+    border-color: var(--cinza-300);
+
+    background: var(--cinza-50);
+
+    color: var(--secundaria);
+}
+
+
+/*====================================================
+            SALVAR CONFIGURAÇÕES
+====================================================*/
+
+.save-settings-button {
+    min-height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding:
+        0
+        17px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: var(--secundaria);
+
+    color: var(--branco);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transicao),
+        transform var(--transicao);
+}
+
+
+.save-settings-button:hover {
+    background: var(--primaria);
+
+    transform: translateY(-1px);
+}
+
+
+/*====================================================
+            MODAL - RESTAURAR
+====================================================*/
+
+.reset-settings-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1500;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px;
+}
+
+
+.reset-settings-modal.active {
+    display: flex;
+}
+
+
+/*====================================================
+            OVERLAY DO MODAL
+====================================================*/
+
+.reset-settings-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(
+            17,
+            24,
+            39,
+            .45
+        );
+
+    backdrop-filter: blur(3px);
+}
+
+
+/*====================================================
+            CAIXA DO MODAL
+====================================================*/
+
+.reset-settings-box {
+    position: relative;
+
+    z-index: 2;
+
+    width:
+        min(
+            390px,
+            100%
+        );
+
+    padding:
+        27px
+        24px
+        23px;
+
+    border-radius: var(--raio-xl);
+
+    background: var(--branco);
+
+    text-align: center;
+
+    box-shadow: var(--sombra-g);
+}
+
+
+/*====================================================
+                ÍCONE DO MODAL
+====================================================*/
+
+.reset-settings-icon {
+    width: 56px;
+    height: 56px;
+
+    margin:
+        0
+        auto
+        14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #FFF8E1;
+
+    color: var(--primaria);
+
+    font-size: 19px;
+}
+
+
+.reset-settings-box h2 {
+    margin:
+        0
+        0
+        9px;
+
+    color: var(--secundaria);
+
+    font-size: 17px;
+    font-weight: 600;
+}
+
+
+.reset-settings-box p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.6;
+}
+
+
+/*====================================================
+            AÇÕES DO MODAL
+====================================================*/
+
+.reset-settings-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 10px;
+
+    margin-top: 21px;
+}
+
+
+/*
+    .secondary-button
+    vem do components.css.
+*/
+
+
+/*====================================================
+            CONFIRMAR RESTAURAÇÃO
+====================================================*/
+
+.reset-confirm-button {
+    min-height: 40px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        14px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--secundaria);
+
+    color: var(--branco);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transicao),
+        transform var(--transicao);
+}
+
+
+.reset-confirm-button:hover {
+    background: var(--primaria);
+
+    transform: translateY(-1px);
+}
+
+
+/*====================================================
+                    TOAST
+====================================================*/
+
+.settings-toast {
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    z-index: 2000;
+
+    min-width: 250px;
+    max-width: 360px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        12px
+        15px;
+
+    border:
+        1px solid
+        #D1FAE5;
+
+    border-radius: 10px;
+
+    background: var(--branco);
+
+    color: #065F46;
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform:
+        translateY(
+            14px
+        );
+
+    pointer-events: none;
+
+    box-shadow:
+        0
+        12px
+        35px
+        rgba(
+            0,
+            0,
+            0,
+            .12
+        );
+
+    transition:
+        opacity var(--transicao),
+        visibility var(--transicao),
+        transform var(--transicao);
+}
+
+
+.settings-toast i {
+    flex-shrink: 0;
+
+    color: var(--sucesso);
+
+    font-size: 13px;
+}
+
+
+.settings-toast.active {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0);
+}
+
+
+/*====================================================
+                DESKTOP MENOR
+====================================================*/
+
+@media (max-width: 1200px) {
+
+    .settings-page {
+        padding:
+            28px
+            26px
+            40px;
+    }
+
+
+    .settings-summary {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
+}
+
+
+/*====================================================
+                    TABLET
+====================================================*/
+
+@media (max-width: 1000px) {
+
+    /*
+        .app-layout e .sidebar são controlados
+        pelo components.css.
+    */
+
+    .settings-page {
+        padding:
+            25px
+            22px
+            38px;
+    }
+
+}
+
+
+/*====================================================
+                    MOBILE
+====================================================*/
+
+@media (max-width: 750px) {
+
+    .settings-page {
+        padding:
+            20px
+            18px
+            35px;
+    }
+
+
+    .settings-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+
+    .settings-header h1 {
+        font-size: 23px;
+    }
+
+
+    .save-settings-top {
+        width: 100%;
+    }
+
+
+    .settings-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .form-grid-address {
+        grid-template-columns: 1fr;
+    }
+
+
+    .settings-card-content {
+        padding: 18px;
+    }
+
+}
+
+
+/*====================================================
+                CELULAR PEQUENO
+====================================================*/
+
+@media (max-width: 500px) {
+
+    .settings-page {
+        padding:
+            18px
+            12px
+            30px;
+    }
+
+
+    .settings-header h1 {
+        font-size: 21px;
+    }
+
+
+    .settings-header p {
+        font-size: 10px;
+    }
+
+
+    .settings-card {
+        border-radius: 14px;
+    }
+
+
+    .settings-card-header {
+        align-items: flex-start;
+
+        padding:
+            17px
+            16px;
+    }
+
+
+    .settings-card-icon {
+        width: 39px;
+        height: 39px;
+
+        font-size: 13px;
+    }
+
+
+    .settings-card-header h2 {
+        font-size: 15px;
+    }
+
+
+    .settings-card-content {
+        padding: 16px;
+    }
+
+
+    .setting-toggle-row {
+        align-items: flex-start;
+
+        gap: 13px;
+
+        padding:
+            13px
+            2px;
+    }
+
+
+    .setting-toggle-info {
+        align-items: flex-start;
+    }
+
+
+    .setting-toggle-icon {
+        width: 34px;
+        height: 34px;
+
+        font-size: 11px;
+    }
+
+
+    .settings-security-note {
+        padding: 13px;
+    }
+
+
+    .settings-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+
+    .reset-settings-button,
+    .save-settings-button {
+        width: 100%;
+    }
+
+
+    .reset-settings-box {
+        padding:
+            24px
+            18px
+            20px;
+    }
+
+
+    .reset-settings-actions {
+        grid-template-columns: 1fr;
+    }
+
+
+    .settings-toast {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+
+        min-width: 0;
+        max-width: none;
+    }
+
+}
+
+
+/*====================================================
+                TELAS MUITO PEQUENAS
+====================================================*/
+
+@media (max-width: 360px) {
+
+    .settings-page {
+        padding:
+            15px
+            9px
+            25px;
+    }
+
+
+    .settings-card-header,
+    .settings-card-content {
+        padding:
+            14px
+            13px;
+    }
+
+
+    .setting-toggle-row {
+        gap: 10px;
+    }
+
+
+    .setting-toggle-icon {
+        display: none;
+    }
+
+
+    .settings-security-note {
+        padding: 11px;
+    }
+
+}

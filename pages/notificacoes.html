@@ -13,16 +13,29 @@
     <title>Notificações | PrimeWay School</title>
 
 
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/components.css"
     >
+
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
 
     <link
         rel="stylesheet"
         href="../css/notificacoes.css"
     >
 
+
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
 
     <link
         rel="preconnect"
@@ -41,6 +54,10 @@
     >
 
 
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -55,12 +72,17 @@
     <div class="app-layout">
 
 
-        <!-- =========================================
-                    SIDEBAR
-        ========================================== -->
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
+
+            <!-- LOGO -->
 
             <div class="sidebar-logo">
 
@@ -72,34 +94,54 @@
             </div>
 
 
-            <nav class="sidebar-menu">
+            <!-- MENU -->
 
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
+
+
+                <!-- INÍCIO -->
 
                 <a href="dashboard.html">
 
-                    <i class="fa-solid fa-house"></i>
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        Dashboard
+                        Início
                     </span>
 
                 </a>
 
 
-                <a href="professor.html">
+                <!-- PROFESSOR -->
 
-                    <i class="fa-solid fa-chalkboard-user"></i>
+                <a href="professores.html">
+
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        Professor
+                        Professores
                     </span>
 
                 </a>
 
+
+                <!-- ALUNOS -->
 
                 <a href="alunos.html">
 
-                    <i class="fa-solid fa-user-graduate"></i>
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Alunos
@@ -108,9 +150,14 @@
                 </a>
 
 
+                <!-- RESPONSÁVEIS -->
+
                 <a href="responsaveis.html">
 
-                    <i class="fa-solid fa-people-roof"></i>
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Responsáveis
@@ -119,9 +166,14 @@
                 </a>
 
 
+                <!-- TURMAS -->
+
                 <a href="turmas.html">
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Turmas
@@ -130,9 +182,14 @@
                 </a>
 
 
+                <!-- DISCIPLINAS -->
+
                 <a href="disciplinas.html">
 
-                    <i class="fa-solid fa-book-open"></i>
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Disciplinas
@@ -141,9 +198,14 @@
                 </a>
 
 
+                <!-- CHAT -->
+
                 <a href="chat-professor.html">
 
-                    <i class="fa-solid fa-comments"></i>
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Chat
@@ -152,9 +214,14 @@
                 </a>
 
 
+                <!-- CALENDÁRIO -->
+
                 <a href="calendario.html">
 
-                    <i class="fa-solid fa-calendar-days"></i>
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Calendário
@@ -163,12 +230,18 @@
                 </a>
 
 
+                <!-- NOTIFICAÇÕES -->
+
                 <a
                     href="notificacoes.html"
                     class="active"
+                    aria-current="page"
                 >
 
-                    <i class="fa-solid fa-bell"></i>
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Notificações
@@ -177,9 +250,14 @@
                 </a>
 
 
-                <a href="#">
+                <!-- CONFIGURAÇÕES -->
 
-                    <i class="fa-solid fa-gear"></i>
+                <a href="configuracoes.html">
+
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Configurações
@@ -191,6 +269,10 @@
             </nav>
 
 
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
+
             <div class="sidebar-bottom">
 
                 <button
@@ -198,7 +280,10 @@
                     id="logoutButton"
                 >
 
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Sair
@@ -212,14 +297,16 @@
         </aside>
 
 
-        <!-- =========================================
-                    CONTEÚDO
-        ========================================== -->
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
 
         <main class="notifications-page">
 
 
-            <!-- CABEÇALHO -->
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
 
             <header class="notifications-header">
 
@@ -235,7 +322,8 @@
                     </h1>
 
                     <p>
-                        Acompanhe avisos, eventos, atividades e informações importantes.
+                        Acompanhe avisos, eventos, atividades
+                        e informações importantes.
                     </p>
 
                 </div>
@@ -245,11 +333,18 @@
                     type="button"
                     class="new-notification-button"
                     id="newNotificationButton"
+                    aria-haspopup="dialog"
+                    aria-controls="notificationModal"
                 >
 
-                    <i class="fa-solid fa-plus"></i>
+                    <i
+                        class="fa-solid fa-plus"
+                        aria-hidden="true"
+                    ></i>
 
-                    Novo aviso
+                    <span>
+                        Novo aviso
+                    </span>
 
                 </button>
 
@@ -257,20 +352,29 @@
             </header>
 
 
-            <!-- =========================================
-                        CARDS
-            ========================================== -->
+            <!-- ==================================================
+                            CARDS
+            =================================================== -->
 
-            <section class="notifications-summary">
+            <section
+                class="notifications-summary"
+                aria-label="Resumo das notificações"
+            >
 
+
+                <!-- TOTAL -->
 
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-bell"></i>
+                        <i
+                            class="fa-solid fa-bell"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -287,13 +391,19 @@
                 </article>
 
 
+                <!-- NÃO LIDAS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon unread">
 
-                        <i class="fa-solid fa-envelope"></i>
+                        <i
+                            class="fa-solid fa-envelope"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -310,13 +420,19 @@
                 </article>
 
 
+                <!-- EVENTOS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-calendar-check"></i>
+                        <i
+                            class="fa-solid fa-calendar-check"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -333,13 +449,19 @@
                 </article>
 
 
+                <!-- AVISOS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon warning">
 
-                        <i class="fa-solid fa-bullhorn"></i>
+                        <i
+                            class="fa-solid fa-bullhorn"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -359,11 +481,14 @@
             </section>
 
 
-            <!-- =========================================
-                    PAINEL
-            ========================================== -->
+            <!-- ==================================================
+                            PAINEL
+            =================================================== -->
 
-            <section class="notifications-panel">
+            <section
+                class="notifications-panel"
+                aria-labelledby="notificationsPanelTitle"
+            >
 
 
                 <div class="notifications-panel-header">
@@ -371,7 +496,7 @@
 
                     <div>
 
-                        <h2>
+                        <h2 id="notificationsPanelTitle">
                             Central de notificações
                         </h2>
 
@@ -382,23 +507,40 @@
                     </div>
 
 
+                    <!-- CONTROLES -->
+
                     <div class="notifications-controls">
 
 
-                        <div class="notifications-search">
+                        <!-- PESQUISA -->
 
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                        <div
+                            class="notifications-search"
+                            role="search"
+                        >
+
+                            <i
+                                class="fa-solid fa-magnifying-glass"
+                                aria-hidden="true"
+                            ></i>
 
                             <input
-                                type="text"
+                                type="search"
                                 id="notificationSearch"
                                 placeholder="Pesquisar..."
+                                autocomplete="off"
+                                aria-label="Pesquisar notificações"
                             >
 
                         </div>
 
 
-                        <select id="notificationTypeFilter">
+                        <!-- TIPO -->
+
+                        <select
+                            id="notificationTypeFilter"
+                            aria-label="Filtrar por tipo"
+                        >
 
                             <option value="">
                                 Todos os tipos
@@ -431,7 +573,12 @@
                         </select>
 
 
-                        <select id="notificationStatusFilter">
+                        <!-- STATUS -->
+
+                        <select
+                            id="notificationStatusFilter"
+                            aria-label="Filtrar por status"
+                        >
 
                             <option value="">
                                 Todas
@@ -448,15 +595,23 @@
                         </select>
 
 
+                        <!-- MARCAR TODAS -->
+
                         <button
                             type="button"
                             class="mark-all-button"
                             id="markAllReadButton"
+                            aria-controls="notificationsList"
                         >
 
-                            <i class="fa-solid fa-check-double"></i>
+                            <i
+                                class="fa-solid fa-check-double"
+                                aria-hidden="true"
+                            ></i>
 
-                            Marcar lidas
+                            <span>
+                                Marcar lidas
+                            </span>
 
                         </button>
 
@@ -467,22 +622,31 @@
                 </div>
 
 
-                <!-- LISTA -->
+                <!-- ==================================================
+                        LISTA DE NOTIFICAÇÕES
+                =================================================== -->
 
                 <div
                     class="notifications-list"
                     id="notificationsList"
+                    aria-live="polite"
+                    aria-relevant="additions removals"
                 ></div>
 
 
-                <!-- VAZIO -->
+                <!-- ==================================================
+                        ESTADO VAZIO
+                =================================================== -->
 
                 <div
                     class="notifications-empty"
                     id="notificationsEmpty"
                 >
 
-                    <i class="fa-regular fa-bell-slash"></i>
+                    <i
+                        class="fa-regular fa-bell-slash"
+                        aria-hidden="true"
+                    ></i>
 
                     <strong>
                         Nenhuma notificação encontrada
@@ -504,9 +668,9 @@
     </div>
 
 
-    <!-- =========================================
-            MODAL NOVO AVISO
-    ========================================== -->
+    <!-- ==================================================
+                    MODAL NOVO AVISO
+    =================================================== -->
 
     <div
         class="notification-modal"
@@ -515,11 +679,21 @@
     >
 
 
-        <div class="notification-modal-overlay"></div>
+        <div
+            class="notification-modal-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="notification-modal-box">
+        <div
+            class="notification-modal-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="notificationModalTitle"
+        >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="notification-modal-header">
 
@@ -530,7 +704,7 @@
                         Secretaria
                     </span>
 
-                    <h2>
+                    <h2 id="notificationModalTitle">
                         Novo aviso
                     </h2>
 
@@ -541,9 +715,13 @@
                     type="button"
                     class="notification-modal-close"
                     id="notificationModalClose"
+                    aria-label="Fechar cadastro de aviso"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -551,11 +729,17 @@
             </div>
 
 
+            <!-- ==================================================
+                            FORMULÁRIO
+            =================================================== -->
+
             <form
                 class="notification-form"
                 id="notificationForm"
             >
 
+
+                <!-- TÍTULO -->
 
                 <div class="form-group">
 
@@ -568,11 +752,14 @@
                         id="notificationTitle"
                         required
                         maxlength="80"
+                        autocomplete="off"
                         placeholder="Ex: Comunicado importante"
                     >
 
                 </div>
 
+
+                <!-- TIPO / DESTINATÁRIO -->
 
                 <div class="form-grid">
 
@@ -640,6 +827,8 @@
                 </div>
 
 
+                <!-- MENSAGEM -->
+
                 <div class="form-group">
 
                     <label for="notificationMessage">
@@ -656,6 +845,8 @@
                 </div>
 
 
+                <!-- AÇÕES -->
+
                 <div class="notification-form-actions">
 
 
@@ -664,7 +855,9 @@
                         class="secondary-button"
                         id="notificationCancelButton"
                     >
+
                         Cancelar
+
                     </button>
 
 
@@ -673,7 +866,10 @@
                         class="primary-button"
                     >
 
-                        <i class="fa-solid fa-paper-plane"></i>
+                        <i
+                            class="fa-solid fa-paper-plane"
+                            aria-hidden="true"
+                        ></i>
 
                         Publicar aviso
 
@@ -692,9 +888,9 @@
     </div>
 
 
-    <!-- =========================================
-            VISUALIZAR NOTIFICAÇÃO
-    ========================================== -->
+    <!-- ==================================================
+                VISUALIZAR NOTIFICAÇÃO
+    =================================================== -->
 
     <div
         class="notification-view-modal"
@@ -703,11 +899,21 @@
     >
 
 
-        <div class="notification-view-overlay"></div>
+        <div
+            class="notification-view-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="notification-view-box">
+        <div
+            class="notification-view-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="viewNotificationTitle"
+        >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="notification-view-header">
 
@@ -717,7 +923,10 @@
                     id="viewNotificationIcon"
                 >
 
-                    <i class="fa-solid fa-bell"></i>
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
                 </div>
 
@@ -742,9 +951,13 @@
                     type="button"
                     class="notification-view-close"
                     id="notificationViewClose"
+                    aria-label="Fechar notificação"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -752,11 +965,19 @@
             </div>
 
 
+            <!-- ==================================================
+                            CONTEÚDO
+            =================================================== -->
+
             <div class="notification-view-content">
 
 
+                <!-- INFORMAÇÕES -->
+
                 <div class="notification-view-info">
 
+
+                    <!-- DESTINATÁRIO -->
 
                     <div>
 
@@ -770,6 +991,8 @@
 
                     </div>
 
+
+                    <!-- DATA -->
 
                     <div>
 
@@ -787,6 +1010,8 @@
                 </div>
 
 
+                <!-- MENSAGEM -->
+
                 <div class="notification-view-message">
 
                     <span>
@@ -803,8 +1028,14 @@
             </div>
 
 
+            <!-- ==================================================
+                            AÇÕES
+            =================================================== -->
+
             <div class="notification-view-actions">
 
+
+                <!-- LIDA / NÃO LIDA -->
 
                 <button
                     type="button"
@@ -812,12 +1043,19 @@
                     id="toggleReadButton"
                 >
 
-                    <i class="fa-solid fa-envelope-open"></i>
+                    <i
+                        class="fa-solid fa-envelope-open"
+                        aria-hidden="true"
+                    ></i>
 
-                    Marcar como lida
+                    <span>
+                        Marcar como lida
+                    </span>
 
                 </button>
 
+
+                <!-- EXCLUIR -->
 
                 <button
                     type="button"
@@ -825,9 +1063,14 @@
                     id="deleteNotificationButton"
                 >
 
-                    <i class="fa-solid fa-trash"></i>
+                    <i
+                        class="fa-solid fa-trash"
+                        aria-hidden="true"
+                    ></i>
 
-                    Excluir
+                    <span>
+                        Excluir
+                    </span>
 
                 </button>
 
@@ -841,9 +1084,9 @@
     </div>
 
 
-    <!-- =========================================
-            CONFIRMAR EXCLUSÃO
-    ========================================== -->
+    <!-- ==================================================
+                    CONFIRMAR EXCLUSÃO
+    =================================================== -->
 
     <div
         class="delete-notification-modal"
@@ -852,28 +1095,48 @@
     >
 
 
-        <div class="delete-notification-overlay"></div>
+        <div
+            class="delete-notification-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="delete-notification-box">
+        <div
+            class="delete-notification-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteNotificationTitle"
+            aria-describedby="deleteNotificationMessage"
+        >
 
+
+            <!-- ÍCONE -->
 
             <div class="delete-notification-icon">
 
-                <i class="fa-solid fa-trash"></i>
+                <i
+                    class="fa-solid fa-trash"
+                    aria-hidden="true"
+                ></i>
 
             </div>
 
 
-            <h2>
+            <!-- TÍTULO -->
+
+            <h2 id="deleteNotificationTitle">
                 Excluir notificação
             </h2>
 
+
+            <!-- MENSAGEM -->
 
             <p id="deleteNotificationMessage">
                 Deseja realmente excluir esta notificação?
             </p>
 
+
+            <!-- AÇÕES -->
 
             <div class="delete-notification-actions">
 
@@ -883,7 +1146,9 @@
                     class="secondary-button"
                     id="deleteNotificationCancel"
                 >
+
                     Cancelar
+
                 </button>
 
 
@@ -892,7 +1157,9 @@
                     class="delete-button"
                     id="deleteNotificationConfirm"
                 >
+
                     Excluir
+
                 </button>
 
 
@@ -905,6 +1172,11 @@
     </div>
 
 
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/core.js"></script>
     <script src="../js/notificacoes.js"></script>
 
 

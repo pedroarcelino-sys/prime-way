@@ -76,7 +76,10 @@
                             SIDEBAR
         =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
 
             <!-- LOGO -->
@@ -93,14 +96,20 @@
 
             <!-- MENU -->
 
-            <nav class="sidebar-menu">
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
 
 
                 <!-- INÍCIO -->
 
                 <a href="dashboard.html">
 
-                    <i class="fa-solid fa-house"></i>
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Início
@@ -111,12 +120,15 @@
 
                 <!-- PROFESSOR -->
 
-                <a href="professor.html">
+                <a href="professores.html">
 
-                    <i class="fa-solid fa-chalkboard-user"></i>
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        Professor
+                        Professores
                     </span>
 
                 </a>
@@ -126,7 +138,10 @@
 
                 <a href="alunos.html">
 
-                    <i class="fa-solid fa-user-graduate"></i>
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Alunos
@@ -139,7 +154,10 @@
 
                 <a href="responsaveis.html">
 
-                    <i class="fa-solid fa-people-roof"></i>
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Responsáveis
@@ -156,7 +174,10 @@
                     aria-current="page"
                 >
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Turmas
@@ -169,7 +190,10 @@
 
                 <a href="disciplinas.html">
 
-                    <i class="fa-solid fa-book-open"></i>
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Disciplinas
@@ -182,7 +206,10 @@
 
                 <a href="chat-professor.html">
 
-                    <i class="fa-solid fa-comments"></i>
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Chat
@@ -195,7 +222,10 @@
 
                 <a href="calendario.html">
 
-                    <i class="fa-solid fa-calendar-days"></i>
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Calendário
@@ -208,7 +238,10 @@
 
                 <a href="notificacoes.html">
 
-                    <i class="fa-solid fa-bell"></i>
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Notificações
@@ -219,12 +252,12 @@
 
                 <!-- CONFIGURAÇÕES -->
 
-                <a
-                    href="#"
-                    id="settingsLink"
-                >
+                <a href="configuracoes.html">
 
-                    <i class="fa-solid fa-gear"></i>
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Configurações
@@ -247,7 +280,10 @@
                     id="logoutButton"
                 >
 
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Sair
@@ -298,7 +334,10 @@
                     id="newClassButton"
                 >
 
-                    <i class="fa-solid fa-plus"></i>
+                    <i
+                        class="fa-solid fa-plus"
+                        aria-hidden="true"
+                    ></i>
 
                     Nova turma
 
@@ -312,7 +351,10 @@
                             CARDS
             =================================================== -->
 
-            <section class="classes-summary">
+            <section
+                class="classes-summary"
+                aria-label="Resumo das turmas"
+            >
 
 
                 <!-- TOTAL DE TURMAS -->
@@ -321,7 +363,10 @@
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-users"></i>
+                        <i
+                            class="fa-solid fa-users"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
@@ -347,7 +392,10 @@
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-circle-check"></i>
+                        <i
+                            class="fa-solid fa-circle-check"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
@@ -373,7 +421,10 @@
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i
+                            class="fa-solid fa-user-graduate"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
@@ -399,7 +450,10 @@
 
                     <div class="summary-icon warning">
 
-                        <i class="fa-solid fa-chair"></i>
+                        <i
+                            class="fa-solid fa-chair"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
@@ -423,10 +477,13 @@
 
 
             <!-- ==================================================
-                            PAINEL DE TURMAS
+                        PAINEL DE TURMAS
             =================================================== -->
 
-            <section class="classes-panel">
+            <section
+                class="classes-panel"
+                aria-labelledby="classesListTitle"
+            >
 
 
                 <div class="classes-panel-header">
@@ -434,7 +491,7 @@
 
                     <div>
 
-                        <h2>
+                        <h2 id="classesListTitle">
                             Lista de turmas
                         </h2>
 
@@ -452,15 +509,22 @@
 
                         <!-- PESQUISA -->
 
-                        <div class="classes-search">
+                        <div
+                            class="classes-search"
+                            role="search"
+                        >
 
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i
+                                class="fa-solid fa-magnifying-glass"
+                                aria-hidden="true"
+                            ></i>
 
                             <input
-                                type="text"
+                                type="search"
                                 id="classSearch"
                                 placeholder="Pesquisar turma..."
                                 autocomplete="off"
+                                aria-label="Pesquisar turma"
                             >
 
                         </div>
@@ -534,39 +598,39 @@
 
                             <tr>
 
-                                <th>
+                                <th scope="col">
                                     Turma
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Série
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Turno
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Professor
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Sala
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Alunos
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Ano
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Status
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Ações
                                 </th>
 
@@ -590,7 +654,10 @@
                         id="classesEmpty"
                     >
 
-                        <i class="fa-solid fa-users-slash"></i>
+                        <i
+                            class="fa-solid fa-users-slash"
+                            aria-hidden="true"
+                        ></i>
 
                         <strong>
                             Nenhuma turma encontrada
@@ -626,7 +693,10 @@
     >
 
 
-        <div class="class-modal-overlay"></div>
+        <div
+            class="class-modal-overlay"
+            aria-hidden="true"
+        ></div>
 
 
         <div
@@ -659,10 +729,13 @@
                     type="button"
                     class="class-modal-close"
                     id="classModalClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar cadastro de turma"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -836,9 +909,8 @@
                         <input
                             type="text"
                             id="classTeacher"
-                            required
                             autocomplete="off"
-                            placeholder="Nome do professor"
+                            placeholder="Opcional — vincular depois"
                         >
 
                     </div>
@@ -855,6 +927,8 @@
                             id="classYear"
                             min="2020"
                             max="2100"
+                            step="1"
+                            inputmode="numeric"
                             required
                         >
 
@@ -880,6 +954,8 @@
                             id="classCapacity"
                             min="1"
                             max="100"
+                            step="1"
+                            inputmode="numeric"
                             required
                         >
 
@@ -897,9 +973,13 @@
                             id="classStudents"
                             value="0"
                             readonly
+                            aria-describedby="classStudentsHint"
                         >
 
-                        <small class="field-hint">
+                        <small
+                            class="field-hint"
+                            id="classStudentsHint"
+                        >
                             Calculado automaticamente.
                         </small>
 
@@ -940,12 +1020,18 @@
                 <div
                     class="class-form-warning"
                     id="capacityWarning"
+                    role="alert"
+                    aria-live="polite"
                 >
 
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <i
+                        class="fa-solid fa-triangle-exclamation"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        A capacidade não pode ser menor que o número de alunos vinculados.
+                        A capacidade não pode ser menor que o número
+                        de alunos vinculados.
                     </span>
 
                 </div>
@@ -956,9 +1042,14 @@
                 <div
                     class="class-form-warning"
                     id="duplicateClassWarning"
+                    role="alert"
+                    aria-live="polite"
                 >
 
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <i
+                        class="fa-solid fa-triangle-exclamation"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Já existe uma turma com esse nome.
@@ -988,7 +1079,10 @@
                         class="primary-button"
                     >
 
-                        <i class="fa-solid fa-floppy-disk"></i>
+                        <i
+                            class="fa-solid fa-floppy-disk"
+                            aria-hidden="true"
+                        ></i>
 
                         Salvar turma
 
@@ -1018,7 +1112,10 @@
     >
 
 
-        <div class="class-view-overlay"></div>
+        <div
+            class="class-view-overlay"
+            aria-hidden="true"
+        ></div>
 
 
         <div
@@ -1034,7 +1131,10 @@
 
                 <div class="class-view-avatar">
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
                 </div>
 
@@ -1056,10 +1156,13 @@
                     type="button"
                     class="class-view-close"
                     id="classViewClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar informações da turma"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -1195,7 +1298,10 @@
     >
 
 
-        <div class="students-manager-overlay"></div>
+        <div
+            class="students-manager-overlay"
+            aria-hidden="true"
+        ></div>
 
 
         <div
@@ -1232,10 +1338,13 @@
                     type="button"
                     class="students-manager-close"
                     id="studentsManagerClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar gerenciamento de alunos"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -1261,7 +1370,10 @@
                 </div>
 
 
-                <div class="manager-capacity-bar">
+                <div
+                    class="manager-capacity-bar"
+                    aria-hidden="true"
+                >
 
                     <span id="managerCapacityBar"></span>
 
@@ -1280,7 +1392,10 @@
                             ALUNOS DA TURMA
                 =================================================== -->
 
-                <section class="manager-section">
+                <section
+                    class="manager-section"
+                    aria-labelledby="linkedStudentsTitle"
+                >
 
 
                     <div class="manager-section-title">
@@ -1288,7 +1403,7 @@
 
                         <div>
 
-                            <h3>
+                            <h3 id="linkedStudentsTitle">
                                 Alunos da turma
                             </h3>
 
@@ -1302,6 +1417,7 @@
                         <span
                             class="manager-counter"
                             id="linkedStudentsCounter"
+                            aria-label="Quantidade de alunos vinculados"
                         >
                             0
                         </span>
@@ -1321,7 +1437,10 @@
                         id="linkedStudentsEmpty"
                     >
 
-                        <i class="fa-solid fa-user-graduate"></i>
+                        <i
+                            class="fa-solid fa-user-graduate"
+                            aria-hidden="true"
+                        ></i>
 
                         Nenhum aluno nesta turma.
 
@@ -1335,7 +1454,10 @@
                             ALUNOS CADASTRADOS
                 =================================================== -->
 
-                <section class="manager-section">
+                <section
+                    class="manager-section"
+                    aria-labelledby="availableStudentsTitle"
+                >
 
 
                     <div class="manager-section-title">
@@ -1343,7 +1465,7 @@
 
                         <div>
 
-                            <h3>
+                            <h3 id="availableStudentsTitle">
                                 Alunos cadastrados
                             </h3>
 
@@ -1359,15 +1481,22 @@
 
                     <!-- PESQUISA -->
 
-                    <div class="manager-search">
+                    <div
+                        class="manager-search"
+                        role="search"
+                    >
 
-                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i
+                            class="fa-solid fa-magnifying-glass"
+                            aria-hidden="true"
+                        ></i>
 
                         <input
-                            type="text"
+                            type="search"
                             id="managerStudentSearch"
                             placeholder="Pesquisar aluno..."
                             autocomplete="off"
+                            aria-label="Pesquisar aluno cadastrado"
                         >
 
                     </div>
@@ -1384,7 +1513,10 @@
                         id="availableStudentsEmpty"
                     >
 
-                        <i class="fa-solid fa-user-check"></i>
+                        <i
+                            class="fa-solid fa-user-check"
+                            aria-hidden="true"
+                        ></i>
 
                         Nenhum aluno disponível.
 
@@ -1414,7 +1546,10 @@
     >
 
 
-        <div class="delete-class-overlay"></div>
+        <div
+            class="delete-class-overlay"
+            aria-hidden="true"
+        ></div>
 
 
         <div
@@ -1422,12 +1557,16 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="deleteClassTitle"
+            aria-describedby="deleteClassMessage"
         >
 
 
             <div class="delete-class-icon">
 
-                <i class="fa-solid fa-trash"></i>
+                <i
+                    class="fa-solid fa-trash"
+                    aria-hidden="true"
+                ></i>
 
             </div>
 
@@ -1480,34 +1619,8 @@
                         JAVASCRIPT
     =================================================== -->
 
+    <script src="../js/core.js"></script>
     <script src="../js/turmas.js"></script>
-
-
-    <script>
-
-        /*
-         * Configurações ainda não possui página.
-         * Impede o href="#" de mover a tela para o topo.
-         */
-
-        const settingsLink =
-            document.querySelector("#settingsLink");
-
-
-        if (settingsLink) {
-
-            settingsLink.addEventListener(
-                "click",
-                function (event) {
-
-                    event.preventDefault();
-
-                }
-            );
-
-        }
-
-    </script>
 
 
 </body>

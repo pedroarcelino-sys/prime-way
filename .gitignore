@@ -1,0 +1,23 @@
+# Configuração local e segredos
+config/database.local.php
+config/database.migration.local.php
+.env
+.env.*
+!.env.example
+
+# Dependências e artefatos
+/vendor/
+/node_modules/
+/.phpunit.cache/
+/coverage/
+
+# Arquivos de execução local
+*.log
+*.pid
+sess_*
+
+# Sistema operacional e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,41 +1,285 @@
-console.log("CHAT JS CARREGADO");
-
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    await window.PrimeWayStorage?.ready;
 
     /*====================================================
-                    ELEMENTOS PRINCIPAIS
+                STORAGE / AUTENTICAÇÃO
+    ====================================================*/
+
+    const CHAT_STORAGE_KEY =
+        "primewayChatProfessor";
+
+
+    const AUTH_SESSION_URL =
+        "../api/auth/session.php";
+
+    const AUTH_LOGOUT_URL =
+        "../api/auth/logout.php";
+
+
+    const SESSION_LOGADO_KEY =
+        "primewayLogado";
+
+    const SESSION_USUARIO_KEY =
+        "primewayUsuario";
+
+    const SESSION_PERFIL_KEY =
+        "primewayPerfil";
+
+
+    const PAGINA_LOGIN =
+        "login.html";
+
+
+    /*====================================================
+            COMPATIBILIDADE COM O FRONT-END ATUAL
+    ====================================================*/
+
+    /*
+        A sessão PHP é a fonte de verdade.
+
+        O sessionStorage continua sendo mantido
+        temporariamente apenas para compatibilidade
+        com páginas que ainda não foram migradas.
+
+        As regras de quem pode conversar com quem
+        ainda NÃO são definidas neste arquivo.
+        Elas serão implementadas posteriormente no
+        backend, quando os vínculos reais existirem.
+    */
+
+    function limparSessaoCompatibilidade() {
+
+        sessionStorage.removeItem(
+            SESSION_LOGADO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_USUARIO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_PERFIL_KEY
+        );
+    }
+
+
+    function sincronizarSessaoCompatibilidade(
+        usuario
+    ) {
+
+        sessionStorage.setItem(
+            SESSION_LOGADO_KEY,
+            "true"
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_USUARIO_KEY,
+            String(
+                usuario.email || ""
+            )
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_PERFIL_KEY,
+            String(
+                usuario.perfil || ""
+            )
+        );
+    }
+
+
+    /*====================================================
+                RESPOSTA JSON SEGURA
+    ====================================================*/
+
+    async function lerJsonSeguro(
+        response
+    ) {
+
+        try {
+
+            return await response.json();
+
+        } catch {
+
+            return null;
+        }
+    }
+
+
+    /*====================================================
+                VERIFICAÇÃO DE SESSÃO PHP
+    ====================================================*/
+
+    /*
+        O Chat é um módulo compartilhado do sistema.
+
+        Nesta fase, o JavaScript apenas confirma que
+        existe uma sessão autenticada no servidor.
+
+        Nenhuma regra definitiva de comunicação entre
+        Admin, Professor, Aluno e Responsável é criada
+        aqui. Essas regras serão definidas depois no
+        backend, conforme os vínculos reais do sistema.
+    */
+
+    async function obterSessaoServidor() {
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_SESSION_URL,
+                    {
+                        method:
+                            "GET",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.authenticated ||
+                !data?.usuario
+            ) {
+
+                limparSessaoCompatibilidade();
+
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+
+                return null;
+            }
+
+
+            sincronizarSessaoCompatibilidade(
+                data.usuario
+            );
+
+
+            return data.usuario;
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao validar a sessão do Chat:",
+                error
+            );
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+
+            return null;
+        }
+    }
+
+
+    const usuarioSessao =
+        await obterSessaoServidor();
+
+
+    if (
+        !usuarioSessao
+    ) {
+
+        return;
+    }
+
+
+    /*====================================================
+                        ELEMENTOS
     ====================================================*/
 
     const chatContainer =
-        document.querySelector(".chat-container");
+        document.querySelector(
+            ".chat-container"
+        );
+
+
+    const logoutButton =
+        document.querySelector(
+            "#logoutButton"
+        );
+
 
     const conversationTitle =
-        document.querySelector(".conversation-person h2");
+        document.querySelector(
+            ".conversation-person h2"
+        );
+
 
     const conversationSubtitle =
-        document.querySelector(".conversation-person span");
+        document.querySelector(
+            ".conversation-person span"
+        );
+
 
     const conversationAvatar =
         document.querySelector(
             ".conversation-person .conversation-avatar"
         );
 
+
     const messagesContainer =
-        document.querySelector(".chat-messages");
+        document.querySelector(
+            ".chat-messages"
+        );
+
 
     const messageInput =
         document.querySelector(
             ".chat-input-area input[type='text']"
         );
 
+
     const sendButton =
-        document.querySelector(".chat-send");
+        document.querySelector(
+            ".chat-send"
+        );
+
 
     const searchInput =
-        document.querySelector(".chat-search input");
+        document.querySelector(
+            ".chat-search input"
+        );
+
 
     const conversationsContainer =
-        document.querySelector(".chat-conversations");
+        document.querySelector(
+            ".chat-conversations"
+        );
 
 
     /*====================================================
@@ -43,19 +287,33 @@ document.addEventListener("DOMContentLoaded", function () {
     ====================================================*/
 
     const conversationOptionsButton =
-        document.querySelector("#conversationOptionsButton");
+        document.querySelector(
+            "#conversationOptionsButton"
+        );
+
 
     const conversationMenu =
-        document.querySelector("#conversationMenu");
+        document.querySelector(
+            "#conversationMenu"
+        );
+
 
     const conversationInfoButton =
-        document.querySelector("#conversationInfoButton");
+        document.querySelector(
+            "#conversationInfoButton"
+        );
+
 
     const clearConversationButton =
-        document.querySelector("#clearConversationButton");
+        document.querySelector(
+            "#clearConversationButton"
+        );
+
 
     const deleteConversationButton =
-        document.querySelector("#deleteConversationButton");
+        document.querySelector(
+            "#deleteConversationButton"
+        );
 
 
     /*====================================================
@@ -63,28 +321,51 @@ document.addEventListener("DOMContentLoaded", function () {
     ====================================================*/
 
     const infoChatModal =
-        document.querySelector("#infoChatModal");
+        document.querySelector(
+            "#infoChatModal"
+        );
+
 
     const infoChatOverlay =
-        document.querySelector(".info-chat-overlay");
+        document.querySelector(
+            ".info-chat-overlay"
+        );
+
 
     const infoChatClose =
-        document.querySelector("#infoChatClose");
+        document.querySelector(
+            "#infoChatClose"
+        );
+
 
     const infoChatAvatar =
-        document.querySelector("#infoChatAvatar");
+        document.querySelector(
+            "#infoChatAvatar"
+        );
+
 
     const infoChatName =
-        document.querySelector("#infoChatName");
+        document.querySelector(
+            "#infoChatName"
+        );
+
 
     const infoChatSubtitle =
-        document.querySelector("#infoChatSubtitle");
+        document.querySelector(
+            "#infoChatSubtitle"
+        );
+
 
     const infoChatMessageCount =
-        document.querySelector("#infoChatMessageCount");
+        document.querySelector(
+            "#infoChatMessageCount"
+        );
+
 
     const infoChatType =
-        document.querySelector("#infoChatType");
+        document.querySelector(
+            "#infoChatType"
+        );
 
 
     /*====================================================
@@ -92,76 +373,110 @@ document.addEventListener("DOMContentLoaded", function () {
     ====================================================*/
 
     const confirmChatModal =
-        document.querySelector("#confirmChatModal");
+        document.querySelector(
+            "#confirmChatModal"
+        );
+
 
     const confirmChatOverlay =
-        document.querySelector(".confirm-chat-overlay");
+        document.querySelector(
+            ".confirm-chat-overlay"
+        );
+
 
     const confirmChatIcon =
-        document.querySelector("#confirmChatIcon");
+        document.querySelector(
+            "#confirmChatIcon"
+        );
+
 
     const confirmChatTitle =
-        document.querySelector("#confirmChatTitle");
+        document.querySelector(
+            "#confirmChatTitle"
+        );
+
 
     const confirmChatMessage =
-        document.querySelector("#confirmChatMessage");
+        document.querySelector(
+            "#confirmChatMessage"
+        );
+
 
     const confirmChatCancel =
-        document.querySelector("#confirmChatCancel");
+        document.querySelector(
+            "#confirmChatCancel"
+        );
+
 
     const confirmChatConfirm =
-        document.querySelector("#confirmChatConfirm");
-
-    let confirmacaoAtual =
-        null;
+        document.querySelector(
+            "#confirmChatConfirm"
+        );
 
 
     /*====================================================
-                    MOBILE
+                        MOBILE
     ====================================================*/
 
     const mobileConversationsButton =
-        document.querySelector("#mobileConversationsButton");
+        document.querySelector(
+            "#mobileConversationsButton"
+        );
 
 
     /*====================================================
-                    ANEXO
+                        ANEXO
     ====================================================*/
 
     const attachmentButton =
-        document.querySelector("#attachmentButton");
+        document.querySelector(
+            "#attachmentButton"
+        );
+
 
     const attachmentInput =
-        document.querySelector("#attachmentInput");
+        document.querySelector(
+            "#attachmentInput"
+        );
 
 
     /*====================================================
-                NOVA CONVERSA
+                    NOVA CONVERSA
     ====================================================*/
 
     const newChatButton =
-        document.querySelector("#newChatButton");
+        document.querySelector(
+            "#newChatButton"
+        );
+
 
     const newChatModal =
-        document.querySelector("#newChatModal");
+        document.querySelector(
+            "#newChatModal"
+        );
+
 
     const newChatClose =
-        document.querySelector("#newChatClose");
+        document.querySelector(
+            "#newChatClose"
+        );
+
 
     const newChatOverlay =
-        document.querySelector(".new-chat-overlay");
+        document.querySelector(
+            ".new-chat-overlay"
+        );
+
 
     const newChatPeople =
-        document.querySelectorAll(".new-chat-person");
+        document.querySelectorAll(
+            ".new-chat-person"
+        );
 
 
     /*====================================================
-                        DADOS
+                    DADOS PADRÃO
     ====================================================*/
-
-    const CHAT_STORAGE_KEY =
-        "primewayChatProfessor";
-
 
     const dadosPadrao = {
 
@@ -179,24 +494,38 @@ document.addEventListener("DOMContentLoaded", function () {
             messages: [
 
                 {
-                    type: "received",
+                    type:
+                        "received",
+
                     text:
                         "Olá, professor! Lembrando que teremos reunião pedagógica amanhã às 14h.",
-                    time: "08:35"
+
+                    time:
+                        "08:35"
                 },
 
+
                 {
-                    type: "sent",
+                    type:
+                        "sent",
+
                     text:
                         "Olá! Certo, estarei presente.",
-                    time: "08:38"
+
+                    time:
+                        "08:38"
                 },
 
+
                 {
-                    type: "received",
+                    type:
+                        "received",
+
                     text:
                         "Perfeito. Também vamos conversar sobre o desempenho das turmas.",
-                    time: "08:42"
+
+                    time:
+                        "08:42"
                 }
 
             ]
@@ -218,17 +547,26 @@ document.addEventListener("DOMContentLoaded", function () {
             messages: [
 
                 {
-                    type: "received",
+                    type:
+                        "received",
+
                     text:
                         "Professor, a atividade de matemática já está disponível?",
-                    time: "09:10"
+
+                    time:
+                        "09:10"
                 },
 
+
                 {
-                    type: "sent",
+                    type:
+                        "sent",
+
                     text:
                         "Sim. A atividade já foi publicada no sistema.",
-                    time: "09:14"
+
+                    time:
+                        "09:14"
                 }
 
             ]
@@ -250,17 +588,26 @@ document.addEventListener("DOMContentLoaded", function () {
             messages: [
 
                 {
-                    type: "received",
+                    type:
+                        "received",
+
                     text:
                         "Professor, podemos conversar sobre a próxima atividade?",
-                    time: "10:20"
+
+                    time:
+                        "10:20"
                 },
 
+
                 {
-                    type: "sent",
+                    type:
+                        "sent",
+
                     text:
                         "Claro. Podemos conversar durante o intervalo.",
-                    time: "10:25"
+
+                    time:
+                        "10:25"
                 }
 
             ]
@@ -282,17 +629,26 @@ document.addEventListener("DOMContentLoaded", function () {
             messages: [
 
                 {
-                    type: "received",
+                    type:
+                        "received",
+
                     text:
                         "Professor, o documento solicitado já está disponível.",
-                    time: "11:05"
+
+                    time:
+                        "11:05"
                 },
 
+
                 {
-                    type: "sent",
+                    type:
+                        "sent",
+
                     text:
                         "Perfeito. Obrigado pelo aviso.",
-                    time: "11:08"
+
+                    time:
+                        "11:08"
                 }
 
             ]
@@ -302,14 +658,24 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
 
+    /*====================================================
+                        ESTADO
+    ====================================================*/
+
     let chatData =
-        JSON.parse(
-            JSON.stringify(dadosPadrao)
-        );
+        {};
+
+
+    let confirmacaoAtual =
+        null;
+
+
+    const focoAnteriorPorModal =
+        new WeakMap();
 
 
     /*====================================================
-                    FUNÇÕES AUXILIARES
+                    UTILITÁRIOS
     ====================================================*/
 
     function getConversations() {
@@ -317,7 +683,78 @@ document.addEventListener("DOMContentLoaded", function () {
         return document.querySelectorAll(
             ".conversation"
         );
+    }
 
+
+    function normalizarTexto(
+        valor
+    ) {
+
+        return String(
+            valor ?? ""
+        )
+            .normalize(
+                "NFD"
+            )
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .toLowerCase()
+            .trim();
+    }
+
+
+    function sanitizarIcone(
+        icon
+    ) {
+
+        const valor =
+            String(
+                icon || ""
+            ).trim();
+
+
+        return /^fa-[a-z0-9-]+$/i.test(
+            valor
+        )
+            ? valor
+            : "fa-comments";
+    }
+
+
+    function definirIcone(
+        container,
+        icon
+    ) {
+
+        if (!container) {
+
+            return;
+        }
+
+
+        const elemento =
+            document.createElement(
+                "i"
+            );
+
+
+        elemento.className =
+            `fa-solid ${sanitizarIcone(
+                icon
+            )}`;
+
+
+        elemento.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        container.replaceChildren(
+            elemento
+        );
     }
 
 
@@ -346,7 +783,185 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return `${hora}:${minuto}`;
+    }
 
+
+    function normalizarMensagem(
+        mensagem
+    ) {
+
+        if (
+            !mensagem ||
+            typeof mensagem !==
+                "object"
+        ) {
+
+            return null;
+        }
+
+
+        const texto =
+            String(
+                mensagem.text ??
+                ""
+            );
+
+
+        if (
+            !texto.trim()
+        ) {
+
+            return null;
+        }
+
+
+        return {
+
+            type:
+                mensagem.type ===
+                "received"
+                    ? "received"
+                    : "sent",
+
+            text:
+                texto,
+
+            time:
+                String(
+                    mensagem.time ||
+                    "Agora"
+                )
+
+        };
+    }
+
+
+    function normalizarDadosConversa(
+        dados
+    ) {
+
+        if (
+            !dados ||
+            typeof dados !==
+                "object" ||
+            Array.isArray(
+                dados
+            )
+        ) {
+
+            return null;
+        }
+
+
+        const unread =
+            Number(
+                dados.unread
+            );
+
+
+        return {
+
+            subtitle:
+                String(
+                    dados.subtitle ||
+                    "Conversa"
+                ),
+
+            icon:
+                sanitizarIcone(
+                    dados.icon
+                ),
+
+            unread:
+                Number.isFinite(
+                    unread
+                )
+                    ? Math.max(
+                        0,
+                        Math.trunc(
+                            unread
+                        )
+                    )
+                    : 0,
+
+            messages:
+                Array.isArray(
+                    dados.messages
+                )
+                    ? dados.messages
+                        .map(
+                            normalizarMensagem
+                        )
+                        .filter(
+                            Boolean
+                        )
+                    : []
+
+        };
+    }
+
+
+    function normalizarChatData(
+        dados
+    ) {
+
+        const resultado =
+            Object.create(
+                null
+            );
+
+
+        if (
+            !dados ||
+            typeof dados !==
+                "object" ||
+            Array.isArray(
+                dados
+            )
+        ) {
+
+            return resultado;
+        }
+
+
+        Object.entries(
+            dados
+        )
+            .forEach(
+                function (
+                    [
+                        nome,
+                        conversa
+                    ]
+                ) {
+
+                    const nomeSeguro =
+                        String(
+                            nome
+                        ).trim();
+
+
+                    const dadosSeguros =
+                        normalizarDadosConversa(
+                            conversa
+                        );
+
+
+                    if (
+                        nomeSeguro &&
+                        dadosSeguros
+                    ) {
+
+                        resultado[
+                            nomeSeguro
+                        ] =
+                            dadosSeguros;
+                    }
+                }
+            );
+
+
+        return resultado;
     }
 
 
@@ -359,7 +974,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 getConversations()
             )
             .find(
-                function (item) {
+                function (
+                    item
+                ) {
+
+                    if (
+                        item.dataset.chat ===
+                        nomeConversa
+                    ) {
+
+                        return true;
+                    }
+
 
                     const strong =
                         item.querySelector(
@@ -368,16 +994,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
                     return (
-                        strong &&
-                        strong
+                        strong &&                        strong
                             .textContent
                             .trim() ===
-                        nomeConversa
+                            nomeConversa
                     );
-
                 }
             );
-
     }
 
 
@@ -392,7 +1015,16 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!ativa) {
 
             return null;
+        }
 
+
+        if (
+            ativa.dataset.chat
+        ) {
+
+            return ativa
+                .dataset
+                .chat;
         }
 
 
@@ -403,9 +1035,204 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         return strong
-            ? strong.textContent.trim()
+            ? strong
+                .textContent
+                .trim()
             : null;
+    }
 
+
+    function atualizarDisponibilidadeChat() {
+
+        const temConversa =
+            Boolean(
+                pegarNomeConversaAtiva()
+            );
+
+
+        if (
+            messageInput
+        ) {
+
+            messageInput.disabled =
+                !temConversa;
+        }
+
+
+        if (
+            sendButton
+        ) {
+
+            sendButton.disabled =
+                !temConversa;
+        }
+
+
+        if (
+            attachmentButton
+        ) {
+
+            attachmentButton.disabled =
+                !temConversa;
+        }
+
+
+        if (
+            conversationOptionsButton
+        ) {
+
+            conversationOptionsButton.disabled =
+                !temConversa;
+        }
+    }
+
+
+    /*====================================================
+                        MODAIS
+    ====================================================*/
+
+    function existeModalAtivo() {
+
+        return [
+
+            newChatModal,
+
+            infoChatModal,
+
+            confirmChatModal
+
+        ].some(
+            modal =>
+                modal &&
+                modal
+                    .classList
+                    .contains(
+                        "active"
+                    )
+        );
+    }
+
+
+    function abrirModalChat(
+        modal,
+        focoInicial = null
+    ) {
+
+        if (!modal) {
+
+            return;
+        }
+
+
+        const elementoAtivo =
+            document.activeElement;
+
+
+        if (
+            elementoAtivo instanceof
+                HTMLElement
+        ) {
+
+            focoAnteriorPorModal.set(
+                modal,
+                elementoAtivo
+            );
+        }
+
+
+        modal.classList.add(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+
+        if (
+            focoInicial &&
+            typeof focoInicial.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                () =>
+                    focoInicial.focus()
+            );
+        }
+    }
+
+
+    function fecharModalChat(
+        modal,
+        fallback = null
+    ) {
+
+        if (!modal) {
+
+            return;
+        }
+
+
+        modal.classList.remove(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (
+            !existeModalAtivo()
+        ) {
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+        }
+
+
+        const focoAnterior =
+            focoAnteriorPorModal.get(
+                modal
+            );
+
+
+        focoAnteriorPorModal.delete(
+            modal
+        );
+
+
+        const destinoFoco =
+            focoAnterior &&
+            focoAnterior.isConnected &&
+            typeof focoAnterior.focus ===
+                "function"
+                ? focoAnterior
+                : fallback;
+
+
+        if (
+            destinoFoco &&
+            typeof destinoFoco.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                () =>
+                    destinoFoco.focus()
+            );
+        }
     }
 
 
@@ -420,7 +1247,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 "(max-width: 750px)"
             )
             .matches;
-
     }
 
 
@@ -432,7 +1258,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
@@ -444,7 +1269,6 @@ document.addEventListener("DOMContentLoaded", function () {
         chatContainer.classList.add(
             "mobile-show-list"
         );
-
     }
 
 
@@ -456,7 +1280,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
@@ -468,56 +1291,64 @@ document.addEventListener("DOMContentLoaded", function () {
         chatContainer.classList.add(
             "mobile-show-chat"
         );
-
     }
 
 
     function ajustarModoResponsivo() {
 
-        if (!chatContainer) {
+        if (
+            !chatContainer
+        ) {
 
             return;
-
         }
 
 
-        if (estaNoMobile()) {
+        if (
+            estaNoMobile()
+        ) {
+
+            const semEstado =
+                !chatContainer
+                    .classList
+                    .contains(
+                        "mobile-show-list"
+                    ) &&
+                !chatContainer
+                    .classList
+                    .contains(
+                        "mobile-show-chat"
+                    );
+
 
             if (
-                !chatContainer.classList.contains(
-                    "mobile-show-list"
-                ) &&
-                !chatContainer.classList.contains(
-                    "mobile-show-chat"
-                )
+                semEstado
             ) {
 
-                chatContainer.classList.add(
-                    "mobile-show-chat"
-                );
-
+                chatContainer
+                    .classList
+                    .add(
+                        "mobile-show-chat"
+                    );
             }
 
-        } else {
 
-            chatContainer.classList.remove(
-                "mobile-show-list",
-                "mobile-show-chat"
-            );
-
+            return;
         }
 
+
+        chatContainer.classList.remove(
+            "mobile-show-list",
+            "mobile-show-chat"
+        );
     }
 
 
-    if (mobileConversationsButton) {
-
-        mobileConversationsButton.addEventListener(
+    mobileConversationsButton
+        ?.addEventListener(
             "click",
             mostrarListaMobile
         );
-
-    }
 
 
     window.addEventListener(
@@ -552,6 +1383,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "conversation";
 
 
+        conversation.dataset.chat =
+            nome;
+
+
         const avatar =
             document.createElement(
                 "div"
@@ -562,8 +1397,10 @@ document.addEventListener("DOMContentLoaded", function () {
             "conversation-avatar";
 
 
-        avatar.innerHTML =
-            `<i class="fa-solid ${icon}"></i>`;
+        definirIcone(
+            avatar,
+            icon
+        );
 
 
         const info =
@@ -596,12 +1433,8 @@ document.addEventListener("DOMContentLoaded", function () {
             preview;
 
 
-        info.appendChild(
-            strong
-        );
-
-
-        info.appendChild(
+        info.append(
+            strong,
             span
         );
 
@@ -631,23 +1464,14 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        conversation.appendChild(
-            avatar
-        );
-
-
-        conversation.appendChild(
-            info
-        );
-
-
-        conversation.appendChild(
+        conversation.append(
+            avatar,
+            info,
             meta
         );
 
 
         return conversation;
-
     }
 
 
@@ -663,22 +1487,34 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (existente) {
+        if (
+            existente
+        ) {
 
             return existente;
-
         }
 
 
-        if (!chatData[nome]) {
+        if (
+            !chatData[
+                nome
+            ]
+        ) {
 
-            chatData[nome] = {
+            chatData[
+                nome
+            ] = {
 
                 subtitle:
-                    subtitle,
+                    String(
+                        subtitle ||
+                        "Conversa"
+                    ),
 
                 icon:
-                    icon,
+                    sanitizarIcone(
+                        icon
+                    ),
 
                 unread:
                     0,
@@ -687,34 +1523,35 @@ document.addEventListener("DOMContentLoaded", function () {
                     []
 
             };
-
         }
+
+
+        const dados =
+            chatData[
+                nome
+            ];
 
 
         const elemento =
             criarElementoConversa(
                 nome,
-                subtitle,
-                icon
+                dados.subtitle,
+                dados.icon
             );
 
 
-        if (conversationsContainer) {
-
-            conversationsContainer.prepend(
+        conversationsContainer
+            ?.prepend(
                 elemento
             );
 
-        }
-
 
         return elemento;
-
     }
 
 
     /*====================================================
-                    CONTADORES
+                        CONTADORES
     ====================================================*/
 
     function atualizarContador(
@@ -722,7 +1559,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
         const conversa =
-            chatData[nomeConversa];
+            chatData[
+                nomeConversa
+            ];
 
 
         const elemento =
@@ -737,7 +1576,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
@@ -747,44 +1585,51 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (!meta) {
+        if (
+            !meta
+        ) {
 
             return;
-
         }
 
 
-        const contadorExistente =
-            meta.querySelector(
+        meta
+            .querySelector(
+                "b"
+            )
+            ?.remove();
+
+
+        if (
+            conversa.unread <=
+            0
+        ) {
+
+            return;
+        }
+
+
+        const contador =
+            document.createElement(
                 "b"
             );
 
 
-        if (contadorExistente) {
-
-            contadorExistente.remove();
-
-        }
-
-
-        if (conversa.unread > 0) {
-
-            const contador =
-                document.createElement(
-                    "b"
-                );
-
-
-            contador.textContent =
-                conversa.unread;
-
-
-            meta.appendChild(
-                contador
+        contador.textContent =
+            String(
+                conversa.unread
             );
 
-        }
 
+        contador.setAttribute(
+            "aria-label",
+            `${conversa.unread} mensagem(ns) não lida(s)`
+        );
+
+
+        meta.appendChild(
+            contador
+        );
     }
 
 
@@ -797,12 +1642,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .forEach(
                 atualizarContador
             );
-
     }
 
 
     /*====================================================
-                    PREVIEW
+                        PREVIEW
     ====================================================*/
 
     function atualizarPreview(
@@ -817,10 +1661,11 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (!elemento) {
+        if (
+            !elemento
+        ) {
 
             return;
-
         }
 
 
@@ -836,26 +1681,27 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-        if (preview) {
+        if (
+            preview
+        ) {
 
             preview.textContent =
                 texto;
-
         }
 
 
-        if (small) {
+        if (
+            small
+        ) {
 
             small.textContent =
                 horario;
-
         }
-
     }
 
 
     /*====================================================
-                    LOCALSTORAGE
+                        LOCALSTORAGE
     ====================================================*/
 
     function salvarEstadoChat() {
@@ -868,12 +1714,43 @@ document.addEventListener("DOMContentLoaded", function () {
                         getConversations()
                     )
                     .map(
-                        function (elemento) {
+                        function (
+                            elemento
+                        ) {
 
                             const nomeElemento =
                                 elemento.querySelector(
                                     ".conversation-info strong"
                                 );
+
+
+                            if (
+                                !nomeElemento
+                            ) {
+
+                                return null;
+                            }
+
+
+                            const nome =
+                                elemento.dataset.chat ||
+                                nomeElemento
+                                    .textContent
+                                    .trim();
+
+
+                            const dados =
+                                chatData[
+                                    nome
+                                ];
+
+
+                            if (
+                                !dados
+                            ) {
+
+                                return null;
+                            }
 
 
                             const previewElemento =
@@ -888,34 +1765,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 );
 
 
-                            if (!nomeElemento) {
-
-                                return null;
-
-                            }
-
-
-                            const nome =
-                                nomeElemento
-                                    .textContent
-                                    .trim();
-
-
-                            const dados =
-                                chatData[nome];
-
-
-                            if (!dados) {
-
-                                return null;
-
-                            }
-
-
                             return {
 
-                                nome:
-                                    nome,
+                                nome,
 
                                 subtitle:
                                     dados.subtitle,
@@ -925,16 +1777,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                                 preview:
                                     previewElemento
-                                        ? previewElemento.textContent
+                                        ? previewElemento
+                                            .textContent
                                         : "Nova conversa",
 
                                 horario:
                                     horarioElemento
-                                        ? horarioElemento.textContent
+                                        ? horarioElemento
+                                            .textContent
                                         : "Agora"
 
                             };
-
                         }
                     )
                     .filter(
@@ -945,13 +1798,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const estado = {
 
                 versao:
-                    1,
+                    2,
 
-                chatData:
-                    chatData,
+                chatData,
 
-                conversas:
-                    conversas,
+                conversas,
 
                 conversaAtiva:
                     pegarNomeConversaAtiva()
@@ -966,15 +1817,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 )
             );
 
-        } catch (erro) {
 
-            console.warn(
+            return true;
+
+        } catch (
+            erro
+        ) {
+
+            console.error(
                 "Erro ao salvar chat:",
                 erro
             );
 
-        }
 
+            return false;
+        }
     }
 
 
@@ -988,10 +1845,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            if (!salvo) {
+            if (
+                !salvo
+            ) {
 
                 return null;
-
             }
 
 
@@ -1005,96 +1863,210 @@ document.addEventListener("DOMContentLoaded", function () {
                 !estado ||
                 !estado.chatData ||
                 typeof estado.chatData !==
-                "object"
+                    "object"
             ) {
 
                 return null;
-
             }
 
 
             chatData =
-                estado.chatData;
+                normalizarChatData(
+                    estado.chatData
+                );
 
 
             if (
-                conversationsContainer &&
-                Array.isArray(
-                    estado.conversas
-                )
+                conversationsContainer
             ) {
 
-                conversationsContainer.innerHTML =
-                    "";
+                conversationsContainer
+                    .replaceChildren();
 
 
-                estado.conversas.forEach(
-                    function (item) {
-
-                        if (!item.nome) {
-
-                            return;
-
-                        }
+                const nomesRenderizados =
+                    new Set();
 
 
-                        const dados =
-                            chatData[
-                                item.nome
-                            ];
+                const conversasSalvas =
+                    Array.isArray(
+                        estado.conversas
+                    )
+                        ? estado.conversas
+                        : [];
 
 
-                        if (!dados) {
-
-                            return;
-
-                        }
-
-
-                        const elemento =
-                            criarElementoConversa(
-
-                                item.nome,
-
-                                dados.subtitle,
-
-                                dados.icon,
-
-                                item.preview ||
-                                "Nova conversa",
-
-                                item.horario ||
-                                "Agora"
-
-                            );
-
-
-                        if (
-                            estado.conversaAtiva ===
-                            item.nome
+                conversasSalvas
+                    .forEach(
+                        function (
+                            item
                         ) {
 
-                            elemento.classList.add(
-                                "active"
+                            const nome =
+                                String(
+                                    item?.nome ||
+                                    ""
+                                ).trim();
+
+
+                            if (
+                                !nome ||
+                                nomesRenderizados
+                                    .has(
+                                        nome
+                                    )
+                            ) {
+
+                                return;
+                            }
+
+
+                            const dados =
+                                chatData[
+                                    nome
+                                ];
+
+
+                            if (
+                                !dados
+                            ) {
+
+                                return;
+                            }
+
+
+                            nomesRenderizados.add(
+                                nome
                             );
 
+
+                            const elemento =
+                                criarElementoConversa(
+                                    nome,
+                                    dados.subtitle,
+                                    dados.icon,
+                                    String(
+                                        item.preview ||
+                                        "Nova conversa"
+                                    ),
+                                    String(
+                                        item.horario ||
+                                        "Agora"
+                                    )
+                                );
+
+
+                            if (
+                                estado.conversaAtiva ===
+                                nome
+                            ) {
+
+                                elemento
+                                    .classList
+                                    .add(
+                                        "active"
+                                    );
+                            }
+
+
+                            conversationsContainer
+                                .appendChild(
+                                    elemento
+                                );
                         }
+                    );
 
 
-                        conversationsContainer.appendChild(
-                            elemento
-                        );
+                Object
+                    .keys(
+                        chatData
+                    )
+                    .forEach(
+                        function (
+                            nome
+                        ) {
 
-                    }
-                );
+                            if (
+                                nomesRenderizados
+                                    .has(
+                                        nome
+                                    )
+                            ) {
 
+                                return;
+                            }
+
+
+                            const dados =
+                                chatData[
+                                    nome
+                                ];
+
+
+                            const ultimaMensagem =
+                                dados.messages[
+                                    dados.messages.length -
+                                    1
+                                ];
+
+
+                            const elemento =
+                                criarElementoConversa(
+                                    nome,
+                                    dados.subtitle,
+                                    dados.icon,
+                                    ultimaMensagem
+                                        ? ultimaMensagem
+                                            .text
+                                        : "Nova conversa",
+                                    ultimaMensagem
+                                        ? ultimaMensagem
+                                            .time
+                                        : "Agora"
+                                );
+
+
+                            if (
+                                estado.conversaAtiva ===
+                                nome
+                            ) {
+
+                                elemento
+                                    .classList
+                                    .add(
+                                        "active"
+                                    );
+                            }
+
+
+                            conversationsContainer
+                                .appendChild(
+                                    elemento
+                                );
+                        }
+                    );
             }
 
 
-            return estado.conversaAtiva ||
-                null;
+            const conversaAtiva =
+                String(
+                    estado.conversaAtiva ||
+                    ""
+                ).trim();
 
-        } catch (erro) {
+
+            return (
+                conversaAtiva &&
+                chatData[
+                    conversaAtiva
+                ]
+            )
+                ? conversaAtiva
+                : null;
+
+        } catch (
+            erro
+        ) {
 
             console.warn(
                 "Erro ao carregar chat:",
@@ -1103,9 +2075,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             return null;
-
         }
-
     }
 
 
@@ -1129,12 +2099,11 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
-        messagesContainer.innerHTML =
-            "";
+        messagesContainer
+            .replaceChildren();
 
 
         const data =
@@ -1151,89 +2120,89 @@ document.addEventListener("DOMContentLoaded", function () {
             "Hoje";
 
 
-        messagesContainer.appendChild(
-            data
-        );
+        messagesContainer
+            .appendChild(
+                data
+            );
 
 
-        conversa.messages.forEach(
-            function (message) {
+        conversa.messages
+            .forEach(
+                function (
+                    message
+                ) {
 
-                const elemento =
-                    document.createElement(
-                        "div"
+                    const elemento =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    elemento.className =
+                        `message ${message.type}`;
+
+
+                    const bubble =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    bubble.className =
+                        "message-bubble";
+
+
+                    const texto =
+                        document.createElement(
+                            "p"
+                        );
+
+
+                    texto.textContent =
+                        message.text;
+
+
+                    const horario =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    horario.textContent =
+                        message.time;
+
+
+                    bubble.append(
+                        texto,
+                        horario
                     );
 
 
-                elemento.className =
-                    `message ${message.type}`;
-
-
-                const bubble =
-                    document.createElement(
-                        "div"
+                    elemento.appendChild(
+                        bubble
                     );
 
 
-                bubble.className =
-                    "message-bubble";
-
-
-                const texto =
-                    document.createElement(
-                        "p"
-                    );
-
-
-                texto.textContent =
-                    message.text;
-
-
-                const horario =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                horario.textContent =
-                    message.time;
-
-
-                bubble.appendChild(
-                    texto
-                );
-
-
-                bubble.appendChild(
-                    horario
-                );
-
-
-                elemento.appendChild(
-                    bubble
-                );
-
-
-                messagesContainer.appendChild(
-                    elemento
-                );
-
-            }
-        );
+                    messagesContainer
+                        .appendChild(
+                            elemento
+                        );
+                }
+            );
 
 
         messagesContainer.scrollTop =
             messagesContainer.scrollHeight;
-
     }
 
 
     /*====================================================
-                TROCAR CONVERSA
+                    TROCAR CONVERSA
     ====================================================*/
 
     function trocarConversa(
-        nomeConversa
+        nomeConversa,
+        persistir = true
     ) {
 
         const conversa =
@@ -1242,35 +2211,36 @@ document.addEventListener("DOMContentLoaded", function () {
             ];
 
 
-        if (!conversa) {
+        if (
+            !conversa
+        ) {
 
             return;
-
         }
 
 
-        if (conversationTitle) {
+        if (
+            conversationTitle
+        ) {
 
             conversationTitle.textContent =
                 nomeConversa;
-
         }
 
 
-        if (conversationSubtitle) {
+        if (
+            conversationSubtitle
+        ) {
 
             conversationSubtitle.textContent =
                 conversa.subtitle;
-
         }
 
 
-        if (conversationAvatar) {
-
-            conversationAvatar.innerHTML =
-                `<i class="fa-solid ${conversa.icon}"></i>`;
-
-        }
+        definirIcone(
+            conversationAvatar,
+            conversa.icon
+        );
 
 
         conversa.unread =
@@ -1287,33 +2257,48 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        salvarEstadoChat();
+        atualizarDisponibilidadeChat();
+
+
+        if (
+            persistir
+        ) {
+
+            salvarEstadoChat();
+        }
 
 
         fecharMenuConversa();
-
     }
 
 
     function ativarConversa(
-        elemento
+        elemento,
+        persistir = true
     ) {
 
-        if (!elemento) {
+        if (
+            !elemento
+        ) {
 
             return;
-
         }
 
 
         getConversations()
             .forEach(
-                function (item) {
+                function (
+                    item
+                ) {
 
                     item.classList.remove(
                         "active"
                     );
 
+
+                    item.removeAttribute(
+                        "aria-current"
+                    );
                 }
             );
 
@@ -1323,36 +2308,68 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
+        elemento.setAttribute(
+            "aria-current",
+            "true"
+        );
+
+
         const strong =
             elemento.querySelector(
                 ".conversation-info strong"
             );
 
 
-        if (!strong) {
+        const nome =
+            elemento.dataset.chat ||
+            (
+                strong
+                    ? strong
+                        .textContent
+                        .trim()
+                    : ""
+            );
+
+
+        if (
+            !nome
+        ) {
 
             return;
-
         }
 
 
+        elemento.dataset.chat =
+            nome;
+
+
         trocarConversa(
-            strong
-                .textContent
-                .trim()
+            nome,
+            persistir
         );
 
 
         mostrarChatMobile();
-
     }
 
 
-    if (conversationsContainer) {
-
-        conversationsContainer.addEventListener(
+    conversationsContainer
+        ?.addEventListener(
             "click",
-            function (event) {
+            function (
+                event
+            ) {
+
+                if (
+                    !(
+                        event.target instanceof
+                        Element
+                    )
+                ) {
+
+                    return;
+                }
+
 
                 const conversation =
                     event.target.closest(
@@ -1360,21 +2377,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-                if (!conversation) {
+                if (
+                    !conversation
+                ) {
 
                     return;
-
                 }
 
 
                 ativarConversa(
                     conversation
                 );
-
             }
         );
-
-    }
 
 
     /*====================================================
@@ -1383,23 +2398,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function enviarMensagem() {
 
-        if (!messageInput) {
+        if (
+            !messageInput
+        ) {
 
             return;
-
         }
 
 
         const texto =
-            messageInput
-                .value
-                .trim();
+            messageInput.value.trim();
 
 
-        if (texto === "") {
+        if (
+            !texto
+        ) {
 
             return;
-
         }
 
 
@@ -1415,7 +2430,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
@@ -1425,18 +2439,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
         chatData[
             nomeConversa
-        ].messages.push({
+        ]
+            .messages
+            .push(
+                {
 
-            type:
-                "sent",
+                    type:
+                        "sent",
 
-            text:
-                texto,
+                    text:
+                        texto,
 
-            time:
-                horario
+                    time:
+                        horario
 
-        });
+                }
+            );
 
 
         messageInput.value =
@@ -1455,49 +2473,53 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        salvarEstadoChat();
+        if (
+            !salvarEstadoChat()
+        ) {
+
+            console.warn(
+                "A mensagem foi exibida, mas não pôde ser persistida no navegador."
+            );
+        }
 
 
         messageInput.focus();
-
     }
 
 
-    if (sendButton) {
-
-        sendButton.addEventListener(
+    sendButton
+        ?.addEventListener(
             "click",
             enviarMensagem
         );
 
-    }
 
-
-    if (messageInput) {
-
-        messageInput.addEventListener(
+    messageInput
+        ?.addEventListener(
             "keydown",
-            function (event) {
+            function (
+                event
+            ) {
 
                 if (
-                    event.key ===
+                    event.key !==
                     "Enter"
                 ) {
 
-                    event.preventDefault();
-
-                    enviarMensagem();
-
+                    return;
                 }
 
+
+                event.preventDefault();
+
+
+                enviarMensagem();
             }
         );
 
-    }
-
 
     /*====================================================
-                    ANEXO
+                        ANEXO
     ====================================================*/
 
     if (
@@ -1505,292 +2527,342 @@ document.addEventListener("DOMContentLoaded", function () {
         attachmentInput
     ) {
 
-        attachmentButton.addEventListener(
-            "click",
-            function () {
+        attachmentButton
+            .addEventListener(
+                "click",
+                function () {
 
-                attachmentInput.click();
-
-            }
-        );
-
-
-        attachmentInput.addEventListener(
-            "change",
-            function () {
-
-                const arquivo =
-                    attachmentInput.files[
-                        0
-                    ];
-
-
-                if (!arquivo) {
-
-                    return;
-
+                    attachmentInput.click();
                 }
+            );
 
 
-                const nomeConversa =
-                    pegarNomeConversaAtiva();
+        attachmentInput
+            .addEventListener(
+                "change",
+                function () {
+
+                    const arquivo =
+                        attachmentInput
+                            .files?.[
+                                0
+                            ];
 
 
-                if (
-                    !nomeConversa ||
-                    !chatData[
+                    if (
+                        !arquivo
+                    ) {
+
+                        return;
+                    }
+
+
+                    const nomeConversa =
+                        pegarNomeConversaAtiva();
+
+
+                    if (
+                        !nomeConversa ||
+                        !chatData[
+                            nomeConversa
+                        ]
+                    ) {
+
+                        attachmentInput.value =
+                            "";
+
+                        return;
+                    }
+
+
+                    const horario =
+                        gerarHorarioAtual();
+
+
+                    /*
+                        O protótipo registra somente o nome
+                        do arquivo.
+
+                        O conteúdo real do arquivo não é
+                        enviado nem armazenado.
+                    */
+
+
+                    const texto =
+                        `📎 Arquivo anexado: ${arquivo.name}`;
+
+
+                    chatData[
                         nomeConversa
                     ]
-                ) {
+                        .messages
+                        .push(
+                            {
+
+                                type:
+                                    "sent",
+
+                                text:
+                                    texto,
+
+                                time:
+                                    horario
+
+                            }
+                        );
+
+
+                    renderMessages(
+                        nomeConversa
+                    );
+
+
+                    atualizarPreview(
+                        nomeConversa,
+                        `📎 ${arquivo.name}`,
+                        horario
+                    );
+
+
+                    if (
+                        !salvarEstadoChat()
+                    ) {
+
+                        console.warn(
+                            "O anexo foi exibido, mas não pôde ser persistido no navegador."
+                        );
+                    }
+
 
                     attachmentInput.value =
                         "";
+                }
+            );
+    }
+        /*====================================================
+                        PESQUISA
+    ====================================================*/
+
+    function filtrarConversas() {
+
+        if (
+            !searchInput
+        ) {
+
+            return;
+        }
+
+
+        const termo =
+            normalizarTexto(
+                searchInput.value
+            );
+
+
+        getConversations()
+            .forEach(
+                function (
+                    conversation
+                ) {
+
+                    const strong =
+                        conversation
+                            .querySelector(
+                                ".conversation-info strong"
+                            );
+
+
+                    const span =
+                        conversation
+                            .querySelector(
+                                ".conversation-info span"
+                            );
+
+
+                    const nome =
+                        conversation
+                            .dataset
+                            .chat ||
+                        (
+                            strong
+                                ? strong
+                                    .textContent
+                                : ""
+                        );
+
+
+                    const subtitle =
+                        chatData[
+                            nome
+                        ]?.subtitle ||
+                        "";
+
+
+                    const texto =
+                        normalizarTexto(
+                            [
+
+                                strong
+                                    ? strong
+                                        .textContent
+                                    : "",
+
+                                span
+                                    ? span
+                                        .textContent
+                                    : "",
+
+                                subtitle
+
+                            ].join(
+                                " "
+                            )
+                        );
+
+
+                    conversation.style.display =
+                        texto.includes(
+                            termo
+                        )
+                            ? ""
+                            : "none";
+                }
+            );
+    }
+
+
+    function limparPesquisaConversas() {
+
+        if (
+            !searchInput
+        ) {
+
+            return;
+        }
+
+
+        searchInput.value =
+            "";
+
+
+        filtrarConversas();
+    }
+
+
+    searchInput
+        ?.addEventListener(
+            "input",
+            filtrarConversas
+        );
+
+
+    searchInput
+        ?.addEventListener(
+            "keydown",
+            function (
+                event
+            ) {
+
+                if (
+                    event.key !==
+                        "Escape" ||
+                    searchInput.value ===
+                        ""
+                ) {
 
                     return;
-
                 }
 
 
-                const horario =
-                    gerarHorarioAtual();
+                event.stopPropagation();
 
 
-                const texto =
-                    `📎 Arquivo anexado: ${arquivo.name}`;
-
-
-                chatData[
-                    nomeConversa
-                ].messages.push({
-
-                    type:
-                        "sent",
-
-                    text:
-                        texto,
-
-                    time:
-                        horario
-
-                });
-
-
-                renderMessages(
-                    nomeConversa
-                );
-
-
-                atualizarPreview(
-
-                    nomeConversa,
-
-                    `📎 ${arquivo.name}`,
-
-                    horario
-
-                );
-
-
-                salvarEstadoChat();
-
-
-                attachmentInput.value =
-                    "";
-
+                limparPesquisaConversas();
             }
         );
 
-    }
-
 
     /*====================================================
-                    PESQUISA
-    ====================================================*/
-
-    if (searchInput) {
-
-        searchInput.addEventListener(
-            "input",
-            function () {
-
-                const termo =
-                    searchInput
-                        .value
-                        .toLowerCase()
-                        .trim();
-
-
-                getConversations()
-                    .forEach(
-                        function (
-                            conversation
-                        ) {
-
-                            const strong =
-                                conversation.querySelector(
-                                    ".conversation-info strong"
-                                );
-
-
-                            const span =
-                                conversation.querySelector(
-                                    ".conversation-info span"
-                                );
-
-
-                            if (
-                                !strong ||
-                                !span
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            const texto =
-                                (
-                                    strong.textContent +
-                                    " " +
-                                    span.textContent
-                                )
-                                    .toLowerCase();
-
-
-                            conversation.style.display =
-                                texto.includes(
-                                    termo
-                                )
-                                    ? ""
-                                    : "none";
-
-                        }
-                    );
-
-            }
-        );
-
-    }
-
-
-    /*====================================================
-                NOVA CONVERSA
+                    NOVA CONVERSA
     ====================================================*/
 
     function abrirNovaConversa() {
 
-        if (!newChatModal) {
-
-            return;
-
-        }
-
-
-        newChatModal.classList.add(
-            "active"
+        abrirModalChat(
+            newChatModal,
+            newChatClose
         );
-
-
-        newChatModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-
-        if (newChatClose) {
-
-            newChatClose.focus();
-
-        }
-
     }
 
 
     function fecharNovaConversa() {
 
-        if (!newChatModal) {
-
-            return;
-
-        }
-
-
-        newChatModal.classList.remove(
-            "active"
+        fecharModalChat(
+            newChatModal,
+            newChatButton
         );
-
-
-        newChatModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
     }
 
 
-    if (newChatButton) {
-
-        newChatButton.addEventListener(
+    newChatButton
+        ?.addEventListener(
             "click",
             abrirNovaConversa
         );
 
-    }
 
-
-    if (newChatClose) {
-
-        newChatClose.addEventListener(
+    newChatClose
+        ?.addEventListener(
             "click",
             fecharNovaConversa
         );
 
-    }
 
-
-    if (newChatOverlay) {
-
-        newChatOverlay.addEventListener(
+    newChatOverlay
+        ?.addEventListener(
             "click",
             fecharNovaConversa
         );
-
-    }
 
 
     newChatPeople.forEach(
-        function (person) {
+        function (
+            person
+        ) {
 
             person.addEventListener(
                 "click",
                 function () {
 
                     const nome =
-                        person.dataset.chat;
+                        String(
+                            person
+                                .dataset
+                                .chat ||
+                            ""
+                        ).trim();
 
 
                     const subtitle =
-                        person.dataset.subtitle;
+                        person
+                            .dataset
+                            .subtitle ||
+                        "Conversa";
 
 
                     const icon =
-                        person.dataset.icon;
+                        sanitizarIcone(
+                            person
+                                .dataset
+                                .icon
+                        );
 
 
-                    if (!nome) {
+                    if (
+                        !nome
+                    ) {
 
                         return;
-
                     }
 
 
@@ -1800,7 +2872,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (!elemento) {
+                    if (
+                        !elemento
+                    ) {
 
                         elemento =
                             criarConversa(
@@ -1808,27 +2882,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                 subtitle,
                                 icon
                             );
-
                     }
 
 
-                    if (searchInput) {
-
-                        searchInput.value =
-                            "";
-
-                    }
-
-
-                    getConversations()
-                        .forEach(
-                            function (item) {
-
-                                item.style.display =
-                                    "";
-
-                            }
-                        );
+                    limparPesquisaConversas();
 
 
                     fecharNovaConversa();
@@ -1837,43 +2894,46 @@ document.addEventListener("DOMContentLoaded", function () {
                     ativarConversa(
                         elemento
                     );
-
-
-                    salvarEstadoChat();
-
                 }
             );
-
         }
     );
 
 
     /*====================================================
-                    MENU ⋮
+                        MENU ⋮
     ====================================================*/
 
     function abrirMenuConversa() {
 
         if (
             !conversationMenu ||
-            !conversationOptionsButton
+            !conversationOptionsButton ||
+            !pegarNomeConversaAtiva()
         ) {
 
             return;
-
         }
 
 
-        conversationMenu.classList.add(
-            "active"
+        conversationMenu
+            .classList
+            .add(
+                "active"
+            );
+
+
+        conversationMenu.setAttribute(
+            "aria-hidden",
+            "false"
         );
 
 
-        conversationOptionsButton.setAttribute(
-            "aria-expanded",
-            "true"
-        );
-
+        conversationOptionsButton
+            .setAttribute(
+                "aria-expanded",
+                "true"
+            );
     }
 
 
@@ -1885,65 +2945,63 @@ document.addEventListener("DOMContentLoaded", function () {
         ) {
 
             return;
-
         }
 
 
-        conversationMenu.classList.remove(
-            "active"
+        conversationMenu
+            .classList
+            .remove(
+                "active"
+            );
+
+
+        conversationMenu.setAttribute(
+            "aria-hidden",
+            "true"
         );
 
 
-        conversationOptionsButton.setAttribute(
-            "aria-expanded",
-            "false"
-        );
-
+        conversationOptionsButton
+            .setAttribute(
+                "aria-expanded",
+                "false"
+            );
     }
 
 
     function alternarMenuConversa() {
 
-        if (!conversationMenu) {
-
-            return;
-
-        }
-
-
         if (
-            conversationMenu
-                .classList
-                .contains(
-                    "active"
-                )
+            !conversationMenu
         ) {
 
-            fecharMenuConversa();
-
-        } else {
-
-            abrirMenuConversa();
-
+            return;
         }
 
+
+        conversationMenu
+            .classList
+            .contains(
+                "active"
+            )
+                ? fecharMenuConversa()
+                : abrirMenuConversa();
     }
 
 
-    if (conversationOptionsButton) {
-
-        conversationOptionsButton.addEventListener(
+    conversationOptionsButton
+        ?.addEventListener(
             "click",
-            function (event) {
+            function (
+                event
+            ) {
 
                 event.stopPropagation();
 
-                alternarMenuConversa();
 
+                alternarMenuConversa();
             }
         );
-
-    }
 
 
     /*====================================================
@@ -1956,148 +3014,112 @@ document.addEventListener("DOMContentLoaded", function () {
             pegarNomeConversaAtiva();
 
 
+        const conversa =
+            nomeConversa
+                ? chatData[
+                    nomeConversa
+                ]
+                : null;
+
+
         if (
             !nomeConversa ||
-            !chatData[
-                nomeConversa
-            ] ||
+            !conversa ||
             !infoChatModal
         ) {
 
             return;
-
         }
 
 
-        const conversa =
-            chatData[
-                nomeConversa
-            ];
-
-
-        if (infoChatName) {
+        if (
+            infoChatName
+        ) {
 
             infoChatName.textContent =
                 nomeConversa;
-
         }
 
 
-        if (infoChatSubtitle) {
+        if (
+            infoChatSubtitle
+        ) {
 
             infoChatSubtitle.textContent =
                 conversa.subtitle;
-
         }
 
 
-        if (infoChatAvatar) {
-
-            infoChatAvatar.innerHTML =
-                `<i class="fa-solid ${conversa.icon}"></i>`;
-
-        }
+        definirIcone(
+            infoChatAvatar,
+            conversa.icon
+        );
 
 
-        if (infoChatMessageCount) {
+        if (
+            infoChatMessageCount
+        ) {
 
             infoChatMessageCount.textContent =
-                conversa.messages.length;
-
+                String(
+                    conversa.messages.length
+                );
         }
 
 
-        if (infoChatType) {
+        if (
+            infoChatType
+        ) {
 
             infoChatType.textContent =
-                conversa.subtitle;
-
+                normalizarTexto(
+                    conversa.subtitle
+                ).startsWith(
+                    "turma"
+                )
+                    ? "Turma"
+                    : "Institucional";
         }
-
-
-        infoChatModal.classList.add(
-            "active"
-        );
-
-
-        infoChatModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
-        );
 
 
         fecharMenuConversa();
 
 
-        if (infoChatClose) {
-
-            infoChatClose.focus();
-
-        }
-
+        abrirModalChat(
+            infoChatModal,
+            infoChatClose
+        );
     }
 
 
     function fecharInfoConversa() {
 
-        if (!infoChatModal) {
-
-            return;
-
-        }
-
-
-        infoChatModal.classList.remove(
-            "active"
+        fecharModalChat(
+            infoChatModal,
+            conversationOptionsButton
         );
-
-
-        infoChatModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
     }
 
 
-    if (conversationInfoButton) {
-
-        conversationInfoButton.addEventListener(
+    conversationInfoButton
+        ?.addEventListener(
             "click",
             abrirInfoConversa
         );
 
-    }
 
-
-    if (infoChatClose) {
-
-        infoChatClose.addEventListener(
+    infoChatClose
+        ?.addEventListener(
             "click",
             fecharInfoConversa
         );
 
-    }
 
-
-    if (infoChatOverlay) {
-
-        infoChatOverlay.addEventListener(
+    infoChatOverlay
+        ?.addEventListener(
             "click",
             fecharInfoConversa
         );
-
-    }
 
 
     /*====================================================
@@ -2108,10 +3130,11 @@ document.addEventListener("DOMContentLoaded", function () {
         configuracao
     ) {
 
-        if (!confirmChatModal) {
+        if (
+            !confirmChatModal
+        ) {
 
             return;
-
         }
 
 
@@ -2120,139 +3143,110 @@ document.addEventListener("DOMContentLoaded", function () {
             null;
 
 
-        if (confirmChatTitle) {
+        if (
+            confirmChatTitle
+        ) {
 
             confirmChatTitle.textContent =
                 configuracao.title ||
                 "Confirmar ação";
-
         }
 
 
-        if (confirmChatMessage) {
+        if (
+            confirmChatMessage
+        ) {
 
             confirmChatMessage.textContent =
                 configuracao.message ||
                 "Deseja continuar?";
-
         }
 
 
-        if (confirmChatIcon) {
+        if (
+            confirmChatIcon
+        ) {
 
-            confirmChatIcon.classList.toggle(
-                "danger",
+            const perigoso =
                 configuracao.danger ===
-                true
+                true;
+
+
+            confirmChatIcon
+                .classList
+                .toggle(
+                    "danger",
+                    perigoso
+                );
+
+
+            definirIcone(
+                confirmChatIcon,
+                perigoso
+                    ? "fa-trash"
+                    : "fa-broom"
             );
-
-
-            confirmChatIcon.innerHTML =
-                configuracao.danger
-                    ? '<i class="fa-solid fa-trash"></i>'
-                    : '<i class="fa-solid fa-broom"></i>';
-
         }
 
 
-        if (confirmChatConfirm) {
+        if (
+            confirmChatConfirm
+        ) {
 
-            confirmChatConfirm.classList.toggle(
-                "danger",
-                configuracao.danger ===
-                true
-            );
+            confirmChatConfirm
+                .classList
+                .toggle(
+                    "danger",
+                    configuracao.danger ===
+                        true
+                );
 
 
             confirmChatConfirm.textContent =
                 configuracao.confirmText ||
                 "Confirmar";
-
         }
-
-
-        confirmChatModal.classList.add(
-            "active"
-        );
-
-
-        confirmChatModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
-        );
 
 
         fecharMenuConversa();
 
 
-        if (confirmChatCancel) {
-
-            confirmChatCancel.focus();
-
-        }
-
+        abrirModalChat(
+            confirmChatModal,
+            confirmChatCancel
+        );
     }
 
 
     function fecharConfirmacao() {
 
-        if (!confirmChatModal) {
-
-            return;
-
-        }
-
-
-        confirmChatModal.classList.remove(
-            "active"
-        );
-
-
-        confirmChatModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
         confirmacaoAtual =
             null;
 
 
-        document.body.classList.remove(
-            "modal-open"
+        fecharModalChat(
+            confirmChatModal,
+            conversationOptionsButton
         );
-
     }
 
 
-    if (confirmChatCancel) {
-
-        confirmChatCancel.addEventListener(
+    confirmChatCancel
+        ?.addEventListener(
             "click",
             fecharConfirmacao
         );
 
-    }
 
-
-    if (confirmChatOverlay) {
-
-        confirmChatOverlay.addEventListener(
+    confirmChatOverlay
+        ?.addEventListener(
             "click",
             fecharConfirmacao
         );
 
-    }
 
-
-    if (confirmChatConfirm) {
-
-        confirmChatConfirm.addEventListener(
+    confirmChatConfirm
+        ?.addEventListener(
             "click",
             function () {
 
@@ -2269,22 +3263,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) {
 
                     acao();
-
                 }
-
             }
         );
 
-    }
-
 
     /*====================================================
-                LIMPAR CONVERSA
+                    LIMPAR CONVERSA
     ====================================================*/
 
-    if (clearConversationButton) {
-
-        clearConversationButton.addEventListener(
+    clearConversationButton
+        ?.addEventListener(
             "click",
             function () {
 
@@ -2300,64 +3289,154 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) {
 
                     return;
-
                 }
 
 
-                abrirConfirmacao({
+                abrirConfirmacao(
+                    {
 
-                    title:
-                        "Limpar conversa",
+                        title:
+                            "Limpar conversa",
 
-                    message:
-                        `Todas as mensagens da conversa "${nomeConversa}" serão removidas deste protótipo.`,
+                        message:
+                            `Todas as mensagens da conversa "${nomeConversa}" serão removidas deste protótipo.`,
 
-                    confirmText:
-                        "Limpar",
+                        confirmText:
+                            "Limpar",
 
-                    danger:
-                        false,
+                        danger:
+                            false,
 
-                    onConfirm:
-                        function () {
+                        onConfirm:
+                            function () {
 
-                            chatData[
-                                nomeConversa
-                            ].messages =
-                                [];
-
-
-                            renderMessages(
-                                nomeConversa
-                            );
+                                const conversa =
+                                    chatData[
+                                        nomeConversa
+                                    ];
 
 
-                            atualizarPreview(
-                                nomeConversa,
-                                "Conversa limpa",
-                                "Agora"
-                            );
+                                if (
+                                    !conversa
+                                ) {
+
+                                    return;
+                                }
 
 
-                            salvarEstadoChat();
+                                conversa.messages =
+                                    [];
 
-                        }
 
-                });
+                                conversa.unread =
+                                    0;
 
+
+                                atualizarContador(
+                                    nomeConversa
+                                );
+
+
+                                renderMessages(
+                                    nomeConversa
+                                );
+
+
+                                atualizarPreview(
+                                    nomeConversa,
+                                    "Conversa limpa",
+                                    "Agora"
+                                );
+
+
+                                salvarEstadoChat();
+                            }
+
+                    }
+                );
             }
         );
 
+
+    /*====================================================
+                ESTADO SEM CONVERSA
+    ====================================================*/
+
+    function mostrarEstadoSemConversa() {
+
+        if (
+            conversationTitle
+        ) {
+
+            conversationTitle.textContent =
+                "Nenhuma conversa";
+        }
+
+
+        if (
+            conversationSubtitle
+        ) {
+
+            conversationSubtitle.textContent =
+                "Selecione ou inicie uma conversa";
+        }
+
+
+        definirIcone(
+            conversationAvatar,
+            "fa-comments"
+        );
+
+
+        messagesContainer
+            ?.replaceChildren();
+
+
+        if (
+            messageInput
+        ) {
+
+            messageInput.value =
+                "";
+        }
+
+
+        getConversations()
+            .forEach(
+                function (
+                    item
+                ) {
+
+                    item
+                        .classList
+                        .remove(
+                            "active"
+                        );
+
+
+                    item.removeAttribute(
+                        "aria-current"
+                    );
+                }
+            );
+
+
+        atualizarDisponibilidadeChat();
+
+
+        fecharMenuConversa();
+
+
+        mostrarListaMobile();
     }
 
 
     /*====================================================
-                EXCLUIR CONVERSA
+                    EXCLUIR CONVERSA
     ====================================================*/
 
-    if (deleteConversationButton) {
-
-        deleteConversationButton.addEventListener(
+    deleteConversationButton
+        ?.addEventListener(
             "click",
             function () {
 
@@ -2365,126 +3444,96 @@ document.addEventListener("DOMContentLoaded", function () {
                     pegarNomeConversaAtiva();
 
 
-                if (!nomeConversa) {
+                if (
+                    !nomeConversa
+                ) {
 
                     return;
-
                 }
 
 
-                abrirConfirmacao({
+                abrirConfirmacao(
+                    {
 
-                    title:
-                        "Excluir conversa",
+                        title:
+                            "Excluir conversa",
 
-                    message:
-                        `A conversa "${nomeConversa}" será removida da sua lista.`,
+                        message:
+                            `A conversa "${nomeConversa}" será removida da sua lista.`,
 
-                    confirmText:
-                        "Excluir",
+                        confirmText:
+                            "Excluir",
 
-                    danger:
-                        true,
+                        danger:
+                            true,
 
-                    onConfirm:
-                        function () {
+                        onConfirm:
+                            function () {
 
-                            const elemento =
                                 encontrarConversa(
                                     nomeConversa
-                                );
+                                )?.remove();
 
 
-                            if (elemento) {
-
-                                elemento.remove();
-
-                            }
+                                delete chatData[
+                                    nomeConversa
+                                ];
 
 
-                            delete chatData[
-                                nomeConversa
-                            ];
+                                limparPesquisaConversas();
 
 
-                            const proximaConversa =
-                                document.querySelector(
-                                    ".conversation"
-                                );
+                                const proximaConversa =
+                                    document.querySelector(
+                                        ".conversation"
+                                    );
 
 
-                            if (proximaConversa) {
-
-                                ativarConversa(
+                                if (
                                     proximaConversa
-                                );
+                                ) {
 
-                            } else {
+                                    ativarConversa(
+                                        proximaConversa
+                                    );
 
-                                if (conversationTitle) {
 
-                                    conversationTitle.textContent =
-                                        "Nenhuma conversa";
-
+                                    return;
                                 }
 
 
-                                if (conversationSubtitle) {
-
-                                    conversationSubtitle.textContent =
-                                        "Selecione ou inicie uma conversa";
-
-                                }
+                                mostrarEstadoSemConversa();
 
 
-                                if (conversationAvatar) {
-
-                                    conversationAvatar.innerHTML =
-                                        '<i class="fa-solid fa-comments"></i>';
-
-                                }
-
-
-                                if (messagesContainer) {
-
-                                    messagesContainer.innerHTML =
-                                        "";
-
-                                }
-
-
-                                mostrarListaMobile();
-
+                                salvarEstadoChat();
                             }
 
-
-                            salvarEstadoChat();
-
-                        }
-
-                });
-
+                    }
+                );
             }
         );
 
-    }
-
 
     /*====================================================
-                FECHAR MENU CLICANDO FORA
+                    CLIQUE FORA DO MENU
     ====================================================*/
 
     document.addEventListener(
         "click",
-        function (event) {
+        function (
+            event
+        ) {
 
             if (
                 !conversationMenu ||
-                !conversationOptionsButton
+                !conversationOptionsButton ||
+                !(
+                    event.target instanceof
+                    Node
+                )
             ) {
 
                 return;
-
             }
 
 
@@ -2495,9 +3544,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             const clicouNoBotao =
-                conversationOptionsButton.contains(
-                    event.target
-                );
+                conversationOptionsButton
+                    .contains(
+                        event.target
+                    );
 
 
             if (
@@ -2506,20 +3556,20 @@ document.addEventListener("DOMContentLoaded", function () {
             ) {
 
                 fecharMenuConversa();
-
             }
-
         }
     );
 
 
     /*====================================================
-                    TECLA ESC
+                        TECLA ESC
     ====================================================*/
 
     document.addEventListener(
         "keydown",
-        function (event) {
+        function (
+            event
+        ) {
 
             if (
                 event.key !==
@@ -2527,17 +3577,12 @@ document.addEventListener("DOMContentLoaded", function () {
             ) {
 
                 return;
-
             }
 
 
-            fecharMenuConversa();
-
-
             if (
-                confirmChatModal &&
                 confirmChatModal
-                    .classList
+                    ?.classList
                     .contains(
                         "active"
                     )
@@ -2545,15 +3590,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 fecharConfirmacao();
 
-                return;
 
+                return;
             }
 
 
             if (
-                infoChatModal &&
                 infoChatModal
-                    .classList
+                    ?.classList
                     .contains(
                         "active"
                     )
@@ -2561,15 +3605,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 fecharInfoConversa();
 
-                return;
 
+                return;
             }
 
 
             if (
-                newChatModal &&
                 newChatModal
-                    .classList
+                    ?.classList
                     .contains(
                         "active"
                     )
@@ -2577,8 +3620,226 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 fecharNovaConversa();
 
+
+                return;
             }
 
+
+            if (
+                conversationMenu
+                    ?.classList
+                    .contains(
+                        "active"
+                    )
+            ) {
+
+                fecharMenuConversa();
+            }
+        }
+    );
+
+
+    /*====================================================
+                        LOGOUT PHP
+    ====================================================*/
+
+    let logoutEmAndamento =
+        false;
+
+
+    async function fazerLogout() {
+
+        if (
+            logoutEmAndamento
+        ) {
+
+            return;
+        }
+
+
+        logoutEmAndamento =
+            true;
+
+
+        if (
+            logoutButton
+        ) {
+
+            logoutButton.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+
+            if (
+                "disabled" in
+                logoutButton
+            ) {
+
+                logoutButton.disabled =
+                    true;
+            }
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_LOGOUT_URL,
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.success
+            ) {
+
+                throw new Error(
+                    data?.message ||
+                    "O servidor não confirmou o logout."
+                );
+            }
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao encerrar a sessão:",
+                error
+            );
+
+
+            alert(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
+
+
+            logoutEmAndamento =
+                false;
+
+
+            if (
+                logoutButton
+            ) {
+
+                logoutButton.setAttribute(
+                    "aria-busy",
+                    "false"
+                );
+
+
+                if (
+                    "disabled" in
+                    logoutButton
+                ) {
+
+                    logoutButton.disabled =
+                        false;
+                }
+            }
+        }
+    }
+
+
+    logoutButton
+        ?.addEventListener(
+            "click",
+            fazerLogout
+        );
+
+
+    /*====================================================
+                SINCRONIZAÇÃO ENTRE ABAS
+    ====================================================*/
+
+    window.addEventListener(
+        "storage",
+        function (
+            event
+        ) {
+
+            if (
+                event.key !==
+                CHAT_STORAGE_KEY
+            ) {
+
+                return;
+            }
+
+
+            const conversaAtiva =
+                carregarEstadoChat();
+
+
+            atualizarTodosOsContadores();
+
+
+            let conversa =
+                conversaAtiva
+                    ? encontrarConversa(
+                        conversaAtiva
+                    )
+                    : null;
+
+
+            if (
+                !conversa
+            ) {
+
+                conversa =
+                    document.querySelector(
+                        ".conversation"
+                    );
+            }
+
+
+            if (
+                conversa
+            ) {
+
+                ativarConversa(
+                    conversa,
+                    false
+                );
+
+            } else {
+
+                mostrarEstadoSemConversa();
+            }
+
+
+            filtrarConversas();
         }
     );
 
@@ -2590,48 +3851,117 @@ document.addEventListener("DOMContentLoaded", function () {
     ajustarModoResponsivo();
 
 
+    if (
+        conversationMenu
+    ) {
+
+        conversationMenu.setAttribute(
+            "aria-hidden",
+            conversationMenu
+                .classList
+                .contains(
+                    "active"
+                )
+                    ? "false"
+                    : "true"
+        );
+    }
+
+
+    /*
+        As conversas iniciais já existem no HTML.
+
+        data-chat é usado para identificar cada
+        conversa sem depender somente do texto
+        que aparece visualmente.
+    */
+
+
+    getConversations()
+        .forEach(
+            function (
+                conversation
+            ) {
+
+                const strong =
+                    conversation
+                        .querySelector(
+                            ".conversation-info strong"
+                        );
+
+
+                if (
+                    strong &&
+                    !conversation
+                        .dataset
+                        .chat
+                ) {
+
+                    conversation
+                        .dataset
+                        .chat =
+                            strong
+                                .textContent
+                                .trim();
+                }
+            }
+        );
+
+
     const conversaAtivaSalva =
         carregarEstadoChat();
+
+
+    if (
+        conversaAtivaSalva === null &&
+        conversationsContainer
+    ) {
+        conversationsContainer.replaceChildren();
+        chatData = {};
+    }
+
+    conversationsContainer?.setAttribute(
+        "data-ready",
+        "true"
+    );
 
 
     atualizarTodosOsContadores();
 
 
     let conversaInicial =
-        null;
-
-
-    if (conversaAtivaSalva) {
-
-        conversaInicial =
-            encontrarConversa(
+        conversaAtivaSalva
+            ? encontrarConversa(
                 conversaAtivaSalva
-            );
+            )
+            : null;
 
-    }
 
-
-    if (!conversaInicial) {
+    if (
+        !conversaInicial
+    ) {
 
         conversaInicial =
             document.querySelector(
                 ".conversation.active"
             );
-
     }
 
 
-    if (!conversaInicial) {
+    if (
+        !conversaInicial
+    ) {
 
         conversaInicial =
             document.querySelector(
                 ".conversation"
             );
-
     }
 
 
-    if (conversaInicial) {
+    if (
+        conversaInicial
+    ) {
 
         ativarConversa(
             conversaInicial
@@ -2639,40 +3969,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } else {
 
-        if (conversationTitle) {
-
-            conversationTitle.textContent =
-                "Nenhuma conversa";
-
-        }
-
-
-        if (conversationSubtitle) {
-
-            conversationSubtitle.textContent =
-                "Selecione ou inicie uma conversa";
-
-        }
-
-
-        if (conversationAvatar) {
-
-            conversationAvatar.innerHTML =
-                '<i class="fa-solid fa-comments"></i>';
-
-        }
-
-
-        if (messagesContainer) {
-
-            messagesContainer.innerHTML =
-                "";
-
-        }
-
-
-        mostrarListaMobile();
-
+        mostrarEstadoSemConversa();
     }
 
 

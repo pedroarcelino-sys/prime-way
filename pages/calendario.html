@@ -12,15 +12,30 @@
 
     <title>Calendário | PrimeWay School</title>
 
+
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/components.css"
     >
 
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/calendario.css"
     >
+
+
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
 
     <link
         rel="preconnect"
@@ -38,6 +53,11 @@
         rel="stylesheet"
     >
 
+
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -45,18 +65,24 @@
 
 </head>
 
+
 <body>
 
 
     <div class="app-layout">
 
 
-        <!-- =========================================
-                    SIDEBAR
-        ========================================== -->
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
+
+            <!-- LOGO -->
 
             <div class="sidebar-logo">
 
@@ -68,104 +94,184 @@
             </div>
 
 
-            <nav class="sidebar-menu">
+            <!-- MENU -->
 
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
+
+
+                <!-- INÍCIO -->
 
                 <a href="dashboard.html">
 
-                    <i class="fa-solid fa-house"></i>
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Dashboard</span>
+                    <span>
+                        Início
+                    </span>
+
+                </a>
+
+
+                <!-- PROFESSOR -->
+
+                <a href="professores.html">
+
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Professores
+                    </span>
 
                 </a>
 
 
-                <a href="professor.html">
-
-                    <i class="fa-solid fa-chalkboard-user"></i>
-
-                    <span>Professor</span>
-
-                </a>
-
+                <!-- ALUNOS -->
 
                 <a href="alunos.html">
 
-                    <i class="fa-solid fa-user-graduate"></i>
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Alunos</span>
+                    <span>
+                        Alunos
+                    </span>
 
                 </a>
 
+
+                <!-- RESPONSÁVEIS -->
 
                 <a href="responsaveis.html">
 
-                    <i class="fa-solid fa-people-roof"></i>
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Responsáveis</span>
+                    <span>
+                        Responsáveis
+                    </span>
 
                 </a>
 
+
+                <!-- TURMAS -->
 
                 <a href="turmas.html">
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Turmas</span>
+                    <span>
+                        Turmas
+                    </span>
 
                 </a>
 
+
+                <!-- DISCIPLINAS -->
 
                 <a href="disciplinas.html">
 
-                    <i class="fa-solid fa-book-open"></i>
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Disciplinas</span>
+                    <span>
+                        Disciplinas
+                    </span>
 
                 </a>
 
+
+                <!-- CHAT -->
 
                 <a href="chat-professor.html">
 
-                    <i class="fa-solid fa-comments"></i>
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Chat</span>
+                    <span>
+                        Chat
+                    </span>
 
                 </a>
 
+
+                <!-- CALENDÁRIO -->
 
                 <a
                     href="calendario.html"
                     class="active"
+                    aria-current="page"
                 >
 
-                    <i class="fa-solid fa-calendar-days"></i>
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Calendário</span>
+                    <span>
+                        Calendário
+                    </span>
 
                 </a>
 
+
+                <!-- NOTIFICAÇÕES -->
 
                 <a href="notificacoes.html">
 
-                    <i class="fa-solid fa-bell"></i>
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Notificações</span>
+                    <span>
+                        Notificações
+                    </span>
 
                 </a>
 
 
-                <a href="#">
+                <!-- CONFIGURAÇÕES -->
 
-                    <i class="fa-solid fa-gear"></i>
+                <a href="configuracoes.html">
 
-                    <span>Configurações</span>
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Configurações
+                    </span>
 
                 </a>
 
 
             </nav>
 
+
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
 
             <div class="sidebar-bottom">
 
@@ -174,9 +280,14 @@
                     id="logoutButton"
                 >
 
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
 
-                    <span>Sair</span>
+                    <span>
+                        Sair
+                    </span>
 
                 </button>
 
@@ -186,14 +297,16 @@
         </aside>
 
 
-        <!-- =========================================
-                    CONTEÚDO
-        ========================================== -->
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
 
         <main class="calendar-page">
 
 
-            <!-- CABEÇALHO -->
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
 
             <header class="calendar-page-header">
 
@@ -209,7 +322,8 @@
                     </h1>
 
                     <p>
-                        Organize provas, reuniões, atividades, eventos e datas importantes.
+                        Organize provas, reuniões, atividades,
+                        eventos e datas importantes.
                     </p>
 
                 </div>
@@ -219,9 +333,14 @@
                     type="button"
                     class="new-event-button"
                     id="newEventButton"
+                    aria-haspopup="dialog"
+                    aria-controls="eventModal"
                 >
 
-                    <i class="fa-solid fa-plus"></i>
+                    <i
+                        class="fa-solid fa-plus"
+                        aria-hidden="true"
+                    ></i>
 
                     Novo evento
 
@@ -231,24 +350,35 @@
             </header>
 
 
-            <!-- =========================================
-                        RESUMO
-            ========================================== -->
+            <!-- ==================================================
+                            RESUMO
+            =================================================== -->
 
-            <section class="calendar-summary">
+            <section
+                class="calendar-summary"
+                aria-label="Resumo do calendário"
+            >
 
+
+                <!-- EVENTOS NO MÊS -->
 
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-calendar-check"></i>
+                        <i
+                            class="fa-solid fa-calendar-check"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
+
                     <div>
 
-                        <span>Eventos no mês</span>
+                        <span>
+                            Eventos no mês
+                        </span>
 
                         <strong id="monthEventsCount">
                             0
@@ -259,17 +389,25 @@
                 </article>
 
 
+                <!-- PROVAS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-file-pen"></i>
+                        <i
+                            class="fa-solid fa-file-pen"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
+
                     <div>
 
-                        <span>Provas / avaliações</span>
+                        <span>
+                            Provas / avaliações
+                        </span>
 
                         <strong id="examEventsCount">
                             0
@@ -280,17 +418,25 @@
                 </article>
 
 
+                <!-- REUNIÕES -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-people-group"></i>
+                        <i
+                            class="fa-solid fa-people-group"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
+
                     <div>
 
-                        <span>Reuniões</span>
+                        <span>
+                            Reuniões
+                        </span>
 
                         <strong id="meetingEventsCount">
                             0
@@ -301,17 +447,25 @@
                 </article>
 
 
+                <!-- PRÓXIMOS EVENTOS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon warning">
 
-                        <i class="fa-solid fa-star"></i>
+                        <i
+                            class="fa-solid fa-star"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
 
+
                     <div>
 
-                        <span>Próximos eventos</span>
+                        <span>
+                            Próximos eventos
+                        </span>
 
                         <strong id="upcomingEventsCount">
                             0
@@ -325,20 +479,29 @@
             </section>
 
 
-            <!-- =========================================
+            <!-- ==================================================
                     CONTEÚDO DO CALENDÁRIO
-            ========================================== -->
+            =================================================== -->
 
-            <section class="calendar-layout">
+            <section
+                class="calendar-layout"
+                aria-label="Calendário e próximos eventos"
+            >
 
 
-                <!-- CALENDÁRIO -->
+                <!-- ==================================================
+                            CALENDÁRIO
+                =================================================== -->
 
                 <div class="calendar-panel">
 
 
+                    <!-- TOOLBAR -->
+
                     <div class="calendar-toolbar">
 
+
+                        <!-- NAVEGAÇÃO -->
 
                         <div class="calendar-navigation">
 
@@ -348,20 +511,30 @@
                                 class="calendar-nav-button"
                                 id="previousMonthButton"
                                 aria-label="Mês anterior"
+                                aria-controls="calendarGrid"
                             >
 
-                                <i class="fa-solid fa-chevron-left"></i>
+                                <i
+                                    class="fa-solid fa-chevron-left"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
 
                             <div>
 
-                                <span class="calendar-year" id="calendarYear">
+                                <span
+                                    class="calendar-year"
+                                    id="calendarYear"
+                                >
                                     2026
                                 </span>
 
-                                <h2 id="calendarMonth">
+                                <h2
+                                    id="calendarMonth"
+                                    aria-live="polite"
+                                >
                                     Agosto
                                 </h2>
 
@@ -373,9 +546,13 @@
                                 class="calendar-nav-button"
                                 id="nextMonthButton"
                                 aria-label="Próximo mês"
+                                aria-controls="calendarGrid"
                             >
 
-                                <i class="fa-solid fa-chevron-right"></i>
+                                <i
+                                    class="fa-solid fa-chevron-right"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
@@ -383,8 +560,12 @@
                         </div>
 
 
+                        <!-- FILTROS -->
+
                         <div class="calendar-toolbar-actions">
 
+
+                            <!-- HOJE -->
 
                             <button
                                 type="button"
@@ -395,7 +576,12 @@
                             </button>
 
 
-                            <select id="eventTypeFilter">
+                            <!-- TIPO -->
+
+                            <select
+                                id="eventTypeFilter"
+                                aria-label="Filtrar eventos por tipo"
+                            >
 
                                 <option value="">
                                     Todos os tipos
@@ -428,7 +614,12 @@
                             </select>
 
 
-                            <select id="eventClassFilter">
+                            <!-- TURMA -->
+
+                            <select
+                                id="eventClassFilter"
+                                aria-label="Filtrar eventos por turma"
+                            >
 
                                 <option value="">
                                     Todas as turmas
@@ -443,34 +634,73 @@
                     </div>
 
 
-                    <div class="weekdays">
+                    <!-- ==================================================
+                            DIAS DA SEMANA
+                    =================================================== -->
 
-                        <span>Dom</span>
-                        <span>Seg</span>
-                        <span>Ter</span>
-                        <span>Qua</span>
-                        <span>Qui</span>
-                        <span>Sex</span>
-                        <span>Sáb</span>
+                    <div
+                        class="weekdays"
+                        aria-label="Dias da semana"
+                    >
+
+                        <span>
+                            Dom
+                        </span>
+
+                        <span>
+                            Seg
+                        </span>
+
+                        <span>
+                            Ter
+                        </span>
+
+                        <span>
+                            Qua
+                        </span>
+
+                        <span>
+                            Qui
+                        </span>
+
+                        <span>
+                            Sex
+                        </span>
+
+                        <span>
+                            Sáb
+                        </span>
 
                     </div>
 
 
+                    <!-- ==================================================
+                            GRID DO CALENDÁRIO
+                    =================================================== -->
+
                     <div
                         class="calendar-grid"
                         id="calendarGrid"
+                        aria-live="polite"
+                        aria-label="Dias e eventos do mês"
                     ></div>
 
 
                 </div>
 
 
-                <!-- PRÓXIMOS EVENTOS -->
+                <!-- ==================================================
+                        PRÓXIMOS EVENTOS
+                =================================================== -->
 
-                <aside class="upcoming-panel">
+                <aside
+                    class="upcoming-panel"
+                    aria-labelledby="upcomingEventsTitle"
+                >
 
 
                     <div class="upcoming-header">
+
 
                         <div>
 
@@ -478,29 +708,42 @@
                                 Agenda
                             </span>
 
-                            <h2>
+                            <h2 id="upcomingEventsTitle">
                                 Próximos eventos
                             </h2>
 
                         </div>
 
-                        <i class="fa-solid fa-clock"></i>
+
+                        <i
+                            class="fa-solid fa-clock"
+                            aria-hidden="true"
+                        ></i>
+
 
                     </div>
 
 
+                    <!-- LISTA -->
+
                     <div
                         class="upcoming-list"
                         id="upcomingEventsList"
+                        aria-live="polite"
                     ></div>
 
+
+                    <!-- LISTA VAZIA -->
 
                     <div
                         class="upcoming-empty"
                         id="upcomingEventsEmpty"
                     >
 
-                        <i class="fa-regular fa-calendar"></i>
+                        <i
+                            class="fa-regular fa-calendar"
+                            aria-hidden="true"
+                        ></i>
 
                         <strong>
                             Nenhum evento próximo
@@ -525,9 +768,9 @@
     </div>
 
 
-    <!-- =========================================
+    <!-- ==================================================
             MODAL CRIAR / EDITAR EVENTO
-    ========================================== -->
+    =================================================== -->
 
     <div
         class="event-modal"
@@ -536,11 +779,21 @@
     >
 
 
-        <div class="event-modal-overlay"></div>
+        <div
+            class="event-modal-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="event-modal-box">
+        <div
+            class="event-modal-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="eventModalTitle"
+        >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="event-modal-header">
 
@@ -562,16 +815,23 @@
                     type="button"
                     class="event-modal-close"
                     id="eventModalClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar cadastro de evento"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
 
             </div>
 
+
+            <!-- ==================================================
+                            FORMULÁRIO
+            =================================================== -->
 
             <form
                 class="event-form"
@@ -585,6 +845,8 @@
                 >
 
 
+                <!-- TÍTULO -->
+
                 <div class="form-group">
 
                     <label for="eventTitle">
@@ -596,11 +858,14 @@
                         id="eventTitle"
                         required
                         maxlength="80"
+                        autocomplete="off"
                         placeholder="Ex: Avaliação de Matemática"
                     >
 
                 </div>
 
+
+                <!-- TIPO / TURMA -->
 
                 <div class="form-grid">
 
@@ -669,6 +934,8 @@
                 </div>
 
 
+                <!-- DATA / HORÁRIO -->
+
                 <div class="form-grid">
 
 
@@ -704,6 +971,8 @@
                 </div>
 
 
+                <!-- LOCAL -->
+
                 <div class="form-group">
 
                     <label for="eventLocation">
@@ -714,11 +983,14 @@
                         type="text"
                         id="eventLocation"
                         maxlength="80"
+                        autocomplete="off"
                         placeholder="Ex: Sala 05, Auditório ou Quadra"
                     >
 
                 </div>
 
+
+                <!-- DESCRIÇÃO -->
 
                 <div class="form-group">
 
@@ -735,6 +1007,8 @@
                 </div>
 
 
+                <!-- AÇÕES -->
+
                 <div class="event-form-actions">
 
 
@@ -743,7 +1017,9 @@
                         class="secondary-button"
                         id="eventCancelButton"
                     >
+
                         Cancelar
+
                     </button>
 
 
@@ -752,7 +1028,10 @@
                         class="primary-button"
                     >
 
-                        <i class="fa-solid fa-floppy-disk"></i>
+                        <i
+                            class="fa-solid fa-floppy-disk"
+                            aria-hidden="true"
+                        ></i>
 
                         Salvar evento
 
@@ -771,9 +1050,9 @@
     </div>
 
 
-    <!-- =========================================
-            VISUALIZAR EVENTO
-    ========================================== -->
+    <!-- ==================================================
+                    VISUALIZAR EVENTO
+    =================================================== -->
 
     <div
         class="event-view-modal"
@@ -782,11 +1061,21 @@
     >
 
 
-        <div class="event-view-overlay"></div>
+        <div
+            class="event-view-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="event-view-box">
+        <div
+            class="event-view-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="viewEventTitle"
+        >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="event-view-header">
 
@@ -796,6 +1085,7 @@
                     <i
                         class="fa-solid fa-calendar-day"
                         id="viewEventIcon"
+                        aria-hidden="true"
                     ></i>
 
                 </div>
@@ -821,9 +1111,13 @@
                     type="button"
                     class="event-view-close"
                     id="eventViewClose"
+                    aria-label="Fechar informações do evento"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -831,16 +1125,27 @@
             </div>
 
 
+            <!-- ==================================================
+                        CONTEÚDO
+            =================================================== -->
+
             <div class="event-view-content">
 
 
+                <!-- DATA -->
+
                 <div class="event-view-item">
 
-                    <i class="fa-solid fa-calendar"></i>
+                    <i
+                        class="fa-solid fa-calendar"
+                        aria-hidden="true"
+                    ></i>
 
                     <div>
 
-                        <span>Data</span>
+                        <span>
+                            Data
+                        </span>
 
                         <strong id="viewEventDate">
                             -
@@ -851,13 +1156,20 @@
                 </div>
 
 
+                <!-- HORÁRIO -->
+
                 <div class="event-view-item">
 
-                    <i class="fa-solid fa-clock"></i>
+                    <i
+                        class="fa-solid fa-clock"
+                        aria-hidden="true"
+                    ></i>
 
                     <div>
 
-                        <span>Horário</span>
+                        <span>
+                            Horário
+                        </span>
 
                         <strong id="viewEventTime">
                             -
@@ -868,13 +1180,20 @@
                 </div>
 
 
+                <!-- TURMA -->
+
                 <div class="event-view-item">
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
                     <div>
 
-                        <span>Turma</span>
+                        <span>
+                            Turma
+                        </span>
 
                         <strong id="viewEventClass">
                             -
@@ -885,13 +1204,20 @@
                 </div>
 
 
+                <!-- LOCAL -->
+
                 <div class="event-view-item">
 
-                    <i class="fa-solid fa-location-dot"></i>
+                    <i
+                        class="fa-solid fa-location-dot"
+                        aria-hidden="true"
+                    ></i>
 
                     <div>
 
-                        <span>Local</span>
+                        <span>
+                            Local
+                        </span>
 
                         <strong id="viewEventLocation">
                             -
@@ -901,6 +1227,8 @@
 
                 </div>
 
+
+                <!-- DESCRIÇÃO -->
 
                 <div class="event-description-box">
 
@@ -918,8 +1246,14 @@
             </div>
 
 
+            <!-- ==================================================
+                        AÇÕES
+            =================================================== -->
+
             <div class="event-view-actions">
 
+
+                <!-- EDITAR -->
 
                 <button
                     type="button"
@@ -927,12 +1261,17 @@
                     id="editEventButton"
                 >
 
-                    <i class="fa-solid fa-pen"></i>
+                    <i
+                        class="fa-solid fa-pen"
+                        aria-hidden="true"
+                    ></i>
 
                     Editar
 
                 </button>
 
+
+                <!-- EXCLUIR -->
 
                 <button
                     type="button"
@@ -940,7 +1279,10 @@
                     id="deleteEventButton"
                 >
 
-                    <i class="fa-solid fa-trash"></i>
+                    <i
+                        class="fa-solid fa-trash"
+                        aria-hidden="true"
+                    ></i>
 
                     Excluir
 
@@ -956,9 +1298,9 @@
     </div>
 
 
-    <!-- =========================================
-            CONFIRMAR EXCLUSÃO
-    ========================================== -->
+    <!-- ==================================================
+                    CONFIRMAR EXCLUSÃO
+    =================================================== -->
 
     <div
         class="delete-event-modal"
@@ -967,28 +1309,48 @@
     >
 
 
-        <div class="delete-event-overlay"></div>
+        <div
+            class="delete-event-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="delete-event-box">
+        <div
+            class="delete-event-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteEventTitle"
+            aria-describedby="deleteEventMessage"
+        >
 
+
+            <!-- ÍCONE -->
 
             <div class="delete-event-icon">
 
-                <i class="fa-solid fa-trash"></i>
+                <i
+                    class="fa-solid fa-trash"
+                    aria-hidden="true"
+                ></i>
 
             </div>
 
 
-            <h2>
+            <!-- TÍTULO -->
+
+            <h2 id="deleteEventTitle">
                 Excluir evento
             </h2>
 
+
+            <!-- MENSAGEM -->
 
             <p id="deleteEventMessage">
                 Deseja realmente excluir este evento?
             </p>
 
+
+            <!-- AÇÕES -->
 
             <div class="delete-event-actions">
 
@@ -998,7 +1360,9 @@
                     class="secondary-button"
                     id="deleteEventCancel"
                 >
+
                     Cancelar
+
                 </button>
 
 
@@ -1007,7 +1371,9 @@
                     class="delete-button"
                     id="deleteEventConfirm"
                 >
+
                     Excluir
+
                 </button>
 
 
@@ -1020,6 +1386,11 @@
     </div>
 
 
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/core.js"></script>
     <script src="../js/calendario.js"></script>
 
 

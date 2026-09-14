@@ -13,16 +13,29 @@
     <title>Disciplinas | PrimeWay School</title>
 
 
+    <!-- ==================================================
+                    COMPONENTES GLOBAIS
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/components.css"
     >
+
+
+    <!-- ==================================================
+                    CSS DA PÁGINA
+    =================================================== -->
 
     <link
         rel="stylesheet"
         href="../css/disciplinas.css"
     >
 
+
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
 
     <link
         rel="preconnect"
@@ -41,6 +54,10 @@
     >
 
 
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -55,12 +72,17 @@
     <div class="app-layout">
 
 
-        <!-- =========================================
-                    SIDEBAR
-        ========================================== -->
+        <!-- ==================================================
+                            SIDEBAR
+        =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
+
+            <!-- LOGO -->
 
             <div class="sidebar-logo">
 
@@ -72,34 +94,54 @@
             </div>
 
 
-            <nav class="sidebar-menu">
+            <!-- MENU -->
 
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
+
+
+                <!-- INÍCIO -->
 
                 <a href="dashboard.html">
 
-                    <i class="fa-solid fa-house"></i>
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        Dashboard
+                        Início
                     </span>
 
                 </a>
 
 
-                <a href="professor.html">
+                <!-- PROFESSOR -->
 
-                    <i class="fa-solid fa-chalkboard-user"></i>
+                <a href="professores.html">
+
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
-                        Professor
+                        Professores
                     </span>
 
                 </a>
 
+
+                <!-- ALUNOS -->
 
                 <a href="alunos.html">
 
-                    <i class="fa-solid fa-user-graduate"></i>
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Alunos
@@ -108,9 +150,14 @@
                 </a>
 
 
+                <!-- RESPONSÁVEIS -->
+
                 <a href="responsaveis.html">
 
-                    <i class="fa-solid fa-people-roof"></i>
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Responsáveis
@@ -119,9 +166,14 @@
                 </a>
 
 
+                <!-- TURMAS -->
+
                 <a href="turmas.html">
 
-                    <i class="fa-solid fa-users"></i>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Turmas
@@ -130,12 +182,18 @@
                 </a>
 
 
+                <!-- DISCIPLINAS -->
+
                 <a
                     href="disciplinas.html"
                     class="active"
+                    aria-current="page"
                 >
 
-                    <i class="fa-solid fa-book-open"></i>
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Disciplinas
@@ -144,9 +202,14 @@
                 </a>
 
 
+                <!-- CHAT -->
+
                 <a href="chat-professor.html">
 
-                    <i class="fa-solid fa-comments"></i>
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Chat
@@ -155,9 +218,14 @@
                 </a>
 
 
-                <a href="#">
+                <!-- CALENDÁRIO -->
 
-                    <i class="fa-solid fa-calendar-days"></i>
+                <a href="calendario.html">
+
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Calendário
@@ -166,9 +234,14 @@
                 </a>
 
 
-                <a href="#">
+                <!-- NOTIFICAÇÕES -->
 
-                    <i class="fa-solid fa-bell"></i>
+                <a href="notificacoes.html">
+
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Notificações
@@ -177,9 +250,14 @@
                 </a>
 
 
-                <a href="#">
+                <!-- CONFIGURAÇÕES -->
 
-                    <i class="fa-solid fa-gear"></i>
+                <a href="configuracoes.html">
+
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Configurações
@@ -191,6 +269,10 @@
             </nav>
 
 
+            <!-- ==================================================
+                            SAIR
+            =================================================== -->
+
             <div class="sidebar-bottom">
 
                 <button
@@ -198,7 +280,10 @@
                     id="logoutButton"
                 >
 
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Sair
@@ -212,14 +297,16 @@
         </aside>
 
 
-        <!-- =========================================
-                    CONTEÚDO
-        ========================================== -->
+        <!-- ==================================================
+                            CONTEÚDO
+        =================================================== -->
 
         <main class="subjects-page">
 
 
-            <!-- CABEÇALHO -->
+            <!-- ==================================================
+                            CABEÇALHO
+            =================================================== -->
 
             <header class="subjects-header">
 
@@ -235,7 +322,8 @@
                     </h1>
 
                     <p>
-                        Gerencie componentes curriculares, carga horária e vínculos acadêmicos.
+                        Gerencie componentes curriculares,
+                        carga horária e vínculos acadêmicos.
                     </p>
 
                 </div>
@@ -247,7 +335,10 @@
                     id="newSubjectButton"
                 >
 
-                    <i class="fa-solid fa-plus"></i>
+                    <i
+                        class="fa-solid fa-plus"
+                        aria-hidden="true"
+                    ></i>
 
                     <span>
                         Nova disciplina
@@ -259,20 +350,29 @@
             </header>
 
 
-            <!-- =========================================
-                        CARDS
-            ========================================== -->
+            <!-- ==================================================
+                            CARDS
+            =================================================== -->
 
-            <section class="subjects-summary">
+            <section
+                class="subjects-summary"
+                aria-label="Resumo das disciplinas"
+            >
 
+
+                <!-- TOTAL -->
 
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-book-open"></i>
+                        <i
+                            class="fa-solid fa-book-open"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -289,13 +389,19 @@
                 </article>
 
 
+                <!-- ATIVAS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-circle-check"></i>
+                        <i
+                            class="fa-solid fa-circle-check"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -312,13 +418,19 @@
                 </article>
 
 
+                <!-- CARGA HORÁRIA -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon">
 
-                        <i class="fa-solid fa-clock"></i>
+                        <i
+                            class="fa-solid fa-clock"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -335,13 +447,19 @@
                 </article>
 
 
+                <!-- VÍNCULOS -->
+
                 <article class="summary-card">
 
                     <div class="summary-icon warning">
 
-                        <i class="fa-solid fa-link"></i>
+                        <i
+                            class="fa-solid fa-link"
+                            aria-hidden="true"
+                        ></i>
 
                     </div>
+
 
                     <div>
 
@@ -361,11 +479,14 @@
             </section>
 
 
-            <!-- =========================================
+            <!-- ==================================================
                     LISTA DE DISCIPLINAS
-            ========================================== -->
+            =================================================== -->
 
-            <section class="subjects-panel">
+            <section
+                class="subjects-panel"
+                aria-labelledby="subjectsListTitle"
+            >
 
 
                 <div class="subjects-panel-header">
@@ -373,7 +494,7 @@
 
                     <div>
 
-                        <h2>
+                        <h2 id="subjectsListTitle">
                             Lista de disciplinas
                         </h2>
 
@@ -384,23 +505,40 @@
                     </div>
 
 
+                    <!-- FILTROS -->
+
                     <div class="subjects-actions">
 
 
-                        <div class="subjects-search">
+                        <!-- PESQUISA -->
 
-                            <i class="fa-solid fa-magnifying-glass"></i>
+                        <div
+                            class="subjects-search"
+                            role="search"
+                        >
+
+                            <i
+                                class="fa-solid fa-magnifying-glass"
+                                aria-hidden="true"
+                            ></i>
 
                             <input
-                                type="text"
+                                type="search"
                                 id="subjectSearch"
                                 placeholder="Pesquisar disciplina..."
+                                autocomplete="off"
+                                aria-label="Pesquisar disciplina"
                             >
 
                         </div>
 
 
-                        <select id="areaFilter">
+                        <!-- ÁREA -->
+
+                        <select
+                            id="areaFilter"
+                            aria-label="Filtrar por área de conhecimento"
+                        >
 
                             <option value="">
                                 Todas as áreas
@@ -433,7 +571,12 @@
                         </select>
 
 
-                        <select id="statusFilter">
+                        <!-- STATUS -->
+
+                        <select
+                            id="statusFilter"
+                            aria-label="Filtrar por status"
+                        >
 
                             <option value="">
                                 Todos os status
@@ -456,7 +599,9 @@
                 </div>
 
 
-                <!-- TABELA -->
+                <!-- ==================================================
+                                TABELA
+                =================================================== -->
 
                 <div class="subjects-table-wrapper">
 
@@ -468,35 +613,35 @@
 
                             <tr>
 
-                                <th>
+                                <th scope="col">
                                     Disciplina
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Código
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Área
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Professor
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Turma
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Carga horária
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Status
                                 </th>
 
-                                <th>
+                                <th scope="col">
                                     Ações
                                 </th>
 
@@ -505,18 +650,25 @@
                         </thead>
 
 
-                        <tbody id="subjectsTableBody"></tbody>
+                        <tbody id="subjectsTableBody">
+
+                        </tbody>
 
 
                     </table>
 
+
+                    <!-- NENHUM RESULTADO -->
 
                     <div
                         class="subjects-empty"
                         id="subjectsEmpty"
                     >
 
-                        <i class="fa-solid fa-book"></i>
+                        <i
+                            class="fa-solid fa-book"
+                            aria-hidden="true"
+                        ></i>
 
                         <strong>
                             Nenhuma disciplina encontrada
@@ -541,9 +693,9 @@
     </div>
 
 
-    <!-- =========================================
-            MODAL CADASTRO / EDIÇÃO
-    ========================================== -->
+    <!-- ==================================================
+                MODAL CADASTRO / EDIÇÃO
+    =================================================== -->
 
     <div
         class="subject-modal"
@@ -552,7 +704,10 @@
     >
 
 
-        <div class="subject-modal-overlay"></div>
+        <div
+            class="subject-modal-overlay"
+            aria-hidden="true"
+        ></div>
 
 
         <div
@@ -562,6 +717,8 @@
             aria-labelledby="subjectModalTitle"
         >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="subject-modal-header">
 
@@ -583,16 +740,21 @@
                     type="button"
                     class="subject-modal-close"
                     id="subjectModalClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar cadastro de disciplina"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
 
             </div>
 
+
+            <!-- FORMULÁRIO -->
 
             <form
                 class="subject-form"
@@ -605,6 +767,8 @@
                     id="subjectId"
                 >
 
+
+                <!-- NOME / CÓDIGO -->
 
                 <div class="form-grid">
 
@@ -619,6 +783,7 @@
                             type="text"
                             id="subjectName"
                             required
+                            autocomplete="off"
                             placeholder="Ex: Matemática"
                         >
 
@@ -635,6 +800,7 @@
                             type="text"
                             id="subjectCode"
                             required
+                            autocomplete="off"
                             placeholder="Ex: MAT01"
                         >
 
@@ -643,6 +809,8 @@
 
                 </div>
 
+
+                <!-- ÁREA / CARGA HORÁRIA -->
 
                 <div class="form-grid">
 
@@ -702,7 +870,9 @@
                             id="subjectHours"
                             min="1"
                             max="1000"
+                            step="1"
                             required
+                            inputmode="numeric"
                             placeholder="Ex: 160"
                         >
 
@@ -711,6 +881,8 @@
 
                 </div>
 
+
+                <!-- PROFESSOR / TURMA -->
 
                 <div class="form-grid">
 
@@ -725,6 +897,7 @@
                             type="text"
                             id="subjectTeacher"
                             required
+                            autocomplete="off"
                             placeholder="Nome do professor"
                         >
 
@@ -754,6 +927,8 @@
                 </div>
 
 
+                <!-- STATUS -->
+
                 <div class="form-group">
 
                     <label for="subjectStatus">
@@ -778,6 +953,8 @@
                 </div>
 
 
+                <!-- AÇÕES -->
+
                 <div class="subject-form-actions">
 
 
@@ -786,7 +963,9 @@
                         class="secondary-button"
                         id="subjectCancelButton"
                     >
+
                         Cancelar
+
                     </button>
 
 
@@ -795,7 +974,10 @@
                         class="primary-button"
                     >
 
-                        <i class="fa-solid fa-floppy-disk"></i>
+                        <i
+                            class="fa-solid fa-floppy-disk"
+                            aria-hidden="true"
+                        ></i>
 
                         Salvar disciplina
 
@@ -814,9 +996,9 @@
     </div>
 
 
-    <!-- =========================================
-            MODAL VISUALIZAR
-    ========================================== -->
+    <!-- ==================================================
+                    MODAL VISUALIZAR
+    =================================================== -->
 
     <div
         class="subject-view-modal"
@@ -825,18 +1007,31 @@
     >
 
 
-        <div class="subject-view-overlay"></div>
+        <div
+            class="subject-view-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="subject-view-box">
+        <div
+            class="subject-view-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="viewSubjectName"
+        >
 
+
+            <!-- CABEÇALHO -->
 
             <div class="subject-view-header">
 
 
                 <div class="subject-view-avatar">
 
-                    <i class="fa-solid fa-book-open"></i>
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
                 </div>
 
@@ -858,10 +1053,13 @@
                     type="button"
                     class="subject-view-close"
                     id="subjectViewClose"
-                    aria-label="Fechar"
+                    aria-label="Fechar informações da disciplina"
                 >
 
-                    <i class="fa-solid fa-xmark"></i>
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
 
                 </button>
 
@@ -869,8 +1067,12 @@
             </div>
 
 
+            <!-- CONTEÚDO -->
+
             <div class="subject-view-content">
 
+
+                <!-- CÓDIGO -->
 
                 <div class="subject-view-item">
 
@@ -885,6 +1087,8 @@
                 </div>
 
 
+                <!-- ÁREA -->
+
                 <div class="subject-view-item">
 
                     <span>
@@ -897,6 +1101,8 @@
 
                 </div>
 
+
+                <!-- PROFESSOR -->
 
                 <div class="subject-view-item">
 
@@ -911,6 +1117,8 @@
                 </div>
 
 
+                <!-- TURMA -->
+
                 <div class="subject-view-item">
 
                     <span>
@@ -924,6 +1132,8 @@
                 </div>
 
 
+                <!-- CARGA HORÁRIA -->
+
                 <div class="subject-view-item">
 
                     <span>
@@ -936,6 +1146,8 @@
 
                 </div>
 
+
+                <!-- STATUS -->
 
                 <div class="subject-view-item">
 
@@ -959,9 +1171,9 @@
     </div>
 
 
-    <!-- =========================================
-            MODAL EXCLUSÃO
-    ========================================== -->
+    <!-- ==================================================
+                    MODAL EXCLUSÃO
+    =================================================== -->
 
     <div
         class="delete-subject-modal"
@@ -970,20 +1182,32 @@
     >
 
 
-        <div class="delete-subject-overlay"></div>
+        <div
+            class="delete-subject-overlay"
+            aria-hidden="true"
+        ></div>
 
 
-        <div class="delete-subject-box">
+        <div
+            class="delete-subject-box"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="deleteSubjectTitle"
+            aria-describedby="deleteSubjectMessage"
+        >
 
 
             <div class="delete-subject-icon">
 
-                <i class="fa-solid fa-trash"></i>
+                <i
+                    class="fa-solid fa-trash"
+                    aria-hidden="true"
+                ></i>
 
             </div>
 
 
-            <h2>
+            <h2 id="deleteSubjectTitle">
                 Excluir disciplina
             </h2>
 
@@ -1001,7 +1225,9 @@
                     class="secondary-button"
                     id="deleteSubjectCancel"
                 >
+
                     Cancelar
+
                 </button>
 
 
@@ -1010,7 +1236,9 @@
                     class="delete-button"
                     id="deleteSubjectConfirm"
                 >
+
                     Excluir
+
                 </button>
 
 
@@ -1023,6 +1251,11 @@
     </div>
 
 
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/core.js"></script>
     <script src="../js/disciplinas.js"></script>
 
 

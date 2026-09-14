@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professores | PrimeWay School</title>
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/professores.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+    <div class="app-layout">
+        <aside class="sidebar" aria-label="Menu principal">
+            <div class="sidebar-logo">
+                <img src="../img/logo.png" alt="PrimeWay School">
+            </div>
+
+            <nav class="sidebar-menu" aria-label="Navegação principal">
+                <a href="dashboard.html">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                    <span>Início</span>
+                </a>
+                <a href="professores.html" class="active" aria-current="page">
+                    <i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i>
+                    <span>Professores</span>
+                </a>
+                <a href="alunos.html">
+                    <i class="fa-solid fa-user-graduate" aria-hidden="true"></i>
+                    <span>Alunos</span>
+                </a>
+                <a href="responsaveis.html">
+                    <i class="fa-solid fa-people-roof" aria-hidden="true"></i>
+                    <span>Responsáveis</span>
+                </a>
+                <a href="turmas.html">
+                    <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    <span>Turmas</span>
+                </a>
+                <a href="disciplinas.html">
+                    <i class="fa-solid fa-book-open" aria-hidden="true"></i>
+                    <span>Disciplinas</span>
+                </a>
+                <a href="chat-professor.html">
+                    <i class="fa-solid fa-comments" aria-hidden="true"></i>
+                    <span>Chat</span>
+                </a>
+                <a href="calendario.html">
+                    <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                    <span>Calendário</span>
+                </a>
+                <a href="notificacoes.html">
+                    <i class="fa-solid fa-bell" aria-hidden="true"></i>
+                    <span>Notificações</span>
+                </a>
+                <a href="configuracoes.html">
+                    <i class="fa-solid fa-gear" aria-hidden="true"></i>
+                    <span>Configurações</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <button type="button" id="logoutButton">
+                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="professors-page">
+            <header class="professors-header">
+                <div>
+                    <span class="section-label">Gestão da equipe</span>
+                    <h1>Professores</h1>
+                    <p>Visão administrativa da equipe docente, vínculos e situação dos cadastros.</p>
+                </div>
+                <button type="button" class="new-professor-button" id="newProfessorButton">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    <span>Novo professor</span>
+                </button>
+            </header>
+
+            <section class="professors-summary" aria-label="Resumo dos professores">
+                <article class="summary-card">
+                    <div class="summary-icon"><i class="fa-solid fa-chalkboard-user" aria-hidden="true"></i></div>
+                    <div><span>Total de professores</span><strong id="totalProfessors">0</strong></div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon active"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></div>
+                    <div><span>Ativos</span><strong id="activeProfessors">0</strong></div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon inactive"><i class="fa-solid fa-circle-pause" aria-hidden="true"></i></div>
+                    <div><span>Inativos</span><strong id="inactiveProfessors">0</strong></div>
+                </article>
+                <article class="summary-card">
+                    <div class="summary-icon available"><i class="fa-solid fa-user-check" aria-hidden="true"></i></div>
+                    <div><span>Disponíveis para turma</span><strong id="availableProfessors">0</strong></div>
+                </article>
+            </section>
+
+            <section class="professors-panel" aria-labelledby="professorsListTitle">
+                <div class="panel-heading">
+                    <div>
+                        <h2 id="professorsListTitle">Equipe docente</h2>
+                        <p>Os dados abaixo são carregados diretamente do banco de dados.</p>
+                    </div>
+                    <label class="professors-search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <span class="sr-only">Buscar professor</span>
+                        <input id="professorSearch" type="search" placeholder="Buscar por nome, e-mail ou registro">
+                    </label>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Professor</th>
+                                <th>Registro</th>
+                                <th>Contato</th>
+                                <th>Situação</th>
+                                <th>Vínculo com turmas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="professorsTableBody">
+                            <tr><td colspan="5" class="empty-cell">Carregando professores…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <dialog class="professor-dialog" id="professorDialog" aria-labelledby="professorDialogTitle">
+                <form method="dialog" id="professorForm">
+                    <div class="dialog-heading">
+                        <div>
+                            <span class="section-label">Novo acesso</span>
+                            <h2 id="professorDialogTitle">Cadastrar professor</h2>
+                            <p>Crie o cadastro profissional e a conta de login.</p>
+                        </div>
+                        <button type="button" class="dialog-close" id="closeProfessorDialog" aria-label="Fechar">
+                            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="professor-form-grid">
+                        <label class="full-field">Nome completo
+                            <input name="name" type="text" maxlength="120" autocomplete="name" required>
+                        </label>
+                        <label>E-mail de acesso
+                            <input name="email" type="email" maxlength="190" autocomplete="email" required>
+                        </label>
+                        <label>Senha inicial
+                            <input name="password" type="password" minlength="8" maxlength="200" autocomplete="new-password" required>
+                        </label>
+                        <label>Telefone
+                            <input name="phone" type="tel" maxlength="30" autocomplete="tel">
+                        </label>
+                        <label>Documento
+                            <input name="document" type="text" maxlength="30">
+                        </label>
+                        <label>Data de nascimento
+                            <input name="birthDate" type="date">
+                        </label>
+                        <label>Registro funcional
+                            <input name="registration" type="text" maxlength="50">
+                        </label>
+                        <label>Data de admissão
+                            <input name="admissionDate" type="date">
+                        </label>
+                    </div>
+
+                    <p class="form-feedback" id="professorFormFeedback" role="status" aria-live="polite"></p>
+                    <div class="dialog-actions">
+                        <button type="button" class="secondary-button" id="cancelProfessorButton">Cancelar</button>
+                        <button type="submit" class="primary-button" id="saveProfessorButton">Cadastrar professor</button>
+                    </div>
+                </form>
+            </dialog>
+        </main>
+    </div>
+
+    <script src="../js/core.js?v=20260914-2"></script>
+    <script src="../js/professores.js?v=20260914-2"></script>
+</body>
+</html>

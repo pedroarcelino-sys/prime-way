@@ -1,9 +1,12 @@
-console.log("NOTIFICAÇÕES JS CARREGADO");
+/*====================================================
+        NOTIFICAÇÕES - PRIMEWAY SCHOOL
+====================================================*/
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    await window.PrimeWayStorage?.ready;
 
     /*====================================================
-                    STORAGE
+                STORAGE / AUTENTICAÇÃO
     ====================================================*/
 
     const NOTIFICATIONS_STORAGE_KEY =
@@ -13,138 +16,632 @@ document.addEventListener("DOMContentLoaded", function () {
         "primewayCalendarEvents";
 
 
+    const AUTH_SESSION_URL =
+        "../api/auth/session.php";
+
+    const AUTH_LOGOUT_URL =
+        "../api/auth/logout.php";
+
+
+    const SESSION_LOGADO_KEY =
+        "primewayLogado";
+
+    const SESSION_USUARIO_KEY =
+        "primewayUsuario";
+
+    const SESSION_PERFIL_KEY =
+        "primewayPerfil";
+
+
+    const PERFIS_PERMITIDOS =
+        new Set([
+            "admin",
+            "professor"
+        ]);
+
+
+    const PAGINA_LOGIN =
+        "login.html";
+
+
+    /*====================================================
+            COMPATIBILIDADE COM O FRONT-END ATUAL
+    ====================================================*/
+
+    /*
+        A sessão PHP é a fonte de verdade.
+
+        O sessionStorage continua sendo mantido
+        temporariamente apenas para compatibilidade
+        com as páginas que ainda não foram migradas.
+    */
+
+    function limparSessaoCompatibilidade() {
+
+        sessionStorage.removeItem(
+            SESSION_LOGADO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_USUARIO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_PERFIL_KEY
+        );
+    }
+
+
+    function sincronizarSessaoCompatibilidade(
+        usuario
+    ) {
+
+        sessionStorage.setItem(
+            SESSION_LOGADO_KEY,
+            "true"
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_USUARIO_KEY,
+            String(
+                usuario.email || ""
+            )
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_PERFIL_KEY,
+            String(
+                usuario.perfil || ""
+            )
+        );
+    }
+
+
+    /*====================================================
+                RESPOSTA JSON SEGURA
+    ====================================================*/
+
+    async function lerJsonSeguro(
+        response
+    ) {
+
+        try {
+
+            return await response.json();
+
+        } catch {
+
+            return null;
+        }
+    }
+
+
+    /*====================================================
+                VERIFICAÇÃO DE SESSÃO PHP
+    ====================================================*/
+
+    async function obterSessaoServidor() {
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_SESSION_URL,
+                    {
+                        method:
+                            "GET",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.authenticated ||
+                !data?.usuario
+            ) {
+
+                limparSessaoCompatibilidade();
+
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+
+                return null;
+            }
+
+
+            const usuario =
+                data.usuario;
+
+
+            const perfil =
+                String(
+                    usuario.perfil || ""
+                ).trim();
+
+
+            if (
+                !PERFIS_PERMITIDOS.has(
+                    perfil
+                )
+            ) {
+
+                limparSessaoCompatibilidade();
+
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+
+                return null;
+            }
+
+
+            sincronizarSessaoCompatibilidade(
+                usuario
+            );
+
+
+            return {
+                ...usuario,
+                perfil
+            };
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao validar a sessão de Notificações:",
+                error
+            );
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+
+            return null;
+        }
+    }
+
+
+    const usuarioSessao =
+        await obterSessaoServidor();
+
+
+    if (
+        !usuarioSessao
+    ) {
+
+        return;
+    }
+
+
+    const perfilUsuario =
+        usuarioSessao.perfil;
+
+
+    /*
+        Nesta etapa, Admin gerencia a central de
+        notificações.
+
+        Professor pode consultar as notificações
+        destinadas a Professores, a Todos e as
+        notificações derivadas do Calendário, mas
+        não altera o estado compartilhado do protótipo.
+
+        A autorização real das operações de dados será
+        reforçada também nos endpoints PHP quando as
+        notificações deixarem o localStorage.
+    */
+
+    const usuarioPodeGerenciarNotificacoes =
+        perfilUsuario ===
+        "admin";
+
+
     /*====================================================
                     ELEMENTOS
     ====================================================*/
 
     const notificationsList =
-        document.querySelector("#notificationsList");
+        document.querySelector(
+            "#notificationsList"
+        );
 
     const notificationsEmpty =
-        document.querySelector("#notificationsEmpty");
+        document.querySelector(
+            "#notificationsEmpty"
+        );
 
+
+    /* FILTROS */
 
     const notificationSearch =
-        document.querySelector("#notificationSearch");
+        document.querySelector(
+            "#notificationSearch"
+        );
 
     const notificationTypeFilter =
-        document.querySelector("#notificationTypeFilter");
+        document.querySelector(
+            "#notificationTypeFilter"
+        );
 
     const notificationStatusFilter =
-        document.querySelector("#notificationStatusFilter");
+        document.querySelector(
+            "#notificationStatusFilter"
+        );
 
 
     /* CARDS */
 
     const totalNotifications =
-        document.querySelector("#totalNotifications");
+        document.querySelector(
+            "#totalNotifications"
+        );
 
     const unreadNotifications =
-        document.querySelector("#unreadNotifications");
+        document.querySelector(
+            "#unreadNotifications"
+        );
 
     const eventNotifications =
-        document.querySelector("#eventNotifications");
+        document.querySelector(
+            "#eventNotifications"
+        );
 
     const noticeNotifications =
-        document.querySelector("#noticeNotifications");
+        document.querySelector(
+            "#noticeNotifications"
+        );
 
 
     /* BOTÕES */
 
     const newNotificationButton =
-        document.querySelector("#newNotificationButton");
+        document.querySelector(
+            "#newNotificationButton"
+        );
 
     const markAllReadButton =
-        document.querySelector("#markAllReadButton");
+        document.querySelector(
+            "#markAllReadButton"
+        );
 
 
     /* MODAL CADASTRO */
 
     const notificationModal =
-        document.querySelector("#notificationModal");
+        document.querySelector(
+            "#notificationModal"
+        );
 
     const notificationModalOverlay =
-        document.querySelector(".notification-modal-overlay");
+        document.querySelector(
+            ".notification-modal-overlay"
+        );
 
     const notificationModalClose =
-        document.querySelector("#notificationModalClose");
+        document.querySelector(
+            "#notificationModalClose"
+        );
 
     const notificationCancelButton =
-        document.querySelector("#notificationCancelButton");
+        document.querySelector(
+            "#notificationCancelButton"
+        );
 
     const notificationForm =
-        document.querySelector("#notificationForm");
+        document.querySelector(
+            "#notificationForm"
+        );
 
+
+    /* CAMPOS */
 
     const notificationTitle =
-        document.querySelector("#notificationTitle");
+        document.querySelector(
+            "#notificationTitle"
+        );
 
     const notificationType =
-        document.querySelector("#notificationType");
+        document.querySelector(
+            "#notificationType"
+        );
 
     const notificationAudience =
-        document.querySelector("#notificationAudience");
+        document.querySelector(
+            "#notificationAudience"
+        );
 
     const notificationMessage =
-        document.querySelector("#notificationMessage");
+        document.querySelector(
+            "#notificationMessage"
+        );
 
 
     /* VISUALIZAÇÃO */
 
     const notificationViewModal =
-        document.querySelector("#notificationViewModal");
+        document.querySelector(
+            "#notificationViewModal"
+        );
 
     const notificationViewOverlay =
-        document.querySelector(".notification-view-overlay");
+        document.querySelector(
+            ".notification-view-overlay"
+        );
 
     const notificationViewClose =
-        document.querySelector("#notificationViewClose");
+        document.querySelector(
+            "#notificationViewClose"
+        );
 
     const viewNotificationIcon =
-        document.querySelector("#viewNotificationIcon");
+        document.querySelector(
+            "#viewNotificationIcon"
+        );
 
     const viewNotificationType =
-        document.querySelector("#viewNotificationType");
+        document.querySelector(
+            "#viewNotificationType"
+        );
 
     const viewNotificationTitle =
-        document.querySelector("#viewNotificationTitle");
+        document.querySelector(
+            "#viewNotificationTitle"
+        );
 
     const viewNotificationAudience =
-        document.querySelector("#viewNotificationAudience");
+        document.querySelector(
+            "#viewNotificationAudience"
+        );
 
     const viewNotificationDate =
-        document.querySelector("#viewNotificationDate");
+        document.querySelector(
+            "#viewNotificationDate"
+        );
 
     const viewNotificationMessage =
-        document.querySelector("#viewNotificationMessage");
+        document.querySelector(
+            "#viewNotificationMessage"
+        );
 
     const toggleReadButton =
-        document.querySelector("#toggleReadButton");
+        document.querySelector(
+            "#toggleReadButton"
+        );
 
     const deleteNotificationButton =
-        document.querySelector("#deleteNotificationButton");
+        document.querySelector(
+            "#deleteNotificationButton"
+        );
 
 
     /* EXCLUSÃO */
 
     const deleteNotificationModal =
-        document.querySelector("#deleteNotificationModal");
+        document.querySelector(
+            "#deleteNotificationModal"
+        );
 
     const deleteNotificationOverlay =
-        document.querySelector(".delete-notification-overlay");
+        document.querySelector(
+            ".delete-notification-overlay"
+        );
 
     const deleteNotificationCancel =
-        document.querySelector("#deleteNotificationCancel");
+        document.querySelector(
+            "#deleteNotificationCancel"
+        );
 
     const deleteNotificationConfirm =
-        document.querySelector("#deleteNotificationConfirm");
+        document.querySelector(
+            "#deleteNotificationConfirm"
+        );
 
     const deleteNotificationMessage =
-        document.querySelector("#deleteNotificationMessage");
+        document.querySelector(
+            "#deleteNotificationMessage"
+        );
 
+
+    /* LOGOUT */
 
     const logoutButton =
-        document.querySelector("#logoutButton");
+        document.querySelector(
+            "#logoutButton"
+        );
+
+
+    /*====================================================
+            VALIDAÇÃO DA ESTRUTURA
+    ====================================================*/
+
+    const elementosObrigatorios = [
+
+        notificationsList,
+        notificationsEmpty,
+
+        notificationSearch,
+        notificationTypeFilter,
+        notificationStatusFilter,
+
+        totalNotifications,
+        unreadNotifications,
+        eventNotifications,
+        noticeNotifications,
+
+        newNotificationButton,
+        markAllReadButton,
+
+        notificationModal,
+        notificationModalOverlay,
+        notificationModalClose,
+        notificationCancelButton,
+        notificationForm,
+
+        notificationTitle,
+        notificationType,
+        notificationAudience,
+        notificationMessage,
+
+        notificationViewModal,
+        notificationViewOverlay,
+        notificationViewClose,
+
+        viewNotificationIcon,
+        viewNotificationType,
+        viewNotificationTitle,
+        viewNotificationAudience,
+        viewNotificationDate,
+        viewNotificationMessage,
+
+        toggleReadButton,
+        deleteNotificationButton,
+
+        deleteNotificationModal,
+        deleteNotificationOverlay,
+        deleteNotificationCancel,
+        deleteNotificationConfirm,
+        deleteNotificationMessage
+
+    ];
+
+
+    if (
+        elementosObrigatorios.some(
+            elemento =>
+                !elemento
+        )
+    ) {
+
+        console.error(
+            "Notificações: a estrutura esperada da página não foi encontrada."
+        );
+
+
+        return;
+
+    }
+
+
+    function aplicarPermissoesInterface() {
+
+        if (
+            usuarioPodeGerenciarNotificacoes
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+            O perfil Professor permanece em modo
+            somente leitura nesta etapa.
+
+            Como o campo "read" ainda pertence ao
+            storage compartilhado, permitir alterações
+            aqui faria uma ação do Professor modificar
+            o estado visto pelo Admin.
+        */
+
+        [
+            newNotificationButton,
+            markAllReadButton,
+            toggleReadButton,
+            deleteNotificationButton
+        ].forEach(
+            function (button) {
+
+                button.hidden =
+                    true;
+
+
+                button.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+
+                button.setAttribute(
+                    "tabindex",
+                    "-1"
+                );
+
+            }
+        );
+
+    }
+
+
+    /*====================================================
+                    TIPOS
+    ====================================================*/
+
+    const TIPOS_NOTIFICACAO =
+        new Set([
+            "Aviso",
+            "Evento",
+            "Prova",
+            "Atividade",
+            "Reunião",
+            "Sistema"
+        ]);
+
+
+    /*
+        O formulário manual atual permite somente
+        Aviso e Sistema.
+
+        Os demais tipos entram pelo Calendário.
+    */
+
+    const TIPOS_MANUAIS =
+        new Set([
+            "Aviso",
+            "Sistema"
+        ]);
+
+
+    const PUBLICOS_MANUAIS =
+        new Set([
+            "Todos",
+            "Alunos",
+            "Responsáveis",
+            "Professores",
+            "Secretaria"
+        ]);
 
 
     /*====================================================
@@ -156,18 +653,27 @@ document.addEventListener("DOMContentLoaded", function () {
         const agora =
             new Date();
 
+
         const ano =
             agora.getFullYear();
+
 
         const mes =
             String(
                 agora.getMonth() + 1
-            ).padStart(2, "0");
+            ).padStart(
+                2,
+                "0"
+            );
+
 
         const dia =
             String(
                 agora.getDate()
-            ).padStart(2, "0");
+            ).padStart(
+                2,
+                "0"
+            );
 
 
         return `${ano}-${mes}-${dia}`;
@@ -175,26 +681,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function dataLocal(dateString) {
+    function dataLocal(
+        dateString
+    ) {
 
-        if (!dateString) {
-
-            return null;
-
-        }
-
-
-        const partes =
-            String(dateString)
-                .split("-")
-                .map(Number);
+        const valor =
+            String(
+                dateString || ""
+            );
 
 
         if (
-            partes.length !== 3 ||
-            partes.some(
-                numero =>
-                    Number.isNaN(numero)
+            !/^\d{4}-\d{2}-\d{2}$/.test(
+                valor
             )
         ) {
 
@@ -203,19 +702,48 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        return new Date(
-            partes[0],
-            partes[1] - 1,
-            partes[2]
-        );
+        const [
+            ano,
+            mes,
+            dia
+        ] =
+            valor
+                .split("-")
+                .map(Number);
+
+
+        const data =
+            new Date(
+                ano,
+                mes - 1,
+                dia
+            );
+
+
+        const valida =
+            data.getFullYear() ===
+                ano &&
+            data.getMonth() ===
+                mes - 1 &&
+            data.getDate() ===
+                dia;
+
+
+        return valida
+            ? data
+            : null;
 
     }
 
 
-    function formatarData(dateString) {
+    function formatarData(
+        dateString
+    ) {
 
         const data =
-            dataLocal(dateString);
+            dataLocal(
+                dateString
+            );
 
 
         if (!data) {
@@ -232,6 +760,166 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function horarioAtual() {
+
+        return new Date()
+            .toLocaleTimeString(
+                "pt-BR",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+    }
+
+
+    /*====================================================
+                    UTILITÁRIOS
+    ====================================================*/
+
+    function normalizarTexto(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .normalize(
+                "NFD"
+            )
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .toLowerCase()
+            .trim();
+
+    }
+
+
+    function normalizarIdOpcional(
+        value
+    ) {
+
+        if (
+            value === null ||
+            value === undefined ||
+            value === ""
+        ) {
+
+            return null;
+
+        }
+
+
+        const id =
+            Number(
+                value
+            );
+
+
+        return (
+            Number.isFinite(
+                id
+            ) &&
+            id > 0
+        )
+            ? id
+            : null;
+
+    }
+
+
+    function elementoPodeReceberFoco(
+        elemento
+    ) {
+
+        return Boolean(
+            elemento &&
+            elemento.isConnected &&
+            typeof elemento.focus ===
+                "function" &&
+            elemento.getClientRects()
+                .length > 0
+        );
+
+    }
+
+
+    function gerarIdManual() {
+
+        if (
+            typeof crypto !==
+                "undefined" &&
+            typeof crypto.randomUUID ===
+                "function"
+        ) {
+
+            return `manual-${crypto.randomUUID()}`;
+
+        }
+
+
+        return (
+            `manual-${Date.now()}-` +
+            Math.random()
+                .toString(36)
+                .slice(
+                    2,
+                    8
+                )
+        );
+
+    }
+
+
+    function normalizarTipo(
+        tipo,
+        source = "manual"
+    ) {
+
+        const valor =
+            String(
+                tipo || ""
+            ).trim();
+
+
+        /*
+            Feriado é um tipo do Calendário,
+            mas não uma categoria própria da
+            central de Notificações.
+        */
+
+        if (
+            valor ===
+            "Feriado"
+        ) {
+
+            return "Evento";
+
+        }
+
+
+        if (
+            TIPOS_NOTIFICACAO.has(
+                valor
+            )
+        ) {
+
+            return valor;
+
+        }
+
+
+        return source ===
+            "calendar"
+                ? "Evento"
+                : "Aviso";
+
+    }
+
+
     /*====================================================
                 NOTIFICAÇÕES PADRÃO
     ====================================================*/
@@ -240,10 +928,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         {
             id: "default-1",
-            title: "Bem-vindo ao PrimeWay School",
+            title:
+                "Bem-vindo ao PrimeWay School",
             type: "Sistema",
             audience: "Todos",
-            message: "A central de notificações está disponível para acompanhar avisos e informações importantes da escola.",
+            message:
+                "A central de notificações está disponível para acompanhar avisos e informações importantes da escola.",
             date: hojeISO(),
             time: "08:00",
             read: false,
@@ -252,10 +942,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         {
             id: "default-2",
-            title: "Atualização de calendário",
+            title:
+                "Atualização de calendário",
             type: "Aviso",
             audience: "Todos",
-            message: "Confira regularmente o calendário escolar para acompanhar provas, reuniões e atividades.",
+            message:
+                "Confira regularmente o calendário escolar para acompanhar provas, reuniões e atividades.",
             date: hojeISO(),
             time: "08:30",
             read: false,
@@ -265,8 +957,206 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
+    function clonarNotificacoesPadrao() {
+
+        return [];
+
+    }
+
+
     /*====================================================
-                    STORAGE
+            NORMALIZAÇÃO DE NOTIFICAÇÕES
+    ====================================================*/
+
+    function normalizarNotificacao(
+        notification,
+        index = 0
+    ) {
+
+        if (
+            !notification ||
+            typeof notification !==
+                "object"
+        ) {
+
+            return null;
+
+        }
+
+
+        const source =
+            notification.source ===
+                "calendar"
+                ? "calendar"
+                : "manual";
+
+
+        const id =
+            String(
+                notification.id ??
+                `notification-${
+                    Date.now() +
+                    index
+                }`
+            );
+
+
+        const eventIdOriginal =
+            notification.eventId;
+
+
+        let eventId =
+            eventIdOriginal ??
+            null;
+
+
+        /*
+            Compatibilidade com notificações antigas
+            que possuam apenas:
+
+            calendar-123
+        */
+
+        if (
+            eventId ===
+                null &&
+            source ===
+                "calendar" &&
+            id.startsWith(
+                "calendar-"
+            )
+        ) {
+
+            eventId =
+                id.slice(
+                    "calendar-".length
+                );
+
+        }
+
+
+        const eventClassId =
+            normalizarIdOpcional(
+                notification.eventClassId
+            );
+
+
+        const eventType =
+            String(
+                notification.eventType ||
+                (
+                    notification.type ===
+                        "Feriado"
+                        ? "Feriado"
+                        : notification.type ||
+                            ""
+                )
+            ).trim();
+
+
+        const date =
+            dataLocal(
+                notification.date
+            )
+                ? String(
+                    notification.date
+                )
+                : hojeISO();
+
+
+        const time =
+            /^([01]\d|2[0-3]):[0-5]\d$/
+                .test(
+                    String(
+                        notification.time ||
+                        ""
+                    )
+                )
+                ? String(
+                    notification.time
+                )
+                : "";
+
+
+        return {
+
+            ...notification,
+
+            id,
+
+            title:
+                String(
+                    notification.title ||
+                    "Notificação"
+                ).trim(),
+
+            type:
+                normalizarTipo(
+                    notification.type,
+                    source
+                ),
+
+            audience:
+                String(
+                    notification.audience ||
+                    "Todos"
+                ).trim(),
+
+            message:
+                String(
+                    notification.message ||
+                    ""
+                ).trim(),
+
+            date,
+
+            time,
+
+            read:
+                notification.read ===
+                    true ||
+                notification.read ===
+                    "true",
+
+            source,
+
+            eventId,
+
+            eventType,
+
+            eventClassId,
+
+            eventDate:
+                String(
+                    notification.eventDate ||
+                    ""
+                ).trim(),
+
+            eventTime:
+                String(
+                    notification.eventTime ||
+                    ""
+                ).trim(),
+
+            eventLocation:
+                String(
+                    notification.eventLocation ||
+                    ""
+                ).trim(),
+
+            eventDescription:
+                String(
+                    notification.eventDescription ||
+                    ""
+                ).trim()
+
+        };
+
+    }
+
+
+    /*====================================================
+            STORAGE DE NOTIFICAÇÕES
     ====================================================*/
 
     function carregarNotificacoes() {
@@ -281,31 +1171,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!saved) {
 
-                return JSON.parse(
-                    JSON.stringify(
-                        defaultNotifications
-                    )
-                );
+                return clonarNotificacoesPadrao();
 
             }
 
 
             const data =
-                JSON.parse(saved);
-
-
-            if (!Array.isArray(data)) {
-
-                return JSON.parse(
-                    JSON.stringify(
-                        defaultNotifications
-                    )
+                JSON.parse(
+                    saved
                 );
+
+
+            if (
+                !Array.isArray(
+                    data
+                )
+            ) {
+
+                return clonarNotificacoesPadrao();
 
             }
 
 
-            return data;
+            return data
+                .map(
+                    normalizarNotificacao
+                )
+                .filter(
+                    Boolean
+                );
 
         } catch (erro) {
 
@@ -315,34 +1209,38 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            return JSON.parse(
-                JSON.stringify(
-                    defaultNotifications
-                )
-            );
+            return clonarNotificacoesPadrao();
 
         }
 
     }
 
 
-    function salvarNotificacoes() {
+    function salvarNotificacoes(
+        lista = notifications
+    ) {
 
         try {
 
             localStorage.setItem(
                 NOTIFICATIONS_STORAGE_KEY,
                 JSON.stringify(
-                    notifications
+                    lista
                 )
             );
 
+
+            return true;
+
         } catch (erro) {
 
-            console.warn(
+            console.error(
                 "Erro ao salvar notificações:",
                 erro
             );
+
+
+            return false;
 
         }
 
@@ -356,131 +1254,221 @@ document.addEventListener("DOMContentLoaded", function () {
     let notifications =
         carregarNotificacoes();
 
+
     let selectedNotificationId =
         null;
+
 
     let notificationToDelete =
         null;
 
 
+    let focoRetornoExclusao =
+        null;
+
+
+    const focoAnteriorPorModal =
+        new WeakMap();
+
+
     /*====================================================
-            INTEGRAÇÃO COM CALENDÁRIO
+            STORAGE DO CALENDÁRIO
     ====================================================*/
 
-    function carregarEventosCalendario() {
+    function carregarEstadoCalendario() {
+
+        const saved =
+            localStorage.getItem(
+                CALENDAR_STORAGE_KEY
+            );
+
+
+        if (
+            saved ===
+            null
+        ) {
+
+            return {
+                exists: false,
+                valid: true,
+                data: []
+            };
+
+        }
+
 
         try {
 
-            const saved =
-                localStorage.getItem(
-                    CALENDAR_STORAGE_KEY
+            const data =
+                JSON.parse(
+                    saved
                 );
 
 
-            if (!saved) {
+            if (
+                !Array.isArray(
+                    data
+                )
+            ) {
 
-                return [];
+                return {
+                    exists: true,
+                    valid: false,
+                    data: []
+                };
 
             }
 
 
-            const data =
-                JSON.parse(saved);
-
-
-            return Array.isArray(data)
-                ? data
-                : [];
+            return {
+                exists: true,
+                valid: true,
+                data
+            };
 
         } catch (erro) {
 
             console.warn(
-                "Erro ao carregar eventos:",
+                "Erro ao carregar eventos do calendário:",
                 erro
             );
 
 
-            return [];
+            return {
+                exists: true,
+                valid: false,
+                data: []
+            };
 
         }
 
     }
 
 
-    function diasAteEvento(dateString) {
+    /*====================================================
+            MENSAGEM DO CALENDÁRIO
+    ====================================================*/
 
-        const evento =
-            dataLocal(
-                dateString
-            );
+    function criarMensagemEvento(
+        evento
+    ) {
+
+        let mensagem =
+            `Novo evento agendado para ${
+                formatarData(
+                    evento.date
+                )
+            }.`;
 
 
-        if (!evento) {
+        if (
+            evento.time
+        ) {
 
-            return null;
+            mensagem +=
+                ` Horário: ${evento.time}.`;
 
         }
 
 
-        const hoje =
-            new Date();
+        if (
+            evento.className
+        ) {
+
+            mensagem +=
+                ` Turma: ${evento.className}.`;
+
+        } else {
+
+            mensagem +=
+                " Destinado a toda a escola.";
+
+        }
 
 
-        hoje.setHours(
-            0,
-            0,
-            0,
-            0
-        );
+        if (
+            evento.location
+        ) {
+
+            mensagem +=
+                ` Local: ${evento.location}.`;
+
+        }
 
 
-        evento.setHours(
-            0,
-            0,
-            0,
-            0
-        );
+        if (
+            evento.description
+        ) {
+
+            mensagem +=
+                ` ${evento.description}`;
+
+        }
 
 
-        return Math.round(
-            (
-                evento.getTime() -
-                hoje.getTime()
-            ) /
-            86400000
-        );
+        return mensagem;
 
     }
 
 
-    function sincronizarEventosCalendario() {
+    /*====================================================
+        SINCRONIZAÇÃO COM O CALENDÁRIO
+    ====================================================*/
+
+    /*
+        IMPORTANTE:
+
+        Esta página NÃO cria notificações novas a partir
+        do calendário.
+
+        A criação acontece em calendario.js.
+
+        Aqui apenas atualizamos notificações de calendário
+        que já existem.
+
+        Dessa forma, se o usuário excluir manualmente uma
+        notificação, ela não será recriada ao abrir esta
+        página novamente.
+    */
+
+    function sincronizarNotificacoesComCalendario(
+        persistir =
+            usuarioPodeGerenciarNotificacoes
+    ) {
+
+        const estadoCalendario =
+            carregarEstadoCalendario();
+
+
+        if (
+            !estadoCalendario.exists ||
+            !estadoCalendario.valid
+        ) {
+
+            return false;
+
+        }
+
 
         const eventos =
-            carregarEventosCalendario();
+            estadoCalendario.data;
 
 
-        let alterou =
-            false;
+        const eventosPorId =
+            new Map();
 
 
         eventos.forEach(
             function (evento) {
 
-                const dias =
-                    diasAteEvento(
-                        evento.date
-                    );
-
-
-                /*
-                 * Evento deve estar entre hoje
-                 * e os próximos 7 dias.
-                 */
-
                 if (
-                    dias === null ||
-                    dias < 0 ||
-                    dias > 7
+                    !evento ||
+                    typeof evento !==
+                        "object" ||
+                    evento.id ===
+                        undefined ||
+                    evento.id ===
+                        null
                 ) {
 
                     return;
@@ -488,199 +1476,241 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
 
-                const notificationId =
-                    `calendar-${evento.id}`;
-
-
-                const existente =
-                    notifications.find(
-                        item =>
-                            String(item.id) ===
-                            notificationId
-                    );
-
-
-                /*
-                 * Se já existe, atualizamos os dados
-                 * caso o evento tenha sido editado.
-                 */
-
-                if (existente) {
-
-                    existente.title =
-                        evento.title;
-
-                    existente.type =
-                        evento.type ||
-                        "Evento";
-
-                    existente.audience =
-                        evento.className ||
-                        "Todos";
-
-                    existente.eventDate =
-                        evento.date;
-
-                    existente.eventTime =
-                        evento.time || "";
-
-                    existente.eventLocation =
-                        evento.location || "";
-
-                    existente.eventDescription =
-                        evento.description || "";
-
-                    alterou =
-                        true;
-
-                    return;
-
-                }
-
-
-                let mensagemTempo;
-
-
-                if (dias === 0) {
-
-                    mensagemTempo =
-                        "Este evento acontece hoje.";
-
-                } else if (dias === 1) {
-
-                    mensagemTempo =
-                        "Este evento acontece amanhã.";
-
-                } else {
-
-                    mensagemTempo =
-                        `Este evento acontece em ${dias} dias.`;
-
-                }
-
-
-                let mensagem =
-                    mensagemTempo;
-
-
-                if (evento.className) {
-
-                    mensagem +=
-                        ` Turma: ${evento.className}.`;
-
-                }
-
-
-                if (evento.time) {
-
-                    mensagem +=
-                        ` Horário: ${evento.time}.`;
-
-                }
-
-
-                if (evento.location) {
-
-                    mensagem +=
-                        ` Local: ${evento.location}.`;
-
-                }
-
-
-                if (evento.description) {
-
-                    mensagem +=
-                        ` ${evento.description}`;
-
-                }
-
-
-                notifications.push({
-
-                    id:
-                        notificationId,
-
-                    title:
-                        evento.title,
-
-                    type:
-                        evento.type ||
-                        "Evento",
-
-                    audience:
-                        evento.className ||
-                        "Todos",
-
-                    message:
-                        mensagem,
-
-                    date:
-                        hojeISO(),
-
-                    time:
-                        new Date()
-                            .toLocaleTimeString(
-                                "pt-BR",
-                                {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                }
-                            ),
-
-                    read:
-                        false,
-
-                    source:
-                        "calendar",
-
-                    eventId:
-                        evento.id,
-
-                    eventDate:
-                        evento.date,
-
-                    eventTime:
-                        evento.time || "",
-
-                    eventLocation:
-                        evento.location || "",
-
-                    eventDescription:
-                        evento.description || ""
-
-                });
-
-
-                alterou =
-                    true;
+                eventosPorId.set(
+                    String(
+                        evento.id
+                    ),
+                    evento
+                );
 
             }
         );
 
 
-        if (alterou) {
+        let alterou =
+            false;
 
-            salvarNotificacoes();
+
+        const sincronizadas =
+            notifications
+                .map(
+                    function (
+                        notification
+                    ) {
+
+                        if (
+                            notification.source !==
+                            "calendar"
+                        ) {
+
+                            return notification;
+
+                        }
+
+
+                        const eventId =
+                            notification.eventId ??
+                            (
+                                String(
+                                    notification.id
+                                ).startsWith(
+                                    "calendar-"
+                                )
+                                    ? String(
+                                        notification.id
+                                    ).slice(
+                                        "calendar-".length
+                                    )
+                                    : null
+                            );
+
+
+                        if (
+                            eventId ===
+                            null
+                        ) {
+
+                            return notification;
+
+                        }
+
+
+                        const evento =
+                            eventosPorId.get(
+                                String(
+                                    eventId
+                                )
+                            );
+
+
+                        /*
+                            Notificação órfã:
+
+                            o evento correspondente não
+                            existe mais no calendário.
+                        */
+
+                        if (!evento) {
+
+                            alterou =
+                                true;
+
+
+                            return null;
+
+                        }
+
+
+                        const eventType =
+                            String(
+                                evento.type ||
+                                "Evento"
+                            );
+
+
+                        const classId =
+                            normalizarIdOpcional(
+                                evento.classId
+                            );
+
+
+                        const atualizada = {
+
+                            ...notification,
+
+                            id:
+                                `calendar-${evento.id}`,
+
+                            title:
+                                String(
+                                    evento.title ||
+                                    "Evento"
+                                ),
+
+                            type:
+                                normalizarTipo(
+                                    eventType,
+                                    "calendar"
+                                ),
+
+                            audience:
+                                String(
+                                    evento.className ||
+                                    "Todos"
+                                ),
+
+                            message:
+                                criarMensagemEvento(
+                                    evento
+                                ),
+
+                            source:
+                                "calendar",
+
+                            eventId:
+                                evento.id,
+
+                            eventType,
+
+                            eventClassId:
+                                classId,
+
+                            eventDate:
+                                String(
+                                    evento.date ||
+                                    ""
+                                ),
+
+                            eventTime:
+                                String(
+                                    evento.time ||
+                                    ""
+                                ),
+
+                            eventLocation:
+                                String(
+                                    evento.location ||
+                                    ""
+                                ),
+
+                            eventDescription:
+                                String(
+                                    evento.description ||
+                                    ""
+                                )
+
+                        };
+
+
+                        if (
+                            JSON.stringify(
+                                atualizada
+                            ) !==
+                            JSON.stringify(
+                                notification
+                            )
+                        ) {
+
+                            alterou =
+                                true;
+
+                        }
+
+
+                        return atualizada;
+
+                    }
+                )
+                .filter(
+                    Boolean
+                );
+
+
+        if (
+            !alterou
+        ) {
+
+            return false;
 
         }
 
-    }
+
+        /*
+            Em modo somente leitura, a sincronização
+            com o Calendário ocorre apenas em memória.
+
+            Nenhum storage é alterado pelo Professor.
+        */
+
+        if (
+            !persistir
+        ) {
+
+            notifications =
+                sincronizadas;
 
 
-    /*====================================================
-                    SEGURANÇA HTML
-    ====================================================*/
+            return true;
 
-    function escapeHtml(value) {
+        }
 
-        return String(
-            value ?? ""
-        )
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
+
+        if (
+            !salvarNotificacoes(
+                sincronizadas
+            )
+        ) {
+
+            return false;
+
+        }
+
+
+        notifications =
+            sincronizadas;
+
+
+        return true;
 
     }
 
@@ -689,43 +1719,44 @@ document.addEventListener("DOMContentLoaded", function () {
                     ÍCONES
     ====================================================*/
 
-    function getIcon(type) {
+    function getIcon(
+        type
+    ) {
 
         const icons = {
 
             "Aviso":
-                "fa-solid fa-bullhorn",
+                "fa-bullhorn",
 
             "Evento":
-                "fa-solid fa-calendar-day",
+                "fa-calendar-day",
 
             "Prova":
-                "fa-solid fa-file-pen",
+                "fa-file-pen",
 
             "Atividade":
-                "fa-solid fa-list-check",
+                "fa-list-check",
 
             "Reunião":
-                "fa-solid fa-people-group",
-
-            "Feriado":
-                "fa-solid fa-calendar-xmark",
+                "fa-people-group",
 
             "Sistema":
-                "fa-solid fa-gear"
+                "fa-gear"
 
         };
 
 
         return (
             icons[type] ||
-            "fa-solid fa-bell"
+            "fa-bell"
         );
 
     }
 
 
-    function getTypeClass(type) {
+    function getTypeClass(
+        type
+    ) {
 
         const classes = {
 
@@ -755,6 +1786,87 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    function criarIcone(
+        type
+    ) {
+
+        const icon =
+            document.createElement(
+                "i"
+            );
+
+
+        icon.classList.add(
+            "fa-solid",
+            getIcon(
+                type
+            )
+        );
+
+
+        icon.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        return icon;
+
+    }
+
+
+    /*====================================================
+                VISIBILIDADE POR PERFIL
+    ====================================================*/
+
+    function notificacaoVisivelParaPerfil(
+        notification
+    ) {
+
+        if (
+            usuarioPodeGerenciarNotificacoes
+        ) {
+
+            return true;
+
+        }
+
+
+        /*
+            Sem vínculo individual de professor com
+            turmas nesta fase, as notificações vindas
+            do Calendário seguem a mesma visibilidade
+            do calendário atual: consulta geral.
+
+            Para avisos manuais, respeitamos o público
+            declarado e não exibimos mensagens destinadas
+            a Alunos, Responsáveis ou Secretaria.
+        */
+
+        if (
+            notification.source ===
+            "calendar"
+        ) {
+
+            return true;
+
+        }
+
+
+        const audience =
+            normalizarTexto(
+                notification.audience
+            );
+
+
+        return (
+            audience === "todos" ||
+            audience === "professores"
+        );
+
+    }
+
+
     /*====================================================
                     FILTROS
     ====================================================*/
@@ -762,39 +1874,40 @@ document.addEventListener("DOMContentLoaded", function () {
     function pegarNotificacoesFiltradas() {
 
         const termo =
-            notificationSearch
-                ? notificationSearch
-                    .value
-                    .trim()
-                    .toLowerCase()
-                : "";
+            normalizarTexto(
+                notificationSearch.value
+            );
 
 
         const tipo =
-            notificationTypeFilter
-                ? notificationTypeFilter.value
-                : "";
+            notificationTypeFilter.value;
 
 
         const status =
-            notificationStatusFilter
-                ? notificationStatusFilter.value
-                : "";
+            notificationStatusFilter.value;
 
 
         return notifications
             .filter(
-                function (notification) {
+                notificacaoVisivelParaPerfil
+            )
+            .filter(
+                function (
+                    notification
+                ) {
 
                     const texto =
-                        [
-                            notification.title,
-                            notification.message,
-                            notification.type,
-                            notification.audience
-                        ]
-                            .join(" ")
-                            .toLowerCase();
+                        normalizarTexto(
+                            [
+                                notification.title,
+                                notification.message,
+                                notification.type,
+                                notification.audience,
+                                notification.eventType
+                            ].join(
+                                " "
+                            )
+                        );
 
 
                     const matchSearch =
@@ -806,7 +1919,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const matchType =
                         !tipo ||
                         notification.type ===
-                        tipo;
+                            tipo;
 
 
                     let matchStatus =
@@ -846,14 +1959,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             )
             .sort(
-                function (a, b) {
+                function (
+                    a,
+                    b
+                ) {
 
                     const dataA =
-                        `${a.date || ""} ${a.time || ""}`;
+                        `${
+                            a.date ||
+                            ""
+                        } ${
+                            a.time ||
+                            ""
+                        }`;
 
 
                     const dataB =
-                        `${b.date || ""} ${b.time || ""}`;
+                        `${
+                            b.date ||
+                            ""
+                        } ${
+                            b.time ||
+                            ""
+                        }`;
 
 
                     return dataB.localeCompare(
@@ -872,47 +2000,335 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function atualizarResumo() {
 
-        if (totalNotifications) {
+        const visiveis =
+            notifications.filter(
+                notificacaoVisivelParaPerfil
+            );
 
-            totalNotifications.textContent =
-                notifications.length;
+
+        const total =
+            visiveis.length;
+
+
+        const naoLidas =
+            visiveis.filter(
+                notification =>
+                    !notification.read
+            ).length;
+
+
+        const eventos =
+            visiveis.filter(
+                notification =>
+                    notification.source ===
+                    "calendar"
+            ).length;
+
+
+        const avisos =
+            visiveis.filter(
+                notification =>
+                    notification.type ===
+                    "Aviso"
+            ).length;
+
+
+        totalNotifications.textContent =
+            String(
+                total
+            );
+
+
+        unreadNotifications.textContent =
+            String(
+                naoLidas
+            );
+
+
+        eventNotifications.textContent =
+            String(
+                eventos
+            );
+
+
+        noticeNotifications.textContent =
+            String(
+                avisos
+            );
+
+
+        /*
+            Evita uma ação sem efeito quando
+            não existem notificações não lidas.
+        */
+
+        markAllReadButton.disabled =
+            !usuarioPodeGerenciarNotificacoes ||
+            naoLidas === 0;
+
+    }
+
+
+    /*====================================================
+            CARD DE NOTIFICAÇÃO
+    ====================================================*/
+
+    function criarCardNotificacao(
+        notification
+    ) {
+
+        const card =
+            document.createElement(
+                "article"
+            );
+
+
+        card.className =
+            "notification-card";
+
+
+        if (
+            !notification.read
+        ) {
+
+            card.classList.add(
+                "unread"
+            );
 
         }
 
 
-        if (unreadNotifications) {
+        card.dataset.notificationId =
+            notification.id;
 
-            unreadNotifications.textContent =
-                notifications.filter(
-                    item =>
-                        !item.read
-                ).length;
+
+        card.setAttribute(
+            "role",
+            "button"
+        );
+
+
+        card.tabIndex =
+            0;
+
+
+        card.setAttribute(
+            "aria-label",
+            `${
+                notification.read
+                    ? ""
+                    : "Não lida. "
+            }${notification.type}: ${
+                notification.title
+            }`
+        );
+
+
+        /*============================================
+                    ÍCONE
+        ============================================*/
+
+        const iconContainer =
+            document.createElement(
+                "div"
+            );
+
+
+        iconContainer.className =
+            "notification-icon";
+
+
+        const typeClass =
+            getTypeClass(
+                notification.type
+            );
+
+
+        if (
+            typeClass
+        ) {
+
+            iconContainer.classList.add(
+                typeClass
+            );
 
         }
 
 
-        if (eventNotifications) {
+        iconContainer.appendChild(
+            criarIcone(
+                notification.type
+            )
+        );
 
-            eventNotifications.textContent =
-                notifications.filter(
-                    item =>
-                        item.source ===
-                        "calendar"
-                ).length;
+
+        /*============================================
+                    CONTEÚDO
+        ============================================*/
+
+        const content =
+            document.createElement(
+                "div"
+            );
+
+
+        content.className =
+            "notification-content";
+
+
+        const meta =
+            document.createElement(
+                "div"
+            );
+
+
+        meta.className =
+            "notification-meta";
+
+
+        const type =
+            document.createElement(
+                "span"
+            );
+
+
+        type.className =
+            "notification-type";
+
+
+        type.textContent =
+            notification.type;
+
+
+        const audience =
+            document.createElement(
+                "span"
+            );
+
+
+        audience.className =
+            "notification-audience";
+
+
+        audience.textContent =
+            notification.audience;
+
+
+        meta.append(
+            type,
+            audience
+        );
+
+
+        const title =
+            document.createElement(
+                "h3"
+            );
+
+
+        title.textContent =
+            notification.title;
+
+
+        const message =
+            document.createElement(
+                "p"
+            );
+
+
+        message.textContent =
+            notification.message;
+
+
+        content.append(
+            meta,
+            title,
+            message
+        );
+
+
+        /*============================================
+                    LATERAL
+        ============================================*/
+
+        const side =
+            document.createElement(
+                "div"
+            );
+
+
+        side.className =
+            "notification-side";
+
+
+        const date =
+            document.createElement(
+                "span"
+            );
+
+
+        date.className =
+            "notification-date";
+
+
+        date.textContent =
+            notification.time
+                ? `${
+                    formatarData(
+                        notification.date
+                    )
+                } • ${
+                    notification.time
+                }`
+                : formatarData(
+                    notification.date
+                );
+
+
+        side.appendChild(
+            date
+        );
+
+
+        if (
+            !notification.read
+        ) {
+
+            const dot =
+                document.createElement(
+                    "span"
+                );
+
+
+            dot.className =
+                "unread-dot";
+
+
+            dot.title =
+                "Não lida";
+
+
+            dot.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            side.appendChild(
+                dot
+            );
 
         }
 
 
-        if (noticeNotifications) {
+        card.append(
+            iconContainer,
+            content,
+            side
+        );
 
-            noticeNotifications.textContent =
-                notifications.filter(
-                    item =>
-                        item.type ===
-                        "Aviso"
-                ).length;
 
-        }
+        return card;
 
     }
 
@@ -923,147 +2339,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderNotifications() {
 
-        if (!notificationsList) {
-
-            return;
-
-        }
+        notificationsList.replaceChildren();
 
 
         const filtered =
             pegarNotificacoesFiltradas();
 
 
-        notificationsList.innerHTML =
-            "";
-
-
-        if (notificationsEmpty) {
-
-            notificationsEmpty.classList.toggle(
-                "active",
-                filtered.length === 0
-            );
-
-        }
+        notificationsEmpty.classList.toggle(
+            "active",
+            filtered.length === 0
+        );
 
 
         filtered.forEach(
-            function (notification) {
+            function (
+                notification
+            ) {
 
-                const card =
-                    document.createElement(
-                        "article"
+                notificationsList
+                    .appendChild(
+                        criarCardNotificacao(
+                            notification
+                        )
                     );
-
-
-                card.className =
-                    "notification-card";
-
-
-                if (
-                    !notification.read
-                ) {
-
-                    card.classList.add(
-                        "unread"
-                    );
-
-                }
-
-
-                card.dataset.notificationId =
-                    notification.id;
-
-
-                const typeClass =
-                    getTypeClass(
-                        notification.type
-                    );
-
-
-                card.innerHTML = `
-
-                    <div class="notification-icon ${typeClass}">
-
-                        <i class="${getIcon(notification.type)}"></i>
-
-                    </div>
-
-
-                    <div class="notification-content">
-
-
-                        <div class="notification-meta">
-
-                            <span class="notification-type">
-
-                                ${escapeHtml(notification.type)}
-
-                            </span>
-
-
-                            <span class="notification-audience">
-
-                                ${escapeHtml(notification.audience)}
-
-                            </span>
-
-                        </div>
-
-
-                        <h3>
-
-                            ${escapeHtml(notification.title)}
-
-                        </h3>
-
-
-                        <p>
-
-                            ${escapeHtml(notification.message)}
-
-                        </p>
-
-
-                    </div>
-
-
-                    <div class="notification-side">
-
-                        <span class="notification-date">
-
-                            ${formatarData(notification.date)}
-
-                            ${
-                                notification.time
-                                    ? " • " +
-                                      escapeHtml(notification.time)
-                                    : ""
-                            }
-
-                        </span>
-
-
-                        ${
-                            !notification.read
-                                ? `
-                                    <span
-                                        class="unread-dot"
-                                        title="Não lida"
-                                    ></span>
-                                `
-                                : ""
-                        }
-
-                    </div>
-
-                `;
-
-
-                notificationsList.appendChild(
-                    card
-                );
 
             }
         );
@@ -1078,11 +2377,51 @@ document.addEventListener("DOMContentLoaded", function () {
                     MODAIS
     ====================================================*/
 
-    function abrirModal(modal) {
+    function existeModalAtivo() {
 
-        if (!modal) {
+        return [
+
+            notificationModal,
+            notificationViewModal,
+            deleteNotificationModal
+
+        ].some(
+            modal =>
+                modal.classList.contains(
+                    "active"
+                )
+        );
+
+    }
+
+
+    function abrirModal(
+        modal,
+        focoInicial = null
+    ) {
+
+        if (
+            !modal
+        ) {
 
             return;
+
+        }
+
+
+        const elementoAtivo =
+            document.activeElement;
+
+
+        if (
+            elementoAtivo instanceof
+            HTMLElement
+        ) {
+
+            focoAnteriorPorModal.set(
+                modal,
+                elementoAtivo
+            );
 
         }
 
@@ -1102,16 +2441,50 @@ document.addEventListener("DOMContentLoaded", function () {
             "modal-open"
         );
 
+
+        if (
+            focoInicial &&
+            typeof focoInicial.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    focoInicial.focus();
+
+                }
+            );
+
+        }
+
     }
 
 
-    function fecharModal(modal) {
+    function fecharModal(
+        modal,
+        opcoes = {}
+    ) {
 
-        if (!modal) {
+        if (
+            !modal
+        ) {
 
             return;
 
         }
+
+
+        const {
+
+            restaurarFoco = true,
+
+            fallbackFoco =
+                usuarioPodeGerenciarNotificacoes
+                    ? newNotificationButton
+                    : notificationSearch
+
+        } = opcoes;
 
 
         modal.classList.remove(
@@ -1125,19 +2498,204 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-        const aberto =
-            document.querySelector(
-                ".notification-modal.active, .notification-view-modal.active, .delete-notification-modal.active"
-            );
-
-
-        if (!aberto) {
+        if (
+            !existeModalAtivo()
+        ) {
 
             document.body.classList.remove(
                 "modal-open"
             );
 
         }
+
+
+        const focoAnterior =
+            focoAnteriorPorModal.get(
+                modal
+            );
+
+
+        focoAnteriorPorModal.delete(
+            modal
+        );
+
+
+        if (
+            !restaurarFoco
+        ) {
+
+            return;
+
+        }
+
+
+        const destinoFoco =
+            elementoPodeReceberFoco(
+                focoAnterior
+            )
+                ? focoAnterior
+                : fallbackFoco;
+
+
+        if (
+            destinoFoco &&
+            typeof destinoFoco.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    destinoFoco.focus();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /*====================================================
+                VALIDAÇÃO DO FORMULÁRIO
+    ====================================================*/
+
+    function limparValidacoesFormulario() {
+
+        notificationTitle.setCustomValidity(
+            ""
+        );
+
+
+        notificationType.setCustomValidity(
+            ""
+        );
+
+
+        notificationAudience.setCustomValidity(
+            ""
+        );
+
+
+        notificationMessage.setCustomValidity(
+            ""
+        );
+
+    }
+
+
+    function validarFormularioNotificacao() {
+
+        const title =
+            notificationTitle.value
+                .trim();
+
+
+        const type =
+            notificationType.value;
+
+
+        const audience =
+            notificationAudience.value;
+
+
+        const message =
+            notificationMessage.value
+                .trim();
+
+
+        notificationTitle.setCustomValidity(
+            title
+                ? ""
+                : "Informe o título da notificação."
+        );
+
+
+        if (
+            !title
+        ) {
+
+            notificationTitle.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        notificationType.setCustomValidity(
+            TIPOS_MANUAIS.has(
+                type
+            )
+                ? ""
+                : "Selecione um tipo válido."
+        );
+
+
+        if (
+            !TIPOS_MANUAIS.has(
+                type
+            )
+        ) {
+
+            notificationType.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        notificationAudience.setCustomValidity(
+            PUBLICOS_MANUAIS.has(
+                audience
+            )
+                ? ""
+                : "Selecione um destinatário válido."
+        );
+
+
+        if (
+            !PUBLICOS_MANUAIS.has(
+                audience
+            )
+        ) {
+
+            notificationAudience.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        notificationMessage.setCustomValidity(
+            message
+                ? ""
+                : "Informe a mensagem."
+        );
+
+
+        if (
+            !message
+        ) {
+
+            notificationMessage.reportValidity();
+
+
+            return null;
+
+        }
+
+
+        return {
+
+            title,
+            type,
+            audience,
+            message
+
+        };
 
     }
 
@@ -1148,7 +2706,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function abrirNovoAviso() {
 
-        if (!notificationForm) {
+        if (
+            !usuarioPodeGerenciarNotificacoes
+        ) {
 
             return;
 
@@ -1156,6 +2716,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         notificationForm.reset();
+
+
+        limparValidacoesFormulario();
 
 
         notificationType.value =
@@ -1167,118 +2730,242 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         abrirModal(
-            notificationModal
+            notificationModal,
+            notificationTitle
         );
-
-
-        notificationTitle.focus();
 
     }
 
 
-    if (notificationForm) {
+    function fecharNovoAviso() {
 
-        notificationForm.addEventListener(
-            "submit",
-            function (event) {
-
-                event.preventDefault();
-
-
-                const agora =
-                    new Date();
-
-
-                notifications.push({
-
-                    id:
-                        `manual-${Date.now()}`,
-
-                    title:
-                        notificationTitle
-                            .value
-                            .trim(),
-
-                    type:
-                        notificationType.value,
-
-                    audience:
-                        notificationAudience.value,
-
-                    message:
-                        notificationMessage
-                            .value
-                            .trim(),
-
-                    date:
-                        hojeISO(),
-
-                    time:
-                        agora.toLocaleTimeString(
-                            "pt-BR",
-                            {
-                                hour: "2-digit",
-                                minute: "2-digit"
-                            }
-                        ),
-
-                    read:
-                        false,
-
-                    source:
-                        "manual"
-
-                });
-
-
-                salvarNotificacoes();
-
-
-                fecharModal(
-                    notificationModal
-                );
-
-
-                renderNotifications();
-
-            }
+        fecharModal(
+            notificationModal
         );
 
     }
 
 
     /*====================================================
-                    VISUALIZAÇÃO
+                SALVAR NOTIFICAÇÃO MANUAL
     ====================================================*/
 
-    function abrirVisualizacao(
+    notificationForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            if (
+                !usuarioPodeGerenciarNotificacoes
+            ) {
+
+                return;
+
+            }
+
+
+            const validacao =
+                validarFormularioNotificacao();
+
+
+            if (
+                !validacao
+            ) {
+
+                return;
+
+            }
+
+
+            const novaNotificacao = {
+
+                id:
+                    gerarIdManual(),
+
+                title:
+                    validacao.title,
+
+                type:
+                    validacao.type,
+
+                audience:
+                    validacao.audience,
+
+                message:
+                    validacao.message,
+
+                date:
+                    hojeISO(),
+
+                time:
+                    horarioAtual(),
+
+                read:
+                    false,
+
+                source:
+                    "manual",
+
+                eventId:
+                    null,
+
+                eventType:
+                    "",
+
+                eventClassId:
+                    null,
+
+                eventDate:
+                    "",
+
+                eventTime:
+                    "",
+
+                eventLocation:
+                    "",
+
+                eventDescription:
+                    ""
+
+            };
+
+
+            const novaLista = [
+
+                novaNotificacao,
+
+                ...notifications.map(
+                    notification => ({
+                        ...notification
+                    })
+                )
+
+            ];
+
+
+            if (
+                !salvarNotificacoes(
+                    novaLista
+                )
+            ) {
+
+                alert(
+                    "Não foi possível salvar a notificação. Tente novamente."
+                );
+
+
+                return;
+
+            }
+
+
+            notifications =
+                novaLista;
+
+
+            fecharNovoAviso();
+
+
+            renderNotifications();
+
+        }
+    );
+
+
+    /*====================================================
+            BOTÃO DE MARCAR LEITURA
+    ====================================================*/
+
+    function atualizarBotaoLeitura(
         notification
     ) {
 
-        selectedNotificationId =
-            notification.id;
+        const icon =
+            document.createElement(
+                "i"
+            );
 
 
-        /*
-         * Abrir a notificação marca como lida.
-         */
-
-        notification.read =
-            true;
+        icon.classList.add(
+            "fa-solid"
+        );
 
 
-        salvarNotificacoes();
+        icon.classList.add(
+            notification.read
+                ? "fa-envelope"
+                : "fa-envelope-open"
+        );
 
+
+        icon.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        const text =
+            document.createElement(
+                "span"
+            );
+
+
+        text.textContent =
+            notification.read
+                ? "Marcar como não lida"
+                : "Marcar como lida";
+
+
+        toggleReadButton.replaceChildren(
+            icon,
+            text
+        );
+
+
+        toggleReadButton.setAttribute(
+            "aria-label",
+            text.textContent
+        );
+
+    }
+
+
+    /*====================================================
+            PREENCHER VISUALIZAÇÃO
+    ====================================================*/
+
+    function preencherVisualizacao(
+        notification
+    ) {
 
         viewNotificationIcon.className =
-            `notification-view-icon ${getTypeClass(notification.type)}`;
+            "notification-view-icon";
 
 
-        viewNotificationIcon.innerHTML = `
+        const typeClass =
+            getTypeClass(
+                notification.type
+            );
 
-            <i class="${getIcon(notification.type)}"></i>
 
-        `;
+        if (
+            typeClass
+        ) {
+
+            viewNotificationIcon.classList.add(
+                typeClass
+            );
+
+        }
+
+
+        viewNotificationIcon.replaceChildren(
+            criarIcone(
+                notification.type
+            )
+        );
 
 
         viewNotificationType.textContent =
@@ -1294,12 +2981,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         viewNotificationDate.textContent =
-            `${formatarData(notification.date)}${
-                notification.time
-                    ? " • " +
-                      notification.time
-                    : ""
-            }`;
+            notification.time
+                ? `${
+                    formatarData(
+                        notification.date
+                    )
+                } • ${
+                    notification.time
+                }`
+                : formatarData(
+                    notification.date
+                );
 
 
         viewNotificationMessage.textContent =
@@ -1310,9 +3002,108 @@ document.addEventListener("DOMContentLoaded", function () {
             notification
         );
 
+    }
+
+
+    /*====================================================
+                    VISUALIZAÇÃO
+    ====================================================*/
+
+    function abrirVisualizacao(
+        notification
+    ) {
+
+        selectedNotificationId =
+            String(
+                notification.id
+            );
+
+
+        let atual =
+            notification;
+
+
+        /*
+            Abrir uma notificação marca como lida.
+
+            A alteração só entra no estado local
+            se também puder ser persistida.
+        */
+
+        if (
+            usuarioPodeGerenciarNotificacoes &&
+            !notification.read
+        ) {
+
+            const novaLista =
+                notifications.map(
+                    function (
+                        item
+                    ) {
+
+                        if (
+                            String(
+                                item.id
+                            ) !==
+                            String(
+                                notification.id
+                            )
+                        ) {
+
+                            return {
+                                ...item
+                            };
+
+                        }
+
+
+                        return {
+
+                            ...item,
+
+                            read: true
+
+                        };
+
+                    }
+                );
+
+
+            if (
+                salvarNotificacoes(
+                    novaLista
+                )
+            ) {
+
+                notifications =
+                    novaLista;
+
+
+                atual =
+                    notifications.find(
+                        item =>
+                            String(
+                                item.id
+                            ) ===
+                            String(
+                                selectedNotificationId
+                            )
+                    ) ||
+                    notification;
+
+            }
+
+        }
+
+
+        preencherVisualizacao(
+            atual
+        );
+
 
         abrirModal(
-            notificationViewModal
+            notificationViewModal,
+            notificationViewClose
         );
 
 
@@ -1321,33 +3112,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-    function atualizarBotaoLeitura(
-        notification
-    ) {
+    function fecharVisualizacao() {
 
-        if (
-            notification.read
-        ) {
+        selectedNotificationId =
+            null;
 
-            toggleReadButton.innerHTML = `
 
-                <i class="fa-solid fa-envelope"></i>
-
-                Marcar como não lida
-
-            `;
-
-        } else {
-
-            toggleReadButton.innerHTML = `
-
-                <i class="fa-solid fa-envelope-open"></i>
-
-                Marcar como lida
-
-            `;
-
-        }
+        fecharModal(
+            notificationViewModal
+        );
 
     }
 
@@ -1358,33 +3131,114 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function alternarLeitura() {
 
-        const notification =
-            notifications.find(
-                item =>
-                    String(item.id) ===
-                    String(
-                        selectedNotificationId
-                    )
-            );
-
-
-        if (!notification) {
+        if (
+            !usuarioPodeGerenciarNotificacoes
+        ) {
 
             return;
 
         }
 
 
-        notification.read =
+        const notification =
+            notifications.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        selectedNotificationId
+                    )
+            );
+
+
+        if (
+            !notification
+        ) {
+
+            return;
+
+        }
+
+
+        const novoEstado =
             !notification.read;
 
 
-        salvarNotificacoes();
+        const novaLista =
+            notifications.map(
+                function (item) {
+
+                    if (
+                        String(
+                            item.id
+                        ) !==
+                        String(
+                            notification.id
+                        )
+                    ) {
+
+                        return {
+                            ...item
+                        };
+
+                    }
 
 
-        atualizarBotaoLeitura(
-            notification
-        );
+                    return {
+
+                        ...item,
+
+                        read:
+                            novoEstado
+
+                    };
+
+                }
+            );
+
+
+        if (
+            !salvarNotificacoes(
+                novaLista
+            )
+        ) {
+
+            alert(
+                "Não foi possível alterar o status da notificação."
+            );
+
+
+            return;
+
+        }
+
+
+        notifications =
+            novaLista;
+
+
+        const atualizada =
+            notifications.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        selectedNotificationId
+                    )
+            );
+
+
+        if (
+            atualizada
+        ) {
+
+            atualizarBotaoLeitura(
+                atualizada
+            );
+
+        }
 
 
         renderNotifications();
@@ -1394,17 +3248,97 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function marcarTodasComoLidas() {
 
-        notifications.forEach(
-            function (notification) {
+        if (
+            !usuarioPodeGerenciarNotificacoes
+        ) {
 
-                notification.read =
-                    true;
+            return;
+
+        }
+
+
+        const existemNaoLidas =
+            notifications.some(
+                notification =>
+                    !notification.read
+            );
+
+
+        if (
+            !existemNaoLidas
+        ) {
+
+            return;
+
+        }
+
+
+        const novaLista =
+            notifications.map(
+                notification => ({
+
+                    ...notification,
+
+                    read: true
+
+                })
+            );
+
+
+        if (
+            !salvarNotificacoes(
+                novaLista
+            )
+        ) {
+
+            alert(
+                "Não foi possível marcar as notificações como lidas."
+            );
+
+
+            return;
+
+        }
+
+
+        notifications =
+            novaLista;
+
+
+        /*
+            Se o modal estiver aberto, mantém seu
+            botão sincronizado com o novo estado.
+        */
+
+        if (
+            notificationViewModal.classList.contains(
+                "active"
+            )
+        ) {
+
+            const selecionada =
+                notifications.find(
+                    notification =>
+                        String(
+                            notification.id
+                        ) ===
+                        String(
+                            selectedNotificationId
+                        )
+                );
+
+
+            if (
+                selecionada
+            ) {
+
+                atualizarBotaoLeitura(
+                    selecionada
+                );
 
             }
-        );
 
-
-        salvarNotificacoes();
+        }
 
 
         renderNotifications();
@@ -1418,17 +3352,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function abrirExclusao() {
 
+        if (
+            !usuarioPodeGerenciarNotificacoes
+        ) {
+
+            return;
+
+        }
+
+
         const notification =
             notifications.find(
                 item =>
-                    String(item.id) ===
+                    String(
+                        item.id
+                    ) ===
                     String(
                         selectedNotificationId
                     )
             );
 
 
-        if (!notification) {
+        if (
+            !notification
+        ) {
 
             return;
 
@@ -1443,19 +3390,82 @@ document.addEventListener("DOMContentLoaded", function () {
             `Deseja realmente excluir "${notification.title}"?`;
 
 
+        /*
+            Guarda o elemento que abriu a visualização
+            para poder devolver o foco depois.
+        */
+
+        focoRetornoExclusao =
+            focoAnteriorPorModal.get(
+                notificationViewModal
+            ) ||
+            null;
+
+
         fecharModal(
-            notificationViewModal
+            notificationViewModal,
+            {
+                restaurarFoco:
+                    false
+            }
         );
 
 
+        selectedNotificationId =
+            null;
+
+
         abrirModal(
-            deleteNotificationModal
+            deleteNotificationModal,
+            deleteNotificationCancel
         );
 
     }
 
 
+    function cancelarExclusao() {
+
+        notificationToDelete =
+            null;
+
+
+        const fallback =
+            elementoPodeReceberFoco(
+                focoRetornoExclusao
+            )
+                ? focoRetornoExclusao
+                : (
+                    usuarioPodeGerenciarNotificacoes
+                        ? newNotificationButton
+                        : notificationSearch
+                );
+
+
+        fecharModal(
+            deleteNotificationModal,
+            {
+                fallbackFoco:
+                    fallback
+            }
+        );
+
+
+        focoRetornoExclusao =
+            null;
+
+    }
+
+
     function confirmarExclusao() {
+
+        if (
+            !usuarioPodeGerenciarNotificacoes
+        ) {
+
+            return;
+
+        }
+
 
         if (
             notificationToDelete ===
@@ -1467,14 +3477,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
 
-        notifications =
+        const idExclusao =
+            String(
+                notificationToDelete
+            );
+
+
+        const novaLista =
             notifications.filter(
                 item =>
-                    String(item.id) !==
                     String(
-                        notificationToDelete
-                    )
+                        item.id
+                    ) !==
+                    idExclusao
             );
+
+
+        if (
+            !salvarNotificacoes(
+                novaLista
+            )
+        ) {
+
+            alert(
+                "Não foi possível excluir a notificação. Tente novamente."
+            );
+
+
+            return;
+
+        }
+
+
+        notifications =
+            novaLista;
 
 
         notificationToDelete =
@@ -1485,12 +3521,29 @@ document.addEventListener("DOMContentLoaded", function () {
             null;
 
 
-        salvarNotificacoes();
+        const fallback =
+            elementoPodeReceberFoco(
+                focoRetornoExclusao
+            )
+                ? focoRetornoExclusao
+                : (
+                    usuarioPodeGerenciarNotificacoes
+                        ? newNotificationButton
+                        : notificationSearch
+                );
 
 
         fecharModal(
-            deleteNotificationModal
+            deleteNotificationModal,
+            {
+                fallbackFoco:
+                    fallback
+            }
         );
+
+
+        focoRetornoExclusao =
+            null;
 
 
         renderNotifications();
@@ -1499,262 +3552,328 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
+            ABRIR NOTIFICAÇÃO POR ID
+    ====================================================*/
+
+    function abrirNotificacaoPorId(
+        id
+    ) {
+
+        const notification =
+            notifications.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        id
+                    )
+            );
+
+
+        if (
+            notification &&
+            notificacaoVisivelParaPerfil(
+                notification
+            )
+        ) {
+
+            abrirVisualizacao(
+                notification
+            );
+
+        }
+
+    }
+
+
+    /*====================================================
                 EVENTOS DA LISTA
     ====================================================*/
 
-    if (notificationsList) {
+    notificationsList.addEventListener(
+        "click",
+        function (event) {
 
-        notificationsList.addEventListener(
-            "click",
-            function (event) {
+            if (
+                !(
+                    event.target instanceof
+                    Element
+                )
+            ) {
 
-                const card =
-                    event.target.closest(
-                        "[data-notification-id]"
-                    );
-
-
-                if (!card) {
-
-                    return;
-
-                }
-
-
-                const notification =
-                    notifications.find(
-                        item =>
-                            String(item.id) ===
-                            String(
-                                card.dataset.notificationId
-                            )
-                    );
-
-
-                if (notification) {
-
-                    abrirVisualizacao(
-                        notification
-                    );
-
-                }
+                return;
 
             }
-        );
 
-    }
+
+            const card =
+                event.target.closest(
+                    "[data-notification-id]"
+                );
+
+
+            if (
+                !card
+            ) {
+
+                return;
+
+            }
+
+
+            abrirNotificacaoPorId(
+                card.dataset.notificationId
+            );
+
+        }
+    );
+
+
+    notificationsList.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key !==
+                    "Enter" &&
+                event.key !==
+                    " "
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                !(
+                    event.target instanceof
+                    Element
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const card =
+                event.target.closest(
+                    "[data-notification-id]"
+                );
+
+
+            if (
+                !card
+            ) {
+
+                return;
+
+            }
+
+
+            event.preventDefault();
+
+
+            abrirNotificacaoPorId(
+                card.dataset.notificationId
+            );
+
+        }
+    );
 
 
     /*====================================================
                     BOTÕES
     ====================================================*/
 
-    if (newNotificationButton) {
-
-        newNotificationButton.addEventListener(
-            "click",
-            abrirNovoAviso
-        );
-
-    }
+    newNotificationButton.addEventListener(
+        "click",
+        abrirNovoAviso
+    );
 
 
-    if (markAllReadButton) {
-
-        markAllReadButton.addEventListener(
-            "click",
-            marcarTodasComoLidas
-        );
-
-    }
+    markAllReadButton.addEventListener(
+        "click",
+        marcarTodasComoLidas
+    );
 
 
-    if (notificationSearch) {
-
-        notificationSearch.addEventListener(
-            "input",
-            renderNotifications
-        );
-
-    }
+    toggleReadButton.addEventListener(
+        "click",
+        alternarLeitura
+    );
 
 
-    if (notificationTypeFilter) {
-
-        notificationTypeFilter.addEventListener(
-            "change",
-            renderNotifications
-        );
-
-    }
+    deleteNotificationButton.addEventListener(
+        "click",
+        abrirExclusao
+    );
 
 
-    if (notificationStatusFilter) {
-
-        notificationStatusFilter.addEventListener(
-            "change",
-            renderNotifications
-        );
-
-    }
-
-
-    if (toggleReadButton) {
-
-        toggleReadButton.addEventListener(
-            "click",
-            alternarLeitura
-        );
-
-    }
-
-
-    if (deleteNotificationButton) {
-
-        deleteNotificationButton.addEventListener(
-            "click",
-            abrirExclusao
-        );
-
-    }
-
-
-    if (deleteNotificationConfirm) {
-
-        deleteNotificationConfirm.addEventListener(
-            "click",
-            confirmarExclusao
-        );
-
-    }
+    deleteNotificationConfirm.addEventListener(
+        "click",
+        confirmarExclusao
+    );
 
 
     /*====================================================
-                    FECHAR MODAIS
+                    FILTROS
     ====================================================*/
 
-    if (notificationModalClose) {
-
-        notificationModalClose.addEventListener(
-            "click",
-            function () {
-
-                fecharModal(
-                    notificationModal
-                );
-
-            }
-        );
-
-    }
+    notificationSearch.addEventListener(
+        "input",
+        renderNotifications
+    );
 
 
-    if (notificationCancelButton) {
+    notificationSearch.addEventListener(
+        "keydown",
+        function (event) {
 
-        notificationCancelButton.addEventListener(
-            "click",
-            function () {
+            if (
+                event.key !==
+                    "Escape" ||
+                notificationSearch.value ===
+                    ""
+            ) {
 
-                fecharModal(
-                    notificationModal
-                );
+                return;
 
             }
-        );
-
-    }
 
 
-    if (notificationModalOverlay) {
-
-        notificationModalOverlay.addEventListener(
-            "click",
-            function () {
-
-                fecharModal(
-                    notificationModal
-                );
-
-            }
-        );
-
-    }
+            notificationSearch.value =
+                "";
 
 
-    if (notificationViewClose) {
+            renderNotifications();
 
-        notificationViewClose.addEventListener(
-            "click",
-            function () {
-
-                fecharModal(
-                    notificationViewModal
-                );
-
-            }
-        );
-
-    }
+        }
+    );
 
 
-    if (notificationViewOverlay) {
-
-        notificationViewOverlay.addEventListener(
-            "click",
-            function () {
-
-                fecharModal(
-                    notificationViewModal
-                );
-
-            }
-        );
-
-    }
+    notificationTypeFilter.addEventListener(
+        "change",
+        renderNotifications
+    );
 
 
-    if (deleteNotificationCancel) {
-
-        deleteNotificationCancel.addEventListener(
-            "click",
-            function () {
-
-                notificationToDelete =
-                    null;
-
-
-                fecharModal(
-                    deleteNotificationModal
-                );
-
-            }
-        );
-
-    }
-
-
-    if (deleteNotificationOverlay) {
-
-        deleteNotificationOverlay.addEventListener(
-            "click",
-            function () {
-
-                notificationToDelete =
-                    null;
-
-
-                fecharModal(
-                    deleteNotificationModal
-                );
-
-            }
-        );
-
-    }
+    notificationStatusFilter.addEventListener(
+        "change",
+        renderNotifications
+    );
 
 
     /*====================================================
-                    ESC
+            LIMPAR VALIDADE AO EDITAR
+    ====================================================*/
+
+    notificationTitle.addEventListener(
+        "input",
+        function () {
+
+            notificationTitle.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    notificationType.addEventListener(
+        "change",
+        function () {
+
+            notificationType.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    notificationAudience.addEventListener(
+        "change",
+        function () {
+
+            notificationAudience.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    notificationMessage.addEventListener(
+        "input",
+        function () {
+
+            notificationMessage.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    /*====================================================
+                FECHAR NOVO AVISO
+    ====================================================*/
+
+    notificationModalClose.addEventListener(
+        "click",
+        fecharNovoAviso
+    );
+
+
+    notificationCancelButton.addEventListener(
+        "click",
+        fecharNovoAviso
+    );
+
+
+    notificationModalOverlay.addEventListener(
+        "click",
+        fecharNovoAviso
+    );
+
+
+    /*====================================================
+                FECHAR VISUALIZAÇÃO
+    ====================================================*/
+
+    notificationViewClose.addEventListener(
+        "click",
+        fecharVisualizacao
+    );
+
+
+    notificationViewOverlay.addEventListener(
+        "click",
+        fecharVisualizacao
+    );
+
+
+    /*====================================================
+                FECHAR EXCLUSÃO
+    ====================================================*/
+
+    deleteNotificationCancel.addEventListener(
+        "click",
+        cancelarExclusao
+    );
+
+
+    deleteNotificationOverlay.addEventListener(
+        "click",
+        cancelarExclusao
+    );
+
+
+    /*====================================================
+                        ESC
     ====================================================*/
 
     document.addEventListener(
@@ -1771,70 +3890,409 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            [
-                notificationModal,
-                notificationViewModal,
-                deleteNotificationModal
-            ].forEach(
-                function (modal) {
+            /*
+                Fecha somente o modal de maior
+                prioridade que estiver aberto.
+            */
 
-                    if (
-                        modal &&
-                        modal.classList.contains(
-                            "active"
-                        )
-                    ) {
+            if (
+                deleteNotificationModal.classList.contains(
+                    "active"
+                )
+            ) {
 
-                        fecharModal(
-                            modal
-                        );
+                cancelarExclusao();
 
-                    }
 
-                }
-            );
+                return;
+
+            }
+
+
+            if (
+                notificationViewModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharVisualizacao();
+
+
+                return;
+
+            }
+
+
+            if (
+                notificationModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharNovoAviso();
+
+            }
 
         }
     );
 
 
     /*====================================================
-                    LOGOUT
+                    LOGOUT PHP
     ====================================================*/
 
-    if (logoutButton) {
-
-        logoutButton.addEventListener(
-            "click",
-            function () {
-
-                sessionStorage.removeItem(
-                    "primewayLogado"
-                );
+    let logoutEmAndamento =
+        false;
 
 
-                sessionStorage.removeItem(
-                    "primewayUsuario"
-                );
+    async function fazerLogout() {
+
+        if (
+            logoutEmAndamento
+        ) {
+
+            return;
+        }
 
 
-                window.location.href =
-                    "login.html";
+        logoutEmAndamento =
+            true;
 
+
+        if (
+            logoutButton
+        ) {
+
+            logoutButton.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+
+            if (
+                "disabled" in
+                logoutButton
+            ) {
+
+                logoutButton.disabled =
+                    true;
             }
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_LOGOUT_URL,
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.success
+            ) {
+
+                throw new Error(
+                    data?.message ||
+                    "O servidor não confirmou o logout."
+                );
+            }
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao encerrar a sessão:",
+                error
+            );
+
+
+            alert(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
+
+
+            logoutEmAndamento =
+                false;
+
+
+            if (
+                logoutButton
+            ) {
+
+                logoutButton.setAttribute(
+                    "aria-busy",
+                    "false"
+                );
+
+
+                if (
+                    "disabled" in
+                    logoutButton
+                ) {
+
+                    logoutButton.disabled =
+                        false;
+                }
+            }
+        }
+    }
+
+
+    logoutButton?.addEventListener(
+        "click",
+        fazerLogout
+    );
+
+
+    /*====================================================
+        ATUALIZAR VISUALIZAÇÃO ABERTA
+    ====================================================*/
+
+    function atualizarVisualizacaoAberta() {
+
+        if (
+            !notificationViewModal.classList.contains(
+                "active"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const notification =
+            notifications.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        selectedNotificationId
+                    )
+            );
+
+
+        /*
+            A notificação pode ter sido excluída
+            em outra aba ou pode deixar de ser
+            visível para o perfil atual.
+        */
+
+        if (
+            !notification ||
+            !notificacaoVisivelParaPerfil(
+                notification
+            )
+        ) {
+
+            fecharVisualizacao();
+
+
+            return;
+
+        }
+
+
+        preencherVisualizacao(
+            notification
         );
 
     }
 
 
     /*====================================================
+            SINCRONIZAÇÃO ENTRE ABAS
+    ====================================================*/
+
+    window.addEventListener(
+        "storage",
+        function (event) {
+
+            /*============================================
+                NOTIFICAÇÕES ALTERADAS
+            ============================================*/
+
+            if (
+                event.key ===
+                NOTIFICATIONS_STORAGE_KEY
+            ) {
+
+                notifications =
+                    carregarNotificacoes();
+
+
+                atualizarVisualizacaoAberta();
+
+
+                renderNotifications();
+
+
+                return;
+
+            }
+
+
+            /*============================================
+                    CALENDÁRIO ALTERADO
+            ============================================*/
+
+            if (
+                event.key ===
+                CALENDAR_STORAGE_KEY
+            ) {
+
+                /*
+                    Apenas notificações de calendário
+                    já existentes são sincronizadas.
+
+                    Não criamos novas notificações aqui.
+                */
+
+                sincronizarNotificacoesComCalendario();
+
+
+                atualizarVisualizacaoAberta();
+
+
+                renderNotifications();
+
+            }
+
+        }
+    );
+
+
+    /*====================================================
                     INICIALIZAÇÃO
     ====================================================*/
 
-    sincronizarEventosCalendario();
+    /*
+        Migra estruturas antigas e padroniza tipos.
+
+        Exemplo:
+
+        Feriado vindo do Calendário
+            ↓
+        Evento na central de Notificações
+
+        O tipo original continua armazenado em
+        eventType.
+    */
+
+    const normalizadas =
+        notifications
+            .map(
+                normalizarNotificacao
+            )
+            .filter(
+                Boolean
+            );
 
 
-    salvarNotificacoes();
+    if (
+        JSON.stringify(
+            normalizadas
+        ) !==
+        JSON.stringify(
+            notifications
+        )
+    ) {
+
+        if (
+            usuarioPodeGerenciarNotificacoes
+        ) {
+
+            if (
+                salvarNotificacoes(
+                    normalizadas
+                )
+            ) {
+
+                notifications =
+                    normalizadas;
+
+            }
+
+        } else {
+
+            /*
+                Para Professor, migrações e correções
+                acontecem somente em memória.
+            */
+
+            notifications =
+                normalizadas;
+
+        }
+
+    }
+
+
+    /*
+        Atualiza somente notificações de calendário
+        que já estejam presentes.
+
+        Notificações excluídas manualmente não são
+        recriadas.
+
+        Para Professor, essa sincronização é somente
+        em memória.
+    */
+
+    sincronizarNotificacoesComCalendario(
+        usuarioPodeGerenciarNotificacoes
+    );
+
+
+    if (
+        usuarioPodeGerenciarNotificacoes
+    ) {
+
+        /*
+            Persiste os dois avisos padrão na primeira
+            abertura e eventuais migrações apenas para
+            quem gerencia a central.
+        */
+
+        salvarNotificacoes();
+
+    }
+
+
+    aplicarPermissoesInterface();
 
 
     renderNotifications();

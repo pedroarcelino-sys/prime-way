@@ -1,686 +1,373 @@
 /*====================================================
-                VARIÁVEIS
+            ÁREA DO PROFESSOR
+            PRIMEWAY SCHOOL
 ====================================================*/
 
-:root{
+/*
+    O layout geral, a sidebar e sua responsividade
+    são controlados por components.css.
 
-    --principal:#FFFFE4;
+    Este arquivo contém apenas os estilos
+    específicos da área do Professor.
+*/
 
-    --secundaria:#1E3A8A;
 
-    --primaria:#D3AF37;
+/*====================================================
+                    PÁGINA
+====================================================*/
 
-    --texto:#1F2937;
+.professor-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
 
+    padding:
+        30px
+        32px
+        45px;
+
+    background: var(--principal);
 }
 
 
 /*====================================================
-                RESET
+                    CABEÇALHO
 ====================================================*/
 
-*{
+.professor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    margin:0;
+    gap: 25px;
 
-    padding:0;
+    margin-bottom: 26px;
+}
 
-    box-sizing:border-box;
 
+.professor-welcome {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--primaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .06em;
+
+    text-transform: uppercase;
+}
+
+
+.professor-header h1 {
+    margin: 0 0 6px;
+
+    color: var(--secundaria);
+
+    font-size: 27px;
+    font-weight: 600;
+}
+
+
+.professor-header p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+
+    line-height: 1.6;
 }
 
 
 /*====================================================
-                CONFIGURAÇÃO GERAL
+                    DATA
 ====================================================*/
 
-body{
+.professor-date {
+    flex-shrink: 0;
 
-    background:var(--principal);
+    display: flex;
+    align-items: center;
 
-    color:var(--texto);
+    gap: 9px;
 
-    font-family:'Cinzel', serif;
+    min-height: 40px;
 
+    padding: 0 14px;
+
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
+
+    border-radius: 10px;
+
+    background: var(--branco);
+
+    color: var(--secundaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+
+    white-space: nowrap;
+
+    box-shadow: var(--sombra-p);
 }
 
 
+.professor-date i {
+    color: var(--primaria);
 
-/*====================================================
-                LAYOUT COM SIDEBAR
-====================================================*/
-
-.professor-app-layout{
-
-    min-height:100vh;
-
-    display:grid;
-
-    grid-template-columns:230px minmax(0, 1fr);
-
-}
-
-
-/*====================================================
-                SIDEBAR DO PROFESSOR
-====================================================*/
-
-.professor-sidebar{
-
-    position:sticky;
-
-    top:0;
-
-    height:100vh;
-
-    min-height:100vh;
-
-    display:flex;
-
-    flex-direction:column;
-
-    background:var(--secundaria);
-
-    overflow-y:auto;
-
-    z-index:20;
-
-}
-
-
-.professor-sidebar .sidebar-logo{
-
-    padding:24px 18px;
-
-    text-align:center;
-
-}
-
-
-.professor-sidebar .sidebar-logo img{
-
-    display:block;
-
-    width:100%;
-
-    max-width:120px;
-
-    margin:0 auto 10px;
-
-}
-
-
-.professor-sidebar .sidebar-logo h2{
-
-    margin:0;
-
-    color:var(--principal);
-
-    font-family:'Cinzel', serif;
-
-    font-size:13px;
-
-    font-weight:600;
-
-}
-
-
-.professor-sidebar .sidebar-menu{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:4px;
-
-    padding:0 12px;
-
-}
-
-
-.professor-sidebar .sidebar-menu a{
-
-    min-height:42px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:13px;
-
-    padding:10px 14px;
-
-    border-left:3px solid transparent;
-
-    border-radius:10px;
-
-    color:rgba(255,255,255,.80);
-
-    font-family:Arial, sans-serif;
-
-    font-size:11px;
-
-    text-decoration:none;
-
-    transition:.25s ease;
-
-}
-
-
-.professor-sidebar .sidebar-menu a i{
-
-    width:20px;
-
-    flex-shrink:0;
-
-    text-align:center;
-
-    font-size:13px;
-
-}
-
-
-.professor-sidebar .sidebar-menu a:hover{
-
-    background:rgba(255,255,255,.10);
-
-    color:#FFFFFF;
-
-}
-
-
-.professor-sidebar .sidebar-menu a.active{
-
-    border-left-color:var(--primaria);
-
-    background:rgba(255,255,255,.12);
-
-    color:#FFFFFF;
-
-}
-
-
-.professor-sidebar .sidebar-bottom{
-
-    margin-top:auto;
-
-    padding:20px 12px;
-
-}
-
-
-.professor-sidebar .sidebar-bottom button{
-
-    width:100%;
-
-    min-height:42px;
-
-    display:flex;
-
-    align-items:center;
-
-    gap:13px;
-
-    padding:10px 14px;
-
-    border:none;
-
-    border-radius:10px;
-
-    background:transparent;
-
-    color:rgba(255,255,255,.80);
-
-    font-family:Arial, sans-serif;
-
-    font-size:11px;
-
-    text-align:left;
-
-    cursor:pointer;
-
-    transition:.25s ease;
-
-}
-
-
-.professor-sidebar .sidebar-bottom button i{
-
-    width:20px;
-
-    flex-shrink:0;
-
-    text-align:center;
-
-}
-
-
-.professor-sidebar .sidebar-bottom button:hover{
-
-    background:rgba(255,255,255,.10);
-
-    color:#FFFFFF;
-
+    font-size: 13px;
 }
 
 
 /*====================================================
-                PÁGINA
+                CARDS DE RESUMO
 ====================================================*/
 
-.professor-page{
+.professor-cards {
+    display: grid;
 
-    min-width:0;
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
 
-    width:100%;
-
-    min-height:100vh;
-
-    padding:35px 40px;
-
+    gap: 16px;
 }
 
 
 /*====================================================
-                CABEÇALHO
+                CARD DE RESUMO
 ====================================================*/
 
-.professor-header{
+.professor-card {
+    min-width: 0;
 
-    display:flex;
+    display: flex;
+    align-items: center;
 
-    align-items:center;
+    gap: 14px;
 
-    justify-content:space-between;
+    padding: 18px;
 
-    gap:30px;
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
 
-    margin-bottom:35px;
+    border-radius: 14px;
 
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
+
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
 }
 
 
-.professor-welcome{
+.professor-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .28
+        );
 
-    display:block;
+    transform: translateY(-3px);
 
-    color:var(--primaria);
-
-    font-size:13px;
-
-    font-weight:600;
-
-    margin-bottom:6px;
-
-}
-
-
-.professor-header h1{
-
-    color:var(--secundaria);
-
-    font-size:32px;
-
-    font-weight:600;
-
-    margin-bottom:8px;
-
-}
-
-
-.professor-header p{
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:14px;
-
-    line-height:1.5;
-
+    box-shadow: var(--sombra-m);
 }
 
 
 /*====================================================
-                DATA
+                ÍCONE DO CARD
 ====================================================*/
 
-.professor-date{
+.professor-card-icon {
+    width: 48px;
+    height: 48px;
 
-    display:flex;
+    flex-shrink: 0;
 
-    align-items:center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    gap:10px;
+    border-radius: 12px;
 
-    padding:12px 18px;
+    background: #FBF3D8;
 
-    background:#FFFFFF;
+    color: var(--primaria);
 
-    border-radius:12px;
-
-    color:var(--secundaria);
-
-    font-size:13px;
-
-    box-shadow:0 6px 20px rgba(0,0,0,.05);
-
-    white-space:nowrap;
-
-}
-
-
-.professor-date i{
-
-    color:var(--primaria);
-
-    font-size:17px;
-
+    font-size: 17px;
 }
 
 
 /*====================================================
-                CARDS
+                CONTEÚDO DO CARD
 ====================================================*/
 
-.professor-cards{
+.professor-card-content {
+    min-width: 0;
+}
 
-    display:grid;
 
-    grid-template-columns:repeat(4, 1fr);
+.professor-card-content span {
+    display: block;
 
-    gap:20px;
+    margin-bottom: 4px;
 
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+}
+
+
+.professor-card-content strong {
+    display: block;
+
+    overflow: hidden;
+
+    color: var(--secundaria);
+
+    font-size: 21px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
 /*====================================================
-                CARD
+                    SEÇÕES
 ====================================================*/
 
-.professor-card{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:16px;
-
-    padding:22px;
-
-    background:#FFFFFF;
-
-    border:1px solid rgba(0,0,0,.04);
-
-    border-radius:16px;
-
-    box-shadow:0 8px 25px rgba(0,0,0,.05);
-
-    transition:.3s ease;
-
+.professor-section {
+    margin-top: 26px;
 }
 
 
-.professor-card:hover{
+.professor-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 
-    transform:translateY(-4px);
+    gap: 18px;
 
-    box-shadow:0 12px 28px rgba(0,0,0,.08);
+    margin-bottom: 16px;
+}
 
+
+.professor-section-header h2 {
+    margin: 0 0 4px;
+
+    color: var(--secundaria);
+
+    font-size: 19px;
+    font-weight: 600;
+}
+
+
+.professor-section-header p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+
+    line-height: 1.5;
 }
 
 
 /*====================================================
-                ÍCONE
+                    VER TODAS
 ====================================================*/
 
-.professor-card-icon{
+.professor-view-all {
+    flex-shrink: 0;
 
-    width:52px;
+    display: inline-flex;
+    align-items: center;
 
-    height:52px;
+    gap: 7px;
 
-    min-width:52px;
+    padding: 0;
 
-    display:flex;
+    border: none;
 
-    align-items:center;
+    background: transparent;
 
-    justify-content:center;
+    color: var(--secundaria);
 
-    border-radius:13px;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
 
-    background:#FBF3D8;
+    cursor: pointer;
 
-    color:var(--primaria);
+    transition: color var(--transicao);
+}
 
-    font-size:20px;
 
+.professor-view-all i {
+    color: var(--primaria);
+
+    transition: transform var(--transicao);
+}
+
+
+.professor-view-all:hover {
+    color: var(--primaria);
+}
+
+
+.professor-view-all:hover i {
+    transform: translateX(3px);
 }
 
 
 /*====================================================
-                CONTEÚDO
+                    TURMAS
 ====================================================*/
 
-.professor-card-content span{
-
-    display:block;
-
-    margin-bottom:5px;
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:12px;
-
-}
-
-
-.professor-card-content strong{
-
-    display:block;
-
-    color:var(--secundaria);
-
-    font-size:25px;
-
-    font-weight:600;
-
-}
-
-
-/*====================================================
-                TABLET
-====================================================*/
-
-@media(max-width:1000px){
-
-    .professor-cards{
-
-        grid-template-columns:repeat(2, 1fr);
-
-    }
-
-}
-
-
-/*====================================================
-                CELULAR
-====================================================*/
-
-@media(max-width:700px){
-
-    .professor-page{
-
-        padding:25px 20px;
-
-    }
-
-
-    .professor-header{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:20px;
-
-    }
-
-
-    .professor-header h1{
-
-        font-size:27px;
-
-    }
-
-
-    .professor-date{
-
-        width:100%;
-
-    }
-
-
-    .professor-cards{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-/*====================================================
-                SEÇÃO
-====================================================*/
-
-.professor-section{
-
-    margin-top:35px;
-
-}
-
-
-.professor-section-header{
-
-    display:flex;
-
-    align-items:flex-end;
-
-    justify-content:space-between;
-
-    gap:20px;
-
-    margin-bottom:20px;
-
-}
-
-
-.section-label{
-
-    display:block;
-
-    color:var(--primaria);
-
-    font-size:11px;
-
-    font-weight:600;
-
-    margin-bottom:5px;
-
-}
-
-
-.professor-section-header h2{
-
-    color:var(--secundaria);
-
-    font-size:23px;
-
-    font-weight:600;
-
-    margin-bottom:5px;
-
-}
-
-
-.professor-section-header p{
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:13px;
-
-}
-
-
-/*====================================================
-                VER TODAS
-====================================================*/
-
-.professor-view-all{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    border:none;
-
-    background:transparent;
-
-    color:var(--secundaria);
-
-    font-family:'Cinzel', serif;
-
-    font-size:12px;
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
-}
-
-
-.professor-view-all i{
-
-    color:var(--primaria);
-
-    transition:.3s ease;
-
-}
-
-
-.professor-view-all:hover{
-
-    color:var(--primaria);
-
-}
-
-
-.professor-view-all:hover i{
-
-    transform:translateX(4px);
-
-}
-
-
-/*====================================================
-                TURMAS
-====================================================*/
-
-.professor-classes{
-
-    display:grid;
-
-    grid-template-columns:repeat(4, 1fr);
-
-    gap:20px;
-
+.professor-classes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 16px;
 }
 
 
@@ -688,125 +375,140 @@ body{
                 CARD DA TURMA
 ====================================================*/
 
-.class-card{
+.class-card {
+    min-width: 0;
 
-    background:#FFFFFF;
+    padding: 18px;
 
-    border:1px solid rgba(0,0,0,.04);
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
 
-    border-radius:16px;
+    border-radius: 14px;
 
-    padding:20px;
+    background: var(--branco);
 
-    box-shadow:0 8px 25px rgba(0,0,0,.05);
+    box-shadow: var(--sombra-p);
 
-    transition:.3s ease;
-
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
 }
 
 
-.class-card:hover{
+.class-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .28
+        );
 
-    transform:translateY(-4px);
+    transform: translateY(-3px);
 
-    box-shadow:0 12px 28px rgba(0,0,0,.08);
-
-}
-
-
-/*====================================================
-                TOPO DO CARD
-====================================================*/
-
-.class-card-top{
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin-bottom:20px;
-
-}
-
-
-.class-icon{
-
-    width:46px;
-
-    height:46px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:#FBF3D8;
-
-    color:var(--primaria);
-
-    font-size:18px;
-
+    box-shadow: var(--sombra-m);
 }
 
 
 /*====================================================
-                STATUS
+                TOPO DA TURMA
 ====================================================*/
 
-.class-status{
+.class-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    padding:5px 10px;
+    gap: 10px;
 
-    border-radius:20px;
-
-    font-family:Arial, sans-serif;
-
-    font-size:10px;
-
-    font-weight:600;
-
+    margin-bottom: 16px;
 }
 
 
-.class-status.active{
+.class-icon {
+    width: 42px;
+    height: 42px;
 
-    background:#EEF4FF;
+    flex-shrink: 0;
 
-    color:var(--secundaria);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
+    border-radius: 10px;
+
+    background: #FBF3D8;
+
+    color: var(--primaria);
+
+    font-size: 15px;
 }
 
 
 /*====================================================
-                INFORMAÇÕES
+                STATUS DA TURMA
 ====================================================*/
 
-.class-card-info h3{
+.class-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    color:var(--secundaria);
+    padding: 5px 9px;
 
-    font-size:18px;
+    border-radius: 20px;
 
-    font-weight:600;
-
-    margin-bottom:5px;
-
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
 }
 
 
-.class-card-info p{
+.class-status.active {
+    background: #EEF4FF;
 
-    color:#6B7280;
+    color: var(--secundaria);
+}
 
-    font-family:Arial, sans-serif;
 
-    font-size:11px;
+/*====================================================
+            INFORMAÇÕES DA TURMA
+====================================================*/
 
+.class-card-info {
+    min-width: 0;
+}
+
+
+.class-card-info h3 {
+    margin: 0 0 4px;
+
+    overflow: hidden;
+
+    color: var(--secundaria);
+
+    font-size: 15px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.class-card-info p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 }
 
 
@@ -814,194 +516,215 @@ body{
                 DADOS DA TURMA
 ====================================================*/
 
-.class-card-data{
+.class-card-data {
+    display: flex;
+    flex-direction: column;
 
-    display:flex;
+    gap: 8px;
 
-    flex-direction:column;
+    margin: 16px 0;
 
-    gap:10px;
+    padding: 13px 0;
 
-    margin:20px 0;
+    border-top:
+        1px solid
+        var(--borda-clara);
 
-    padding:15px 0;
-
-    border-top:1px solid #EEEEEE;
-
-    border-bottom:1px solid #EEEEEE;
-
+    border-bottom:
+        1px solid
+        var(--borda-clara);
 }
 
 
-.class-card-data div{
+.class-card-data div {
+    min-width: 0;
 
-    display:flex;
+    display: flex;
+    align-items: center;
 
-    align-items:center;
-
-    gap:9px;
-
+    gap: 8px;
 }
 
 
-.class-card-data i{
+.class-card-data i {
+    width: 16px;
 
-    width:18px;
+    flex-shrink: 0;
 
-    color:var(--primaria);
+    color: var(--primaria);
 
-    font-size:12px;
+    font-size: 10px;
 
+    text-align: center;
 }
 
 
-.class-card-data span{
+.class-card-data span {
+    overflow: hidden;
 
-    color:#6B7280;
+    color: var(--texto-secundario);
 
-    font-family:Arial, sans-serif;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-    font-size:11px;
-
-}
-
-
-/*====================================================
-                BOTÃO
-====================================================*/
-
-.class-card-button{
-
-    width:100%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    gap:8px;
-
-    padding:11px;
-
-    border:1px solid var(--secundaria);
-
-    border-radius:9px;
-
-    background:transparent;
-
-    color:var(--secundaria);
-
-    font-family:'Cinzel', serif;
-
-    font-size:11px;
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
-}
-
-
-.class-card-button i{
-
-    transition:.3s ease;
-
-}
-
-
-.class-card-button:hover{
-
-    background:var(--secundaria);
-
-    color:#FFFFFF;
-
-}
-
-
-.class-card-button:hover i{
-
-    transform:translateX(4px);
-
-}
-
-/*====================================================
-            ATIVIDADES RECENTES
-====================================================*/
-
-.professor-activities{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
 /*====================================================
-            CARD DA ATIVIDADE
+                BOTÃO DA TURMA
 ====================================================*/
 
-.activity-card{
+.class-card-button {
+    width: 100%;
+    min-height: 38px;
 
-    display:grid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    grid-template-columns:52px minmax(180px, 1.5fr) minmax(190px, 1fr) auto auto;
+    gap: 7px;
 
-    align-items:center;
+    padding: 0 12px;
 
-    gap:18px;
+    border:
+        1px solid
+        var(--secundaria);
 
-    padding:18px 20px;
+    border-radius: 9px;
 
-    background:#FFFFFF;
+    background: transparent;
 
-    border:1px solid rgba(0,0,0,.04);
+    color: var(--secundaria);
 
-    border-radius:14px;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
 
-    box-shadow:0 6px 20px rgba(0,0,0,.04);
+    cursor: pointer;
 
-    transition:.3s ease;
-
+    transition:
+        background var(--transicao),
+        color var(--transicao);
 }
 
 
-.activity-card:hover{
+.class-card-button i {
+    transition: transform var(--transicao);
+}
 
-    transform:translateY(-2px);
 
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
+.class-card-button:hover {
+    background: var(--secundaria);
 
+    color: var(--branco);
+}
+
+
+.class-card-button:hover i {
+    transform: translateX(3px);
 }
 
 
 /*====================================================
-            ÍCONE DA ATIVIDADE
+                ATIVIDADES RECENTES
 ====================================================*/
 
-.activity-icon{
+.professor-activities {
+    display: flex;
+    flex-direction: column;
 
-    width:52px;
+    gap: 10px;
+}
 
-    height:52px;
 
-    display:flex;
+/*====================================================
+                CARD DA ATIVIDADE
+====================================================*/
 
-    align-items:center;
+.activity-card {
+    min-width: 0;
 
-    justify-content:center;
+    display: grid;
 
-    border-radius:12px;
+    grid-template-columns:
+        46px
+        minmax(
+            160px,
+            1.5fr
+        )
+        minmax(
+            170px,
+            1fr
+        )
+        auto
+        auto;
 
-    background:#FBF3D8;
+    align-items: center;
 
-    color:var(--primaria);
+    gap: 14px;
 
-    font-size:19px;
+    padding: 15px 17px;
 
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
+
+    border-radius: 12px;
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
+
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
+}
+
+
+.activity-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .25
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--sombra-m);
+}
+
+
+/*====================================================
+                ÍCONE DA ATIVIDADE
+====================================================*/
+
+.activity-icon {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #FBF3D8;
+
+    color: var(--primaria);
+
+    font-size: 16px;
 }
 
 
@@ -1009,776 +732,557 @@ body{
             INFORMAÇÕES DA ATIVIDADE
 ====================================================*/
 
-.activity-info{
-
-    min-width:0;
-
+.activity-info {
+    min-width: 0;
 }
 
 
-.activity-info h3{
+.activity-info h3 {
+    margin: 0 0 4px;
 
-    color:var(--secundaria);
+    overflow: hidden;
 
-    font-size:14px;
+    color: var(--secundaria);
 
-    font-weight:600;
+    font-size: 11px;
+    font-weight: 600;
 
-    margin-bottom:5px;
-
-    white-space:nowrap;
-
-    overflow:hidden;
-
-    text-overflow:ellipsis;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
-.activity-info p{
+.activity-info p {
+    margin: 0;
 
-    color:#6B7280;
+    overflow: hidden;
 
-    font-family:Arial, sans-serif;
+    color: var(--texto-secundario);
 
-    font-size:11px;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-}
-
-
-/*====================================================
-            DADOS DA ATIVIDADE
-====================================================*/
-
-.activity-data{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:7px;
-
-}
-
-
-.activity-data span{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:7px;
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:11px;
-
-}
-
-
-.activity-data i{
-
-    width:14px;
-
-    color:var(--primaria);
-
-    font-size:11px;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
 /*====================================================
-            STATUS
+                DADOS DA ATIVIDADE
 ====================================================*/
 
-.activity-status{
+.activity-data {
+    min-width: 0;
 
-    display:inline-flex;
+    display: flex;
+    flex-direction: column;
 
-    align-items:center;
-
-    justify-content:center;
-
-    min-width:78px;
-
-    padding:6px 10px;
-
-    border-radius:20px;
-
-    font-family:Arial, sans-serif;
-
-    font-size:10px;
-
-    font-weight:600;
-
-    text-align:center;
-
+    gap: 6px;
 }
 
 
-/* ATIVIDADE PUBLICADA */
+.activity-data span {
+    min-width: 0;
 
-.activity-status.published{
+    display: flex;
+    align-items: center;
 
-    background:#EEF4FF;
+    gap: 6px;
 
-    color:var(--secundaria);
+    color: var(--texto-secundario);
 
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 }
 
 
-/* ATIVIDADE PENDENTE */
+.activity-data i {
+    width: 13px;
 
-.activity-status.pending{
+    flex-shrink: 0;
 
-    background:#FFF7E0;
+    color: var(--primaria);
 
-    color:#9A7410;
+    font-size: 9px;
 
-}
-
-
-/* ATIVIDADE CORRIGIDA */
-
-.activity-status.completed{
-
-    background:#F3F4F6;
-
-    color:#4B5563;
-
+    text-align: center;
 }
 
 
 /*====================================================
-            BOTÃO VISUALIZAR
+                STATUS DA ATIVIDADE
 ====================================================*/
 
-.activity-button{
+.activity-status {
+    min-width: 72px;
 
-    display:flex;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    align-items:center;
+    padding: 5px 9px;
 
-    justify-content:center;
+    border-radius: 20px;
 
-    gap:7px;
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
 
-    min-width:105px;
+    text-align: center;
 
-    padding:9px 12px;
-
-    border:1px solid var(--secundaria);
-
-    border-radius:8px;
-
-    background:transparent;
-
-    color:var(--secundaria);
-
-    font-family:'Cinzel', serif;
-
-    font-size:10px;
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
+    white-space: nowrap;
 }
 
 
-.activity-button i{
+.activity-status.published {
+    background: #EEF4FF;
 
-    transition:.3s ease;
-
+    color: var(--secundaria);
 }
 
 
-.activity-button:hover{
+.activity-status.pending {
+    background: #FFF7E0;
 
-    background:var(--secundaria);
-
-    color:#FFFFFF;
-
+    color: #9A7410;
 }
 
 
-.activity-button:hover i{
+.activity-status.completed {
+    background: var(--cinza-100);
 
-    transform:translateX(4px);
-
+    color: #4B5563;
 }
 
 
 /*====================================================
-            RESPONSIVIDADE — TABLET
+            BOTÃO DA ATIVIDADE
 ====================================================*/
 
-@media(max-width:1000px){
+.activity-button {
+    min-width: 95px;
+    min-height: 36px;
 
-    .activity-card{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-        grid-template-columns:52px 1fr auto;
+    gap: 6px;
 
-        gap:15px;
+    padding: 0 10px;
 
-    }
+    border:
+        1px solid
+        var(--secundaria);
+
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: var(--secundaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transicao),
+        color var(--transicao);
+}
 
 
-    .activity-data{
-
-        grid-column:2;
-
-        flex-direction:row;
-
-        flex-wrap:wrap;
-
-    }
+.activity-button i {
+    transition: transform var(--transicao);
+}
 
 
-    .activity-status{
+.activity-button:hover {
+    background: var(--secundaria);
 
-        grid-column:3;
-
-        grid-row:1;
-
-    }
+    color: var(--branco);
+}
 
 
-    .activity-button{
-
-        grid-column:3;
-
-        grid-row:2;
-
-    }
-
+.activity-button:hover i {
+    transform: translateX(3px);
 }
 
 
 /*====================================================
-            RESPONSIVIDADE — CELULAR
+                PRÓXIMAS ATIVIDADES
 ====================================================*/
 
-@media(max-width:700px){
-
-    .professor-activities{
-
-        gap:15px;
-
-    }
-
-
-    .activity-card{
-
-        display:grid;
-
-        grid-template-columns:46px 1fr;
-
-        gap:12px;
-
-        padding:16px;
-
-    }
-
-
-    .activity-icon{
-
-        width:46px;
-
-        height:46px;
-
-        font-size:17px;
-
-    }
-
-
-    .activity-info h3{
-
-        font-size:13px;
-
-    }
-
-
-    .activity-data{
-
-        grid-column:1 / -1;
-
-        padding-top:12px;
-
-        border-top:1px solid #EEEEEE;
-
-    }
-
-
-    .activity-status{
-
-        grid-column:1 / -1;
-
-        justify-self:start;
-
-    }
-
-
-    .activity-button{
-
-        grid-column:1 / -1;
-
-        width:100%;
-
-    }
-
-}
-
-/*====================================================
-            RESPONSIVIDADE
-====================================================*/
-
-@media(max-width:1000px){
-
-    .professor-cards{
-
-        grid-template-columns:repeat(2, 1fr);
-
-    }
-
-
-    .professor-classes{
-
-        grid-template-columns:repeat(2, 1fr);
-
-    }
-
-}
-
-
-@media(max-width:700px){
-
-    .professor-page{
-
-        padding:25px 20px;
-
-    }
-
-
-    .professor-header{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:20px;
-
-    }
-
-
-    .professor-header h1{
-
-        font-size:27px;
-
-    }
-
-
-    .professor-date{
-
-        width:100%;
-
-    }
-
-
-    .professor-cards{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-    .professor-classes{
-
-        grid-template-columns:1fr;
-
-    }
-
-
-    .professor-section-header{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-    }
-
-}
-
-/*====================================================
-            PRÓXIMAS ATIVIDADES
-====================================================*/
-
-.professor-upcoming-layout{
-
-    display:grid;
-
-    grid-template-columns:1.4fr 1fr;
-
-    gap:20px;
-
+.professor-upcoming-layout {
+    display: grid;
+
+    grid-template-columns:
+        minmax(
+            0,
+            1.4fr
+        )
+        minmax(
+            280px,
+            1fr
+        );
+
+    gap: 18px;
 }
 
 
 /*====================================================
-            LISTA DE ATIVIDADES
+            LISTA DE PRÓXIMAS ATIVIDADES
 ====================================================*/
 
-.upcoming-activities{
+.upcoming-activities {
+    display: flex;
+    flex-direction: column;
 
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
+    gap: 10px;
 }
 
 
-.upcoming-card{
+.upcoming-card {
+    min-width: 0;
 
-    display:grid;
+    display: grid;
 
-    grid-template-columns:58px 1fr 20px;
+    grid-template-columns:
+        52px
+        minmax(
+            0,
+            1fr
+        )
+        18px;
 
-    align-items:center;
+    align-items: center;
 
-    gap:15px;
+    gap: 13px;
 
-    padding:16px;
+    padding: 14px;
 
-    background:#FFFFFF;
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
 
-    border:1px solid rgba(0,0,0,.04);
+    border-radius: 12px;
 
-    border-radius:14px;
+    background: var(--branco);
 
-    box-shadow:0 6px 20px rgba(0,0,0,.04);
+    box-shadow: var(--sombra-p);
 
-    transition:.3s ease;
-
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
 }
 
 
-.upcoming-card:hover{
+.upcoming-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .25
+        );
 
-    transform:translateY(-2px);
+    transform: translateY(-2px);
 
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
-
+    box-shadow: var(--sombra-m);
 }
 
 
 /*====================================================
-            DATA
+                    DATA
 ====================================================*/
 
-.upcoming-date{
+.upcoming-date {
+    width: 52px;
+    height: 52px;
 
-    width:58px;
+    flex-shrink: 0;
 
-    height:58px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
+    border-radius: 11px;
 
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:12px;
-
-    background:#FBF3D8;
-
+    background: #FBF3D8;
 }
 
 
-.upcoming-date strong{
+.upcoming-date strong {
+    color: var(--secundaria);
 
-    color:var(--secundaria);
+    font-size: 17px;
+    font-weight: 600;
 
-    font-size:20px;
-
-    font-weight:600;
-
-    line-height:1;
-
+    line-height: 1;
 }
 
 
-.upcoming-date span{
+.upcoming-date span {
+    margin-top: 4px;
 
-    margin-top:4px;
+    color: var(--primaria);
 
-    color:var(--primaria);
-
-    font-family:Arial, sans-serif;
-
-    font-size:9px;
-
-    font-weight:700;
-
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 700;
 }
 
 
 /*====================================================
-            INFORMAÇÕES
+            INFORMAÇÕES PRÓXIMA ATIVIDADE
 ====================================================*/
 
-.upcoming-info{
-
-    min-width:0;
-
+.upcoming-info {
+    min-width: 0;
 }
 
 
-.upcoming-info h3{
+.upcoming-info h3 {
+    margin: 0 0 4px;
 
-    color:var(--secundaria);
+    overflow: hidden;
 
-    font-size:14px;
+    color: var(--secundaria);
 
-    font-weight:600;
+    font-size: 11px;
+    font-weight: 600;
 
-    margin-bottom:5px;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
-.upcoming-info p{
+.upcoming-info p {
+    margin: 0 0 6px;
 
-    color:#6B7280;
+    overflow: hidden;
 
-    font-family:Arial, sans-serif;
+    color: var(--texto-secundario);
 
-    font-size:11px;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-    margin-bottom:7px;
-
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
-.upcoming-info span{
+.upcoming-info span {
+    display: flex;
+    align-items: center;
 
-    display:flex;
+    gap: 5px;
 
-    align-items:center;
+    color: var(--texto-secundario);
 
-    gap:6px;
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:10px;
-
+    font-family: Arial, sans-serif;
+    font-size: 8px;
 }
 
 
-.upcoming-info i{
-
-    color:var(--primaria);
-
+.upcoming-info i {
+    color: var(--primaria);
 }
 
 
 /*====================================================
-            SETA
+                    SETA
 ====================================================*/
 
-.upcoming-arrow{
+.upcoming-arrow {
+    color: var(--secundaria);
 
-    color:var(--secundaria);
+    font-size: 10px;
 
-    font-size:12px;
-
-    transition:.3s ease;
-
+    transition:
+        color var(--transicao),
+        transform var(--transicao);
 }
 
 
-.upcoming-card:hover .upcoming-arrow{
+.upcoming-card:hover .upcoming-arrow {
+    color: var(--primaria);
 
-    transform:translateX(4px);
-
-    color:var(--primaria);
-
+    transform: translateX(3px);
 }
 
 
 /*====================================================
-            CALENDÁRIO
+            MINI CALENDÁRIO
 ====================================================*/
 
-.professor-calendar{
+.professor-calendar {
+    min-width: 0;
 
-    padding:22px;
+    padding: 18px;
 
-    background:#FFFFFF;
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
 
-    border:1px solid rgba(0,0,0,.04);
+    border-radius: 14px;
 
-    border-radius:16px;
+    background: var(--branco);
 
-    box-shadow:0 8px 25px rgba(0,0,0,.05);
-
+    box-shadow: var(--sombra-p);
 }
 
 
 /*====================================================
-            CABEÇALHO CALENDÁRIO
+            CABEÇALHO DO CALENDÁRIO
 ====================================================*/
 
-.calendar-header{
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
-    display:flex;
+    gap: 12px;
 
-    align-items:center;
-
-    justify-content:space-between;
-
-    margin-bottom:20px;
-
+    margin-bottom: 16px;
 }
 
 
-.calendar-header h3{
+.calendar-header h3 {
+    margin: 0;
 
-    color:var(--secundaria);
+    color: var(--secundaria);
 
-    font-size:16px;
-
-    font-weight:600;
-
+    font-size: 13px;
+    font-weight: 600;
 }
 
 
-.calendar-nav{
+.calendar-nav {
+    width: 29px;
+    height: 29px;
 
-    width:30px;
+    flex-shrink: 0;
 
-    height:30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
+    padding: 0;
 
-    align-items:center;
+    border: none;
+    border-radius: 7px;
 
-    justify-content:center;
+    background: #F7F7F2;
 
-    border:none;
+    color: var(--secundaria);
 
-    border-radius:8px;
+    font-size: 10px;
 
-    background:#F7F7F2;
+    cursor: pointer;
 
-    color:var(--secundaria);
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
+    transition:
+        background var(--transicao),
+        color var(--transicao);
 }
 
 
-.calendar-nav:hover{
+.calendar-nav:hover {
+    background: var(--secundaria);
 
-    background:var(--secundaria);
-
-    color:#FFFFFF;
-
+    color: var(--branco);
 }
 
 
 /*====================================================
-            DIAS DA SEMANA
+                DIAS DA SEMANA
 ====================================================*/
 
-.calendar-weekdays{
+.calendar-weekdays {
+    display: grid;
 
-    display:grid;
+    grid-template-columns:
+        repeat(
+            7,
+            1fr
+        );
 
-    grid-template-columns:repeat(7, 1fr);
+    gap: 4px;
 
-    gap:5px;
-
-    margin-bottom:8px;
-
+    margin-bottom: 7px;
 }
 
 
-.calendar-weekdays span{
+.calendar-weekdays span {
+    color: var(--texto-claro);
 
-    text-align:center;
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
 
-    color:#9CA3AF;
-
-    font-family:Arial, sans-serif;
-
-    font-size:9px;
-
-    font-weight:600;
-
+    text-align: center;
 }
 
 
 /*====================================================
-            DIAS DO CALENDÁRIO
+                DIAS DO CALENDÁRIO
 ====================================================*/
 
-.calendar-days{
+.calendar-days {
+    display: grid;
 
-    display:grid;
+    grid-template-columns:
+        repeat(
+            7,
+            1fr
+        );
 
-    grid-template-columns:repeat(7, 1fr);
-
-    gap:5px;
-
+    gap: 4px;
 }
 
 
-.calendar-days span{
+.calendar-days span {
+    min-height: 30px;
 
-    min-height:32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
+    border-radius: 7px;
 
-    align-items:center;
+    color: #4B5563;
 
-    justify-content:center;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-    border-radius:8px;
+    cursor: pointer;
 
-    color:#4B5563;
-
-    font-family:Arial, sans-serif;
-
-    font-size:11px;
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
+    transition:
+        background var(--transicao),
+        color var(--transicao);
 }
 
 
-.calendar-days span:not(.calendar-empty):hover{
-
-    background:#F7F7F2;
-
+.calendar-days span:not(.calendar-empty):hover {
+    background: #F7F7F2;
 }
 
 
-.calendar-empty{
-
-    cursor:default !important;
-
+.calendar-empty {
+    cursor: default !important;
 }
 
 
@@ -1786,745 +1290,924 @@ body{
             DIAS COM ATIVIDADE
 ====================================================*/
 
-.calendar-highlight{
+.calendar-highlight {
+    background:
+        var(--primaria)
+        !important;
 
-    background:var(--primaria) !important;
+    color:
+        var(--branco)
+        !important;
 
-    color:#FFFFFF !important;
-
-    font-weight:700;
-
+    font-weight: 700;
 }
 
 
-.calendar-highlight:hover{
-
-    background:var(--primaria) !important;
-
-}
-
-
-/*====================================================
-            RESPONSIVIDADE
-====================================================*/
-
-@media(max-width:1000px){
-
-    .professor-upcoming-layout{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-
-@media(max-width:700px){
-
-    .upcoming-card{
-
-        grid-template-columns:50px 1fr 15px;
-
-        gap:12px;
-
-        padding:14px;
-
-    }
-
-
-    .upcoming-date{
-
-        width:50px;
-
-        height:50px;
-
-    }
-
-
-    .upcoming-date strong{
-
-        font-size:18px;
-
-    }
-
-
-    .professor-calendar{
-
-        padding:18px;
-
-    }
-
-
-    .calendar-days span{
-
-        min-height:30px;
-
-    }
-
-}
-
-/*====================================================
-            AVISOS DA ESCOLA
-====================================================*/
-
-.professor-notices{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
+.calendar-highlight:hover {
+    background:
+        var(--primaria)
+        !important;
 }
 
 
 /*====================================================
-            CARD DO AVISO
+                AVISOS DA ESCOLA
 ====================================================*/
 
-.notice-card{
+.professor-notices {
+    display: flex;
+    flex-direction: column;
 
-    display:grid;
-
-    grid-template-columns:52px 1fr 35px;
-
-    align-items:center;
-
-    gap:18px;
-
-    padding:18px 20px;
-
-    background:#FFFFFF;
-
-    border:1px solid rgba(0,0,0,.04);
-
-    border-radius:14px;
-
-    box-shadow:0 6px 20px rgba(0,0,0,.04);
-
-    transition:.3s ease;
-
-}
-
-
-.notice-card:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
-
+    gap: 10px;
 }
 
 
 /*====================================================
-            ÍCONE DO AVISO
+                CARD DO AVISO
 ====================================================*/
 
-.notice-icon{
+.notice-card {
+    min-width: 0;
 
-    width:52px;
+    display: grid;
 
-    height:52px;
+    grid-template-columns:
+        46px
+        minmax(
+            0,
+            1fr
+        )
+        32px;
 
-    display:flex;
+    align-items: center;
 
-    align-items:center;
+    gap: 14px;
 
-    justify-content:center;
+    padding: 15px 17px;
 
-    border-radius:12px;
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
 
-    background:#F7F7F2;
+    border-radius: 12px;
 
-    color:var(--secundaria);
+    background: var(--branco);
 
-    font-size:18px;
+    box-shadow: var(--sombra-p);
 
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
 }
 
 
-.notice-icon.important{
+.notice-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .25
+        );
 
-    background:#FBF3D8;
+    transform: translateY(-2px);
 
-    color:var(--primaria);
-
+    box-shadow: var(--sombra-m);
 }
 
 
 /*====================================================
-            CONTEÚDO
+                ÍCONE DO AVISO
 ====================================================*/
 
-.notice-content{
+.notice-icon {
+    width: 46px;
+    height: 46px;
 
-    min-width:0;
+    flex-shrink: 0;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #F7F7F2;
+
+    color: var(--secundaria);
+
+    font-size: 15px;
 }
 
 
-.notice-title{
+.notice-icon.important {
+    background: #FBF3D8;
 
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:7px;
-
-}
-
-
-.notice-title h3{
-
-    color:var(--secundaria);
-
-    font-size:14px;
-
-    font-weight:600;
-
+    color: var(--primaria);
 }
 
 
 /*====================================================
-            BADGE
+                CONTEÚDO DO AVISO
 ====================================================*/
 
-.notice-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:4px 8px;
-
-    border-radius:20px;
-
-    background:#EEF4FF;
-
-    color:var(--secundaria);
-
-    font-family:Arial, sans-serif;
-
-    font-size:9px;
-
-    font-weight:600;
-
+.notice-content {
+    min-width: 0;
 }
 
 
-.notice-badge.important{
+.notice-title {
+    min-width: 0;
 
-    background:#FFF7E0;
+    display: flex;
+    align-items: center;
 
-    color:#9A7410;
+    gap: 8px;
 
+    margin-bottom: 5px;
+}
+
+
+.notice-title h3 {
+    margin: 0;
+
+    overflow: hidden;
+
+    color: var(--secundaria);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
 /*====================================================
-            DESCRIÇÃO
+                    BADGE
 ====================================================*/
 
-.notice-content p{
+.notice-badge {
+    flex-shrink: 0;
 
-    max-width:850px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-    margin-bottom:9px;
+    padding: 4px 7px;
 
-    color:#6B7280;
+    border-radius: 20px;
 
-    font-family:Arial, sans-serif;
+    background: #EEF4FF;
 
-    font-size:11px;
+    color: var(--secundaria);
 
-    line-height:1.6;
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+}
 
+
+.notice-badge.important {
+    background: #FFF7E0;
+
+    color: #9A7410;
 }
 
 
 /*====================================================
-            DATA
+                    DESCRIÇÃO
 ====================================================*/
 
-.notice-date{
+.notice-content p {
+    max-width: 850px;
 
-    display:flex;
+    margin: 0 0 6px;
 
-    align-items:center;
+    color: var(--texto-secundario);
 
-    gap:6px;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
 
-    color:#9CA3AF;
-
-    font-family:Arial, sans-serif;
-
-    font-size:10px;
-
-}
-
-
-.notice-date i{
-
-    color:var(--primaria);
-
+    line-height: 1.55;
 }
 
 
 /*====================================================
-            BOTÃO
+                    DATA
 ====================================================*/
 
-.notice-button{
+.notice-date {
+    display: flex;
+    align-items: center;
 
-    width:35px;
+    gap: 5px;
 
-    height:35px;
+    color: var(--texto-claro);
 
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border:none;
-
-    border-radius:8px;
-
-    background:#F7F7F2;
-
-    color:var(--secundaria);
-
-    cursor:pointer;
-
-    transition:.3s ease;
-
+    font-family: Arial, sans-serif;
+    font-size: 8px;
 }
 
 
-.notice-button:hover{
-
-    background:var(--secundaria);
-
-    color:#FFFFFF;
-
+.notice-date i {
+    color: var(--primaria);
 }
 
 
 /*====================================================
-            RESPONSIVIDADE
+                BOTÃO DO AVISO
 ====================================================*/
 
-@media(max-width:700px){
+.notice-button {
+    width: 32px;
+    height: 32px;
 
-    .notice-card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-        grid-template-columns:46px 1fr 32px;
+    padding: 0;
 
-        gap:12px;
+    border: none;
+    border-radius: 8px;
 
-        padding:16px;
+    background: #F7F7F2;
 
-    }
+    color: var(--secundaria);
 
+    cursor: pointer;
 
-    .notice-icon{
-
-        width:46px;
-
-        height:46px;
-
-        font-size:16px;
-
-    }
-
-
-    .notice-title{
-
-        align-items:flex-start;
-
-        flex-direction:column;
-
-        gap:5px;
-
-    }
-
-
-    .notice-title h3{
-
-        font-size:13px;
-
-    }
-
-
-    .notice-content p{
-
-        font-size:10px;
-
-    }
-
-
-    .notice-button{
-
-        width:32px;
-
-        height:32px;
-
-    }
-
+    transition:
+        background var(--transicao),
+        color var(--transicao);
 }
+
+
+.notice-button:hover {
+    background: var(--secundaria);
+
+    color: var(--branco);
+}
+
 
 /*====================================================
             RESUMO DE INDICADORES
 ====================================================*/
 
-.professor-indicators{
+.professor-indicators {
+    display: grid;
 
-    display:grid;
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
 
-    grid-template-columns:repeat(4, 1fr);
+    gap: 14px;
+}
 
-    gap:16px;
+
+/*====================================================
+                CARD DO INDICADOR
+====================================================*/
+
+.professor-indicators .indicator-card {
+    min-width: 0;
+
+    padding: 16px;
+
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
+
+    border-radius: 12px;
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
+
+    transition:
+        transform var(--transicao),
+        border-color var(--transicao),
+        box-shadow var(--transicao);
+}
+
+
+.professor-indicators .indicator-card:hover {
+    border-color:
+        rgba(
+            211,
+            175,
+            55,
+            .25
+        );
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--sombra-m);
+}
+
+
+/*====================================================
+            TOPO DO INDICADOR
+====================================================*/
+
+.indicator-top {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    margin-bottom: 14px;
+}
+
+
+.professor-indicators .indicator-icon {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #FBF3D8;
+
+    color: var(--primaria);
+
+    font-size: 13px;
+}
+
+
+.professor-indicators .indicator-icon.attention {
+    background: #FFF7E0;
+
+    color: #9A7410;
+}
+
+
+.indicator-label {
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+/*====================================================
+                VALOR DO INDICADOR
+====================================================*/
+
+.indicator-value {
+    margin-bottom: 12px;
+
+    color: var(--secundaria);
+
+    font-size: 24px;
+    font-weight: 600;
+
+    line-height: 1;
+}
+
+
+/*====================================================
+                RODAPÉ DO INDICADOR
+====================================================*/
+
+.indicator-footer {
+    min-height: 17px;
+
+    display: flex;
+    align-items: center;
+}
+
+
+.indicator-footer span {
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+
+    line-height: 1.4;
+}
+
+
+.indicator-positive {
+    color:
+        var(--texto-secundario)
+        !important;
+}
+
+
+.indicator-positive i {
+    margin-right: 4px;
+
+    color: var(--primaria);
+}
+
+
+.indicator-attention {
+    color:
+        #9A7410
+        !important;
+}
+
+
+.indicator-attention i {
+    margin-right: 4px;
+}
+
+
+/*====================================================
+                DESKTOP MENOR
+====================================================*/
+
+@media (max-width: 1200px) {
+
+    .professor-page {
+        padding:
+            28px
+            26px
+            40px;
+    }
+
+
+    .professor-cards,
+    .professor-classes {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
+
+    .professor-indicators {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
+
+    .activity-card {
+        grid-template-columns:
+            46px
+            minmax(
+                0,
+                1fr
+            )
+            auto;
+    }
+
+
+    .activity-data {
+        grid-column: 2;
+
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+
+    .activity-status {
+        grid-column: 3;
+        grid-row: 1;
+    }
+
+
+    .activity-button {
+        grid-column: 3;
+        grid-row: 2;
+    }
 
 }
 
 
 /*====================================================
-            CARD DO INDICADOR
+                    TABLET
 ====================================================*/
 
-.indicator-card{
+@media (max-width: 1000px) {
 
-    padding:20px;
+    .professor-page {
+        padding:
+            25px
+            22px
+            38px;
+    }
 
-    background:#FFFFFF;
 
-    border:1px solid rgba(0,0,0,.04);
-
-    border-radius:14px;
-
-    box-shadow:0 6px 20px rgba(0,0,0,.04);
-
-    transition:.3s ease;
-
-}
-
-
-.indicator-card:hover{
-
-    transform:translateY(-3px);
-
-    box-shadow:0 10px 25px rgba(0,0,0,.07);
-
-}
-
-
-/*====================================================
-            PARTE SUPERIOR
-====================================================*/
-
-.indicator-top{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    margin-bottom:18px;
-
-}
-
-
-.indicator-icon{
-
-    width:42px;
-
-    height:42px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    border-radius:10px;
-
-    background:#FBF3D8;
-
-    color:var(--primaria);
-
-    font-size:16px;
-
-}
-
-
-.indicator-icon.attention{
-
-    background:#FFF7E0;
-
-    color:#9A7410;
-
-}
-
-
-.indicator-label{
-
-    color:#6B7280;
-
-    font-family:Arial, sans-serif;
-
-    font-size:10px;
-
-    font-weight:600;
-
-}
-
-
-/*====================================================
-            VALOR
-====================================================*/
-
-.indicator-value{
-
-    color:var(--secundaria);
-
-    font-size:30px;
-
-    font-weight:600;
-
-    line-height:1;
-
-    margin-bottom:16px;
-
-}
-
-
-/*====================================================
-            RODAPÉ
-====================================================*/
-
-.indicator-footer{
-
-    min-height:18px;
-
-    display:flex;
-
-    align-items:center;
-
-}
-
-
-.indicator-footer span{
-
-    color:#9CA3AF;
-
-    font-family:Arial, sans-serif;
-
-    font-size:9px;
-
-    line-height:1.4;
-
-}
-
-
-.indicator-positive{
-
-    color:#6B7280 !important;
-
-}
-
-
-.indicator-positive i{
-
-    color:var(--primaria);
-
-    margin-right:4px;
-
-}
-
-
-.indicator-attention{
-
-    color:#9A7410 !important;
-
-}
-
-
-.indicator-attention i{
-
-    margin-right:4px;
-
-}
-
-
-/*====================================================
-            RESPONSIVIDADE — TABLET
-====================================================*/
-
-@media(max-width:1000px){
-
-    .professor-indicators{
-
-        grid-template-columns:repeat(2, 1fr);
-
+    .professor-upcoming-layout {
+        grid-template-columns: 1fr;
     }
 
 }
 
 
 /*====================================================
-            RESPONSIVIDADE — CELULAR
+                    MOBILE
 ====================================================*/
 
-@media(max-width:600px){
+@media (max-width: 750px) {
 
-    .professor-indicators{
-
-        grid-template-columns:1fr;
-
-        gap:12px;
-
+    .professor-page {
+        padding:
+            20px
+            18px
+            35px;
     }
 
 
-    .indicator-card{
+    .professor-header {
+        flex-direction: column;
+        align-items: flex-start;
 
-        padding:18px;
+        gap: 15px;
 
+        margin-bottom: 22px;
     }
 
 
-    .indicator-value{
+    .professor-header h1 {
+        font-size: 23px;
+    }
 
-        font-size:27px;
 
+    .professor-date {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+
+    .professor-cards,
+    .professor-classes {
+        grid-template-columns: 1fr;
+    }
+
+
+    .professor-section {
+        margin-top: 22px;
+    }
+
+
+    .professor-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 10px;
+    }
+
+
+    .activity-card {
+        grid-template-columns:
+            42px
+            minmax(
+                0,
+                1fr
+            );
+
+        gap: 11px;
+
+        padding: 14px;
+    }
+
+
+    .activity-icon {
+        width: 42px;
+        height: 42px;
+
+        font-size: 14px;
+    }
+
+
+    .activity-data {
+        grid-column:
+            1 /
+            -1;
+
+        padding-top: 10px;
+
+        border-top:
+            1px solid
+            var(--borda-clara);
+    }
+
+
+    .activity-status {
+        grid-column:
+            1 /
+            -1;
+
+        grid-row: auto;
+
+        justify-self: start;
+    }
+
+
+    .activity-button {
+        grid-column:
+            1 /
+            -1;
+
+        grid-row: auto;
+
+        width: 100%;
+    }
+
+
+    .upcoming-card {
+        grid-template-columns:
+            48px
+            minmax(
+                0,
+                1fr
+            )
+            15px;
+
+        gap: 10px;
+
+        padding: 13px;
+    }
+
+
+    .upcoming-date {
+        width: 48px;
+        height: 48px;
+    }
+
+
+    .professor-calendar {
+        padding: 16px;
+    }
+
+
+    .notice-card {
+        grid-template-columns:
+            42px
+            minmax(
+                0,
+                1fr
+            )
+            30px;
+
+        gap: 11px;
+
+        padding: 14px;
+    }
+
+
+    .notice-icon {
+        width: 42px;
+        height: 42px;
+
+        font-size: 14px;
+    }
+
+
+    .professor-indicators {
+        grid-template-columns: 1fr;
     }
 
 }
+
 
 /*====================================================
-        RESPONSIVIDADE DO LAYOUT / SIDEBAR
+                CELULAR PEQUENO
 ====================================================*/
 
-@media(max-width:900px){
+@media (max-width: 500px) {
 
-    .professor-app-layout{
-
-        grid-template-columns:75px minmax(0, 1fr);
-
+    .professor-page {
+        padding:
+            18px
+            12px
+            30px;
     }
 
 
-    .professor-sidebar .sidebar-logo{
-
-        padding:22px 10px;
-
+    .professor-header h1 {
+        font-size: 21px;
     }
 
 
-    .professor-sidebar .sidebar-logo img{
-
-        max-width:46px;
-
-        margin-bottom:0;
-
+    .professor-card,
+    .class-card {
+        padding: 15px;
     }
 
 
-    .professor-sidebar .sidebar-logo h2{
+    .professor-card-icon {
+        width: 44px;
+        height: 44px;
 
-        display:none;
-
+        font-size: 15px;
     }
 
 
-    .professor-sidebar .sidebar-menu{
-
-        padding:0 9px;
-
+    .professor-card-content strong {
+        font-size: 19px;
     }
 
 
-    .professor-sidebar .sidebar-menu a{
-
-        justify-content:center;
-
-        gap:0;
-
-        padding:10px 8px;
-
+    .professor-section-header h2 {
+        font-size: 17px;
     }
 
 
-    .professor-sidebar .sidebar-menu a span{
-
-        display:none;
-
+    .class-card-info h3 {
+        font-size: 14px;
     }
 
 
-    .professor-sidebar .sidebar-menu a i{
+    .notice-title {
+        flex-direction: column;
+        align-items: flex-start;
 
-        width:auto;
-
-        font-size:15px;
-
+        gap: 4px;
     }
 
 
-    .professor-sidebar .sidebar-bottom{
+    .notice-title h3 {
+        width: 100%;
 
-        padding:18px 9px;
-
+        white-space: normal;
     }
 
 
-    .professor-sidebar .sidebar-bottom button{
-
-        justify-content:center;
-
-        gap:0;
-
-        padding:10px 8px;
-
+    .notice-content p {
+        font-size: 8px;
     }
 
 
-    .professor-sidebar .sidebar-bottom button span{
-
-        display:none;
-
+    .professor-indicators .indicator-card {
+        padding: 14px;
     }
 
 
-    .professor-sidebar .sidebar-bottom button i{
-
-        width:auto;
-
-        font-size:15px;
-
+    .indicator-value {
+        font-size: 22px;
     }
 
 }
 
 
-@media(max-width:600px){
+/*====================================================
+                TELAS MUITO PEQUENAS
+====================================================*/
 
-    .professor-app-layout{
+@media (max-width: 360px) {
 
-        display:block;
-
+    .professor-page {
+        padding:
+            15px
+            9px
+            25px;
     }
 
 
-    .professor-sidebar{
-
-        display:none;
-
+    .activity-card,
+    .notice-card,
+    .upcoming-card {
+        padding: 11px;
     }
 
+
+    .calendar-days span {
+        min-height: 27px;
+
+        font-size: 8px;
+    }
+
+}
+
+
+/* Portal individual conectado ao banco de dados */
+
+.professor-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.professor-panel {
+    margin-top: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(30, 58, 138, .06);
+    border-radius: 14px;
+    background: var(--branco);
+    box-shadow: var(--sombra-p);
+}
+
+.professor-data-grid .professor-panel { margin-top: 0; }
+
+.professor-panel-header {
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--borda);
+}
+
+.professor-panel-header h2 {
+    margin: 0 0 5px;
+    color: var(--secundaria);
+    font-size: 18px;
+}
+
+.professor-panel-header p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.profile-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 6px 22px 18px;
+}
+
+.profile-list div { min-width: 0; padding: 14px 12px 10px 0; }
+
+.profile-list dt {
+    margin-bottom: 5px;
+    color: var(--texto-secundario);
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+}
+
+.profile-list dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--texto);
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.professor-table-wrap { overflow-x: auto; }
+
+.professor-table-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.professor-table-wrap th,
+.professor-table-wrap td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--borda);
+    text-align: left;
+}
+
+.professor-table-wrap th {
+    color: var(--texto-secundario);
+    background: var(--cinza-50);
+    font-size: 11px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.professor-table-wrap td { color: var(--texto); font-size: 13px; }
+.professor-table-wrap tbody tr:last-child td { border-bottom: 0; }
+
+.professor-empty {
+    padding: 36px 20px !important;
+    color: var(--texto-secundario) !important;
+    text-align: center !important;
+}
+
+@media (max-width: 850px) {
+    .professor-data-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+    .profile-list { grid-template-columns: 1fr; }
 }

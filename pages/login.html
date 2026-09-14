@@ -5,21 +5,38 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Login | PrimeWay School</title>
 
 
-    <!-- CSS -->
+    <!-- ==================================================
+                        CSS
+    =================================================== -->
 
-    <link rel="stylesheet" href="../css/login.css">
+    <link
+        rel="stylesheet"
+        href="../css/login.css"
+    >
 
 
-    <!-- Fonte Cinzel -->
+    <!-- ==================================================
+                    GOOGLE FONTS - CINZEL
+    =================================================== -->
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
@@ -27,7 +44,9 @@
     >
 
 
-    <!-- Font Awesome -->
+    <!-- ==================================================
+                    FONT AWESOME
+    =================================================== -->
 
     <link
         rel="stylesheet"
@@ -39,14 +58,19 @@
 
 <body>
 
+
     <main class="container">
 
 
-        <!-- =================================
-                LADO ESQUERDO
-        ================================== -->
+        <!-- ==================================================
+                    LADO ESQUERDO
+        =================================================== -->
 
-        <section class="lado-esquerdo">
+        <section
+            class="lado-esquerdo"
+            aria-labelledby="schoolTitle"
+        >
+
 
             <img
                 src="../img/logo.png"
@@ -54,55 +78,77 @@
                 alt="PrimeWay School"
             >
 
-            <h1>PrimeWay School</h1>
+
+            <h1 id="schoolTitle">
+                PrimeWay School
+            </h1>
+
 
             <p>
-
-                Bem-vindo! <br>
-
+                Bem-vindo!
+                <br>
                 Faça login para acessar o sistema acadêmico.
-
             </p>
+
 
         </section>
 
 
+        <!-- ==================================================
+                    LADO DIREITO
+        =================================================== -->
 
-        <!-- =================================
-                LADO DIREITO
-        ================================== -->
-
-        <section class="lado-direito">
-
-
-            <form id="loginForm">
-
-                <h2>Entrar</h2>
+        <section
+            class="lado-direito"
+            aria-labelledby="loginTitle"
+        >
 
 
-                <!-- EMAIL -->
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
+
+
+                <h2 id="loginTitle">
+                    Entrar
+                </h2>
+
+
+                <!-- ==================================================
+                                E-MAIL
+                =================================================== -->
 
                 <div class="campo">
 
+
                     <label for="email">
-                        Email
+                        E-mail
                     </label>
+
 
                     <input
                         type="email"
                         id="email"
-                        placeholder="Digite seu email"
+                        name="email"
+                        placeholder="Digite seu e-mail"
                         autocomplete="username"
+                        inputmode="email"
+                        autocapitalize="none"
+                        spellcheck="false"
                         required
                     >
+
 
                 </div>
 
 
-
-                <!-- SENHA -->
+                <!-- ==================================================
+                                SENHA
+                =================================================== -->
 
                 <div class="campo">
+
 
                     <label for="senha">
                         Senha
@@ -111,9 +157,11 @@
 
                     <div class="senha">
 
+
                         <input
                             type="password"
                             id="senha"
+                            name="senha"
                             placeholder="Digite sua senha"
                             autocomplete="current-password"
                             required
@@ -126,17 +174,23 @@
                             aria-label="Mostrar senha"
                         >
 
-                            <i class="fa-solid fa-eye"></i>
+                            <i
+                                class="fa-solid fa-eye"
+                                aria-hidden="true"
+                            ></i>
 
                         </button>
 
+
                     </div>
+
 
                 </div>
 
 
-
-                <!-- ESQUECI A SENHA -->
+                <!-- ==================================================
+                            ESQUECI A SENHA
+                =================================================== -->
 
                 <a
                     href="#"
@@ -147,28 +201,34 @@
                 </a>
 
 
-
-                <!-- LOGIN -->
+                <!-- ==================================================
+                                LOGIN
+                =================================================== -->
 
                 <button
                     type="submit"
                     class="btn-login"
                 >
-
                     Entrar
-
                 </button>
+
 
             </form>
 
+
         </section>
+
 
     </main>
 
 
-    <!-- JAVASCRIPT -->
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
 
-    <script src="../js/login.js"></script>
+    <script src="../js/core.js?v=20260914-3"></script>
+    <script src="../js/login.js?v=20260914-3"></script>
+
 
 </body>
 

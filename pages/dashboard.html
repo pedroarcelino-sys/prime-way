@@ -12,6 +12,11 @@
 
     <title>Início | PrimeWay School</title>
 
+
+    <!-- ==================================================
+                        ESTILOS
+    =================================================== -->
+
     <link
         rel="stylesheet"
         href="../css/components.css"
@@ -23,7 +28,9 @@
     >
 
 
-    <!-- Google Fonts -->
+    <!-- ==================================================
+                        GOOGLE FONTS
+    =================================================== -->
 
     <link
         rel="preconnect"
@@ -42,7 +49,9 @@
     >
 
 
-    <!-- Font Awesome -->
+    <!-- ==================================================
+                        FONT AWESOME
+    =================================================== -->
 
     <link
         rel="stylesheet"
@@ -62,244 +71,200 @@
                             SIDEBAR
         =================================================== -->
 
-        <aside class="sidebar">
+        <aside
+            class="sidebar"
+            aria-label="Menu principal"
+        >
 
 
-            <div class="logo">
+            <!-- LOGO -->
+
+            <div class="sidebar-logo">
 
                 <img
                     src="../img/logo.png"
                     alt="PrimeWay School"
                 >
 
-                <h2>
-                    PrimeWay School
-                </h2>
-
             </div>
 
 
-            <nav>
+            <!-- MENU -->
 
-                <ul>
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação principal"
+            >
 
 
-                    <!-- INÍCIO -->
+                <a
+                    href="dashboard.html"
+                    class="active"
+                    aria-current="page"
+                >
 
-                    <li class="ativo">
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
 
-                        <a
-                            href="dashboard.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
+                    <span>
+                        Início
+                    </span>
 
-                            <i class="fa-solid fa-house"></i>
+                </a>
 
-                            <span>
-                                Início
-                            </span>
 
-                        </a>
+                <a href="professores.html">
 
-                    </li>
+                    <i
+                        class="fa-solid fa-chalkboard-user"
+                        aria-hidden="true"
+                    ></i>
 
+                    <span>
+                        Professores
+                    </span>
 
-                    <!-- PROFESSOR -->
+                </a>
 
-                    <li>
 
-                        <a
-                            href="professor.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
+                <a href="alunos.html">
 
-                            <i class="fa-solid fa-chalkboard-user"></i>
+                    <i
+                        class="fa-solid fa-user-graduate"
+                        aria-hidden="true"
+                    ></i>
 
-                            <span>
-                                Professor
-                            </span>
+                    <span>
+                        Alunos
+                    </span>
 
-                        </a>
+                </a>
 
-                    </li>
 
+                <a href="responsaveis.html">
 
-                    <!-- ALUNOS -->
+                    <i
+                        class="fa-solid fa-people-roof"
+                        aria-hidden="true"
+                    ></i>
 
-                    <li>
+                    <span>
+                        Responsáveis
+                    </span>
 
-                        <a
-                            href="alunos.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
+                </a>
 
-                            <i class="fa-solid fa-user-graduate"></i>
 
-                            <span>
-                                Alunos
-                            </span>
+                <a href="turmas.html">
 
-                        </a>
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
 
-                    </li>
+                    <span>
+                        Turmas
+                    </span>
 
+                </a>
 
-                    <!-- RESPONSÁVEIS -->
 
-                    <li>
+                <a href="disciplinas.html">
 
-                        <a
-                            href="responsaveis.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
+                    <i
+                        class="fa-solid fa-book-open"
+                        aria-hidden="true"
+                    ></i>
 
-                            <i class="fa-solid fa-people-roof"></i>
+                    <span>
+                        Disciplinas
+                    </span>
 
-                            <span>
-                                Responsáveis
-                            </span>
+                </a>
 
-                        </a>
 
-                    </li>
+                <a href="chat-professor.html">
 
+                    <i
+                        class="fa-solid fa-comments"
+                        aria-hidden="true"
+                    ></i>
 
-                    <!-- TURMAS -->
+                    <span>
+                        Chat
+                    </span>
 
-                    <li>
+                </a>
 
-                        <a
-                            href="turmas.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
 
-                            <i class="fa-solid fa-users"></i>
+                <a href="calendario.html">
 
-                            <span>
-                                Turmas
-                            </span>
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
 
-                        </a>
+                    <span>
+                        Calendário
+                    </span>
 
-                    </li>
+                </a>
 
 
-                    <!-- DISCIPLINAS -->
+                <a href="notificacoes.html">
 
-                    <li>
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
 
-                        <a
-                            href="disciplinas.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
+                    <span>
+                        Notificações
+                    </span>
 
-                            <i class="fa-solid fa-book-open"></i>
+                </a>
 
-                            <span>
-                                Disciplinas
-                            </span>
 
-                        </a>
+                <a href="configuracoes.html">
 
-                    </li>
+                    <i
+                        class="fa-solid fa-gear"
+                        aria-hidden="true"
+                    ></i>
 
+                    <span>
+                        Configurações
+                    </span>
 
-                    <!-- CHAT -->
+                </a>
 
-                    <li>
-
-                        <a
-                            href="chat-professor.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
-
-                            <i class="fa-solid fa-comments"></i>
-
-                            <span>
-                                Chat
-                            </span>
-
-                        </a>
-
-                    </li>
-
-
-                    <!-- CALENDÁRIO -->
-
-                    <li>
-
-                        <a
-                            href="calendario.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
-
-                            <i class="fa-solid fa-calendar-days"></i>
-
-                            <span>
-                                Calendário
-                            </span>
-
-                        </a>
-
-                    </li>
-
-
-                    <!-- NOTIFICAÇÕES -->
-
-                    <li>
-
-                        <a
-                            href="notificacoes.html"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
-
-                            <i class="fa-solid fa-bell"></i>
-
-                            <span>
-                                Notificações
-                            </span>
-
-                        </a>
-
-                    </li>
-
-
-                    <!-- CONFIGURAÇÕES -->
-
-                    <li>
-
-                        <a
-                            href="#"
-                            style="display: contents; color: inherit; text-decoration: none;"
-                        >
-
-                            <i class="fa-solid fa-gear"></i>
-
-                            <span>
-                                Configurações
-                            </span>
-
-                        </a>
-
-                    </li>
-
-
-                    <!-- SAIR -->
-
-                    <li id="logoutButton">
-
-                        <i class="fa-solid fa-right-from-bracket"></i>
-
-                        <span>
-                            Sair
-                        </span>
-
-                    </li>
-
-
-                </ul>
 
             </nav>
+
+
+            <!-- SAIR -->
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Sair
+                    </span>
+
+                </button>
+
+            </div>
 
 
         </aside>
@@ -313,23 +278,34 @@
 
 
             <!-- ==================================================
-                                TOPO
+                            TOPO
             =================================================== -->
 
             <header class="topo">
 
 
-                <div class="pesquisa">
+                <!-- PESQUISA -->
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                <div
+                    class="pesquisa"
+                    role="search"
+                >
+
+                    <i
+                        class="fa-solid fa-magnifying-glass"
+                        aria-hidden="true"
+                    ></i>
 
                     <input
                         type="text"
                         placeholder="Pesquisar..."
+                        aria-label="Pesquisar no sistema"
                     >
 
                 </div>
 
+
+                <!-- USUÁRIO -->
 
                 <div class="usuario">
 
@@ -339,27 +315,31 @@
                         type="button"
                         onclick="window.location.href='notificacoes.html'"
                         title="Notificações"
+                        aria-label="Abrir notificações"
                     >
 
-                        <i class="fa-solid fa-bell"></i>
+                        <i
+                            class="fa-solid fa-bell"
+                            aria-hidden="true"
+                        ></i>
 
                     </button>
 
 
                     <img
                         src="../img/avatar.png"
-                        alt="Avatar"
+                        alt="Avatar do usuário"
                     >
 
 
                     <div>
 
-                        <h3>
-                            Professor João
+                        <h3 id="dashboardUserName">
+                            Administrador
                         </h3>
 
-                        <p>
-                            Professor
+                        <p id="dashboardUserRole">
+                            Administrador
                         </p>
 
                     </div>
@@ -372,10 +352,29 @@
 
 
             <!-- ==================================================
-                            ÁREA PRINCIPAL
+                        ÁREA PRINCIPAL
             =================================================== -->
 
-            <section class="pagina">
+            <section
+                class="pagina"
+                aria-labelledby="dashboardTitle"
+            >
+
+
+                <!-- TÍTULO PRINCIPAL -->
+
+                <span class="section-label">
+                    Visão geral
+                </span>
+
+                <h1 id="dashboardTitle">
+                    Início
+                </h1>
+
+                <p>
+                    Acompanhe os principais indicadores acadêmicos
+                    e as informações recentes da escola.
+                </p>
 
 
                 <div class="dashboard-home">
@@ -385,7 +384,10 @@
                                 CARDS DO INÍCIO
                     =================================================== -->
 
-                    <section class="dashboard-cards">
+                    <section
+                        class="dashboard-cards"
+                        aria-label="Resumo geral"
+                    >
 
 
                         <!-- TOTAL DE ALUNOS -->
@@ -395,7 +397,10 @@
 
                             <div class="dashboard-card-icon alunos">
 
-                                <i class="fa-solid fa-user-graduate"></i>
+                                <i
+                                    class="fa-solid fa-user-graduate"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
@@ -406,8 +411,8 @@
                                     Total de Alunos
                                 </span>
 
-                                <h2>
-                                    1.245
+                                <h2 id="dashboardStudents">
+                                    0
                                 </h2>
 
                             </div>
@@ -423,7 +428,10 @@
 
                             <div class="dashboard-card-icon professores">
 
-                                <i class="fa-solid fa-chalkboard-user"></i>
+                                <i
+                                    class="fa-solid fa-chalkboard-user"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
@@ -434,8 +442,8 @@
                                     Professores
                                 </span>
 
-                                <h2>
-                                    56
+                                <h2 id="dashboardProfessors">
+                                    0
                                 </h2>
 
                             </div>
@@ -451,7 +459,10 @@
 
                             <div class="dashboard-card-icon turmas">
 
-                                <i class="fa-solid fa-school"></i>
+                                <i
+                                    class="fa-solid fa-school"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
@@ -462,8 +473,8 @@
                                     Turmas
                                 </span>
 
-                                <h2>
-                                    38
+                                <h2 id="dashboardClasses">
+                                    0
                                 </h2>
 
                             </div>
@@ -479,7 +490,10 @@
 
                             <div class="dashboard-card-icon media">
 
-                                <i class="fa-solid fa-chart-line"></i>
+                                <i
+                                    class="fa-solid fa-chart-line"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
@@ -490,8 +504,8 @@
                                     Média Geral
                                 </span>
 
-                                <h2>
-                                    8,6
+                                <h2 id="dashboardAverage">
+                                    —
                                 </h2>
 
                             </div>
@@ -504,10 +518,13 @@
 
 
                     <!-- ==================================================
-                                ATIVIDADES RECENTES
+                            ATIVIDADES RECENTES
                     =================================================== -->
 
-                    <section class="recent-section">
+                    <section
+                        class="recent-section"
+                        aria-labelledby="recentActivitiesTitle"
+                    >
 
 
                         <div class="recent-header">
@@ -515,7 +532,7 @@
 
                             <div>
 
-                                <h2>
+                                <h2 id="recentActivitiesTitle">
                                     Atividades Recentes
                                 </h2>
 
@@ -531,7 +548,10 @@
                                 type="button"
                             >
 
-                                <i class="fa-solid fa-filter"></i>
+                                <i
+                                    class="fa-solid fa-filter"
+                                    aria-hidden="true"
+                                ></i>
 
                                 Filtrar
 
@@ -541,7 +561,7 @@
                         </div>
 
 
-                        <div class="recent-list">
+                        <div class="recent-list" id="dashboardRecentList">
 
 
                             <!-- ATIVIDADE 1 -->
@@ -551,7 +571,10 @@
 
                                 <div class="recent-icon nota">
 
-                                    <i class="fa-solid fa-file-pen"></i>
+                                    <i
+                                        class="fa-solid fa-file-pen"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -569,7 +592,10 @@
 
                                     <span>
 
-                                        <i class="fa-regular fa-clock"></i>
+                                        <i
+                                            class="fa-regular fa-clock"
+                                            aria-hidden="true"
+                                        ></i>
 
                                         Há 10 minutos
 
@@ -579,9 +605,7 @@
 
 
                                 <span class="recent-status sucesso">
-
                                     Concluído
-
                                 </span>
 
 
@@ -595,7 +619,10 @@
 
                                 <div class="recent-icon atividade">
 
-                                    <i class="fa-solid fa-book-open"></i>
+                                    <i
+                                        class="fa-solid fa-book-open"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -613,7 +640,10 @@
 
                                     <span>
 
-                                        <i class="fa-regular fa-clock"></i>
+                                        <i
+                                            class="fa-regular fa-clock"
+                                            aria-hidden="true"
+                                        ></i>
 
                                         Há 35 minutos
 
@@ -623,9 +653,7 @@
 
 
                                 <span class="recent-status novo">
-
                                     Nova
-
                                 </span>
 
 
@@ -639,7 +667,10 @@
 
                                 <div class="recent-icon frequencia">
 
-                                    <i class="fa-solid fa-user-check"></i>
+                                    <i
+                                        class="fa-solid fa-user-check"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -657,7 +688,10 @@
 
                                     <span>
 
-                                        <i class="fa-regular fa-clock"></i>
+                                        <i
+                                            class="fa-regular fa-clock"
+                                            aria-hidden="true"
+                                        ></i>
 
                                         Há 1 hora
 
@@ -667,9 +701,7 @@
 
 
                                 <span class="recent-status sucesso">
-
                                     Atualizado
-
                                 </span>
 
 
@@ -683,7 +715,10 @@
 
                                 <div class="recent-icon aviso">
 
-                                    <i class="fa-solid fa-bullhorn"></i>
+                                    <i
+                                        class="fa-solid fa-bullhorn"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -701,7 +736,10 @@
 
                                     <span>
 
-                                        <i class="fa-regular fa-clock"></i>
+                                        <i
+                                            class="fa-regular fa-clock"
+                                            aria-hidden="true"
+                                        ></i>
 
                                         Há 2 horas
 
@@ -711,9 +749,7 @@
 
 
                                 <span class="recent-status aviso-status">
-
                                     Aviso
-
                                 </span>
 
 
@@ -730,7 +766,10 @@
                             CALENDÁRIO E AVISOS
                     =================================================== -->
 
-                    <section class="dashboard-two-columns">
+                    <section
+                        class="dashboard-two-columns"
+                        aria-label="Calendário e avisos"
+                    >
 
 
                         <!-- ==================================================
@@ -761,9 +800,13 @@
                                     type="button"
                                     onclick="window.location.href='calendario.html'"
                                     title="Abrir calendário"
+                                    aria-label="Abrir calendário"
                                 >
 
-                                    <i class="fa-solid fa-calendar-days"></i>
+                                    <i
+                                        class="fa-solid fa-calendar-days"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </button>
 
@@ -771,7 +814,7 @@
                             </div>
 
 
-                            <div class="calendar-list">
+                            <div class="calendar-list" id="dashboardCalendarList">
 
 
                                 <!-- ATIVIDADE 1 -->
@@ -800,7 +843,10 @@
 
                                         <p>
 
-                                            <i class="fa-regular fa-clock"></i>
+                                            <i
+                                                class="fa-regular fa-clock"
+                                                aria-hidden="true"
+                                            ></i>
 
                                             08:00 - 09:30
 
@@ -842,7 +888,10 @@
 
                                         <p>
 
-                                            <i class="fa-regular fa-clock"></i>
+                                            <i
+                                                class="fa-regular fa-clock"
+                                                aria-hidden="true"
+                                            ></i>
 
                                             Até 23:59
 
@@ -884,7 +933,10 @@
 
                                         <p>
 
-                                            <i class="fa-regular fa-clock"></i>
+                                            <i
+                                                class="fa-regular fa-clock"
+                                                aria-hidden="true"
+                                            ></i>
 
                                             10:00 - 11:00
 
@@ -926,7 +978,10 @@
 
                                         <p>
 
-                                            <i class="fa-regular fa-clock"></i>
+                                            <i
+                                                class="fa-regular fa-clock"
+                                                aria-hidden="true"
+                                            ></i>
 
                                             14:00 - 16:00
 
@@ -953,7 +1008,10 @@
 
                                 Ver calendário completo
 
-                                <i class="fa-solid fa-arrow-right"></i>
+                                <i
+                                    class="fa-solid fa-arrow-right"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
@@ -962,7 +1020,7 @@
 
 
                         <!-- ==================================================
-                                    AVISOS DA ESCOLA
+                                AVISOS DA ESCOLA
                         =================================================== -->
 
                         <div class="dashboard-panel">
@@ -989,9 +1047,13 @@
                                     type="button"
                                     onclick="window.location.href='notificacoes.html'"
                                     title="Abrir notificações"
+                                    aria-label="Abrir notificações"
                                 >
 
-                                    <i class="fa-solid fa-bullhorn"></i>
+                                    <i
+                                        class="fa-solid fa-bullhorn"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </button>
 
@@ -999,7 +1061,7 @@
                             </div>
 
 
-                            <div class="notice-list">
+                            <div class="notice-list" id="dashboardNoticeList">
 
 
                                 <!-- AVISO 1 -->
@@ -1009,7 +1071,10 @@
 
                                     <div class="notice-icon importante">
 
-                                        <i class="fa-solid fa-circle-exclamation"></i>
+                                        <i
+                                            class="fa-solid fa-circle-exclamation"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1024,9 +1089,7 @@
                                             </h3>
 
                                             <span class="notice-tag importante-tag">
-
                                                 Importante
-
                                             </span>
 
                                         </div>
@@ -1039,9 +1102,7 @@
 
 
                                         <span class="notice-time">
-
                                             Hoje, 08:30
-
                                         </span>
 
 
@@ -1058,7 +1119,10 @@
 
                                     <div class="notice-icon informativo">
 
-                                        <i class="fa-solid fa-info"></i>
+                                        <i
+                                            class="fa-solid fa-info"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1073,9 +1137,7 @@
                                             </h3>
 
                                             <span class="notice-tag informativo-tag">
-
                                                 Informação
-
                                             </span>
 
                                         </div>
@@ -1088,9 +1150,7 @@
 
 
                                         <span class="notice-time">
-
                                             Ontem, 15:40
-
                                         </span>
 
 
@@ -1107,7 +1167,10 @@
 
                                     <div class="notice-icon evento">
 
-                                        <i class="fa-solid fa-calendar-check"></i>
+                                        <i
+                                            class="fa-solid fa-calendar-check"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1122,9 +1185,7 @@
                                             </h3>
 
                                             <span class="notice-tag evento-tag">
-
                                                 Evento
-
                                             </span>
 
                                         </div>
@@ -1137,9 +1198,7 @@
 
 
                                         <span class="notice-time">
-
                                             08 de agosto, 10:15
-
                                         </span>
 
 
@@ -1160,7 +1219,10 @@
 
                                 Ver todos os avisos
 
-                                <i class="fa-solid fa-arrow-right"></i>
+                                <i
+                                    class="fa-solid fa-arrow-right"
+                                    aria-hidden="true"
+                                ></i>
 
                             </button>
 
@@ -1175,7 +1237,10 @@
                             DESEMPENHO ACADÊMICO
                     =================================================== -->
 
-                    <section class="dashboard-performance">
+                    <section
+                        class="dashboard-performance"
+                        aria-labelledby="performanceTitle"
+                    >
 
 
                         <div class="performance-header">
@@ -1183,7 +1248,7 @@
 
                             <div>
 
-                                <h2>
+                                <h2 id="performanceTitle">
                                     Desempenho Acadêmico
                                 </h2>
 
@@ -1194,17 +1259,20 @@
                             </div>
 
 
-                            <select class="performance-select">
+                            <select
+                                class="performance-select"
+                                aria-label="Selecionar ano do desempenho acadêmico"
+                            >
 
-                                <option>
+                                <option value="2026">
                                     2026
                                 </option>
 
-                                <option>
+                                <option value="2025">
                                     2025
                                 </option>
 
-                                <option>
+                                <option value="2024">
                                     2024
                                 </option>
 
@@ -1214,7 +1282,11 @@
                         </div>
 
 
-                        <div class="performance-chart">
+                        <div
+                            class="performance-chart"
+                            role="img"
+                            aria-label="Ainda não há dados de desempenho"
+                        >
 
 
                             <div class="chart-y-axis">
@@ -1232,7 +1304,10 @@
                             <div class="chart-area">
 
 
-                                <div class="chart-grid">
+                                <div
+                                    class="chart-grid"
+                                    aria-hidden="true"
+                                >
 
                                     <span></span>
                                     <span></span>
@@ -1251,8 +1326,8 @@
 
                                         <div
                                             class="chart-bar"
-                                            style="height: 62%;"
-                                            data-value="6,2"
+                                            style="height: 0%;"
+                                            data-value="—"
                                         ></div>
 
                                         <span>
@@ -1266,8 +1341,8 @@
 
                                         <div
                                             class="chart-bar"
-                                            style="height: 71%;"
-                                            data-value="7,1"
+                                            style="height: 0%;"
+                                            data-value="—"
                                         ></div>
 
                                         <span>
@@ -1281,8 +1356,8 @@
 
                                         <div
                                             class="chart-bar"
-                                            style="height: 78%;"
-                                            data-value="7,8"
+                                            style="height: 0%;"
+                                            data-value="—"
                                         ></div>
 
                                         <span>
@@ -1296,8 +1371,8 @@
 
                                         <div
                                             class="chart-bar"
-                                            style="height: 86%;"
-                                            data-value="8,6"
+                                            style="height: 0%;"
+                                            data-value="—"
                                         ></div>
 
                                         <span>
@@ -1323,7 +1398,10 @@
                                 FREQUÊNCIA
                     =================================================== -->
 
-                    <section class="dashboard-attendance">
+                    <section
+                        class="dashboard-attendance"
+                        aria-labelledby="attendanceTitle"
+                    >
 
 
                         <div class="attendance-header">
@@ -1331,28 +1409,32 @@
 
                             <div>
 
-                                <h2>
+                                <h2 id="attendanceTitle">
                                     Frequência dos Alunos
                                 </h2>
 
                                 <p>
-                                    Acompanhe a presença dos alunos no período atual.
+                                    Acompanhe a presença dos alunos
+                                    no período atual.
                                 </p>
 
                             </div>
 
 
-                            <select class="attendance-select">
+                            <select
+                                class="attendance-select"
+                                aria-label="Selecionar ano da frequência"
+                            >
 
-                                <option>
+                                <option value="2026">
                                     2026
                                 </option>
 
-                                <option>
+                                <option value="2025">
                                     2025
                                 </option>
 
-                                <option>
+                                <option value="2024">
                                     2024
                                 </option>
 
@@ -1370,13 +1452,18 @@
                             <div class="attendance-chart">
 
 
-                                <div class="donut-chart">
+                                <div
+                                    class="donut-chart"
+                                    style="background: conic-gradient(#e5e7eb 0 100%);"
+                                    role="img"
+                                    aria-label="Ainda não há registros de frequência"
+                                >
 
 
                                     <div class="donut-center">
 
-                                        <strong>
-                                            92%
+                                        <strong id="dashboardAttendancePercentage">
+                                            —
                                         </strong>
 
                                         <span>
@@ -1402,7 +1489,10 @@
 
                                     <div class="attendance-stat-icon presenca">
 
-                                        <i class="fa-solid fa-user-check"></i>
+                                        <i
+                                            class="fa-solid fa-user-check"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1413,8 +1503,8 @@
                                             Presenças
                                         </span>
 
-                                        <strong>
-                                            1.145
+                                        <strong id="dashboardPresent">
+                                            0
                                         </strong>
 
                                     </div>
@@ -1428,7 +1518,10 @@
 
                                     <div class="attendance-stat-icon falta">
 
-                                        <i class="fa-solid fa-user-xmark"></i>
+                                        <i
+                                            class="fa-solid fa-user-xmark"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1439,8 +1532,8 @@
                                             Faltas
                                         </span>
 
-                                        <strong>
-                                            100
+                                        <strong id="dashboardAbsent">
+                                            0
                                         </strong>
 
                                     </div>
@@ -1454,7 +1547,10 @@
 
                                     <div class="attendance-stat-icon media-frequencia">
 
-                                        <i class="fa-solid fa-chart-line"></i>
+                                        <i
+                                            class="fa-solid fa-chart-line"
+                                            aria-hidden="true"
+                                        ></i>
 
                                     </div>
 
@@ -1465,8 +1561,8 @@
                                             Média de frequência
                                         </span>
 
-                                        <strong>
-                                            92%
+                                        <strong id="dashboardAttendanceAverage">
+                                            —
                                         </strong>
 
                                     </div>
@@ -1488,24 +1584,26 @@
                             RESUMO DE INDICADORES
                     =================================================== -->
 
-                    <section class="dashboard-indicators">
+                    <section
+                        class="dashboard-indicators"
+                        aria-labelledby="indicatorsTitle"
+                    >
 
 
                         <div class="indicators-header">
 
-
                             <div>
 
-                                <h2>
+                                <h2 id="indicatorsTitle">
                                     Resumo de Indicadores
                                 </h2>
 
                                 <p>
-                                    Visão geral das informações que precisam de atenção.
+                                    Visão geral das informações que
+                                    precisam de atenção.
                                 </p>
 
                             </div>
-
 
                         </div>
 
@@ -1520,7 +1618,10 @@
 
                                 <div class="indicator-icon pendentes">
 
-                                    <i class="fa-solid fa-list-check"></i>
+                                    <i
+                                        class="fa-solid fa-list-check"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -1531,8 +1632,8 @@
                                         Atividades pendentes
                                     </span>
 
-                                    <strong>
-                                        12
+                                    <strong id="dashboardPendingActivities">
+                                        0
                                     </strong>
 
                                     <small>
@@ -1552,7 +1653,10 @@
 
                                 <div class="indicator-icon atencao">
 
-                                    <i class="fa-solid fa-user-clock"></i>
+                                    <i
+                                        class="fa-solid fa-user-clock"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -1563,8 +1667,8 @@
                                         Alunos em atenção
                                     </span>
 
-                                    <strong>
-                                        8
+                                    <strong id="dashboardStudentsAttention">
+                                        0
                                     </strong>
 
                                     <small>
@@ -1584,7 +1688,10 @@
 
                                 <div class="indicator-icon baixa-frequencia">
 
-                                    <i class="fa-solid fa-user-xmark"></i>
+                                    <i
+                                        class="fa-solid fa-user-xmark"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -1595,8 +1702,8 @@
                                         Baixa frequência
                                     </span>
 
-                                    <strong>
-                                        5
+                                    <strong id="dashboardLowAttendance">
+                                        0
                                     </strong>
 
                                     <small>
@@ -1616,7 +1723,10 @@
 
                                 <div class="indicator-icon notas-pendentes">
 
-                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    <i
+                                        class="fa-solid fa-pen-to-square"
+                                        aria-hidden="true"
+                                    ></i>
 
                                 </div>
 
@@ -1627,8 +1737,8 @@
                                         Notas pendentes
                                     </span>
 
-                                    <strong>
-                                        7
+                                    <strong id="dashboardPendingGrades">
+                                        0
                                     </strong>
 
                                     <small>
@@ -1659,19 +1769,24 @@
     </div>
 
 
+    <!-- ==================================================
+                        JAVASCRIPT
+    =================================================== -->
+
+    <script src="../js/core.js"></script>
     <script src="../js/dashboard.js"></script>
 
 
     <script>
 
         /*
-         * Garantia temporária para logout do protótipo.
-         * Quando migrarmos para PHP, isso será controlado
-         * pelo servidor e pela sessão do usuário.
+         * Logout temporário do protótipo.
+         *
+         * Na versão PHP, autenticação e encerramento
+         * da sessão deverão ser feitos pelo servidor.
          */
 
-        const dashboardLogoutButton =
-            document.querySelector("#logoutButton");
+        const dashboardLogoutButton = null;
 
 
         if (dashboardLogoutButton) {

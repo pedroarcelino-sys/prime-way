@@ -1,9 +1,13 @@
-console.log("ALUNOS JS CARREGADO");
+/*====================================================
+                ALUNOS - PRIMEWAY SCHOOL
+====================================================*/
 
-document.addEventListener("DOMContentLoaded", function () {
+
+document.addEventListener("DOMContentLoaded", async function () {
+    await window.PrimeWayStorage?.ready;
 
     /*====================================================
-                    STORAGE
+                STORAGE / AUTENTICAÇÃO
     ====================================================*/
 
     const STORAGE_KEY =
@@ -12,139 +16,549 @@ document.addEventListener("DOMContentLoaded", function () {
     const CLASSES_STORAGE_KEY =
         "primewayClasses";
 
+    const STUDENTS_API_URL =
+        "../api/alunos/index.php";
+
+    const STUDENT_SAVE_API_URL =
+        "../api/alunos/salvar.php";
+
+    const STUDENT_DELETE_API_URL =
+        "../api/alunos/excluir.php";
+
+    const CLASSES_API_URL =
+        "../api/turmas/index.php";
+
+
+    const AUTH_SESSION_URL =
+        "../api/auth/session.php";
+
+    const AUTH_LOGOUT_URL =
+        "../api/auth/logout.php";
+
+
+    const SESSION_LOGADO_KEY =
+        "primewayLogado";
+
+    const SESSION_USUARIO_KEY =
+        "primewayUsuario";
+
+    const SESSION_PERFIL_KEY =
+        "primewayPerfil";
+
+
+    const PERFIS_PERMITIDOS =
+        new Set([
+            "admin"
+        ]);
+
+
+    const PAGINA_LOGIN =
+        "login.html";
+
+    const PAGINA_PROFESSOR =
+        "professor.html";
+
+
+    /*====================================================
+            COMPATIBILIDADE COM O FRONT-END ATUAL
+    ====================================================*/
+
+    /*
+        A sessão PHP é a fonte de verdade.
+
+        O sessionStorage continua sendo mantido
+        temporariamente apenas para compatibilidade
+        com páginas que ainda não foram migradas.
+    */
+
+    function limparSessaoCompatibilidade() {
+
+        sessionStorage.removeItem(
+            SESSION_LOGADO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_USUARIO_KEY
+        );
+
+
+        sessionStorage.removeItem(
+            SESSION_PERFIL_KEY
+        );
+    }
+
+
+    function sincronizarSessaoCompatibilidade(
+        usuario
+    ) {
+
+        sessionStorage.setItem(
+            SESSION_LOGADO_KEY,
+            "true"
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_USUARIO_KEY,
+            String(
+                usuario.email || ""
+            )
+        );
+
+
+        sessionStorage.setItem(
+            SESSION_PERFIL_KEY,
+            String(
+                usuario.perfil || ""
+            )
+        );
+    }
+
+
+    /*====================================================
+                RESPOSTA JSON SEGURA
+    ====================================================*/
+
+    async function lerJsonSeguro(
+        response
+    ) {
+
+        try {
+
+            return await response.json();
+
+        } catch {
+
+            return null;
+        }
+    }
+
+
+    /*====================================================
+                VERIFICAÇÃO DE SESSÃO PHP
+    ====================================================*/
+
+    /*
+        O gerenciamento estrutural de Alunos fica
+        reservado ao perfil Admin nesta etapa.
+
+        A sessão é validada no servidor. Caso um
+        Professor autenticado tente abrir esta página,
+        ele é redirecionado para sua área sem encerrar
+        a sessão PHP.
+    */
+
+    async function obterSessaoServidor() {
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_SESSION_URL,
+                    {
+                        method:
+                            "GET",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
+                );
+
+
+            const data =
+                await lerJsonSeguro(
+                    response
+                );
+
+
+            if (
+                !response.ok ||
+                !data?.authenticated ||
+                !data?.usuario
+            ) {
+
+                limparSessaoCompatibilidade();
+
+
+                window.location.replace(
+                    PAGINA_LOGIN
+                );
+
+
+                return null;
+            }
+
+
+            const usuario =
+                data.usuario;
+
+
+            const perfil =
+                String(
+                    usuario.perfil || ""
+                ).trim();
+
+
+            sincronizarSessaoCompatibilidade(
+                usuario
+            );
+
+
+            if (
+                !PERFIS_PERMITIDOS.has(
+                    perfil
+                )
+            ) {
+
+                if (
+                    perfil ===
+                    "professor"
+                ) {
+
+                    window.location.replace(
+                        PAGINA_PROFESSOR
+                    );
+
+                } else {
+
+                    window.location.replace(
+                        PAGINA_LOGIN
+                    );
+                }
+
+
+                return null;
+            }
+
+
+            return {
+                ...usuario,
+                perfil
+            };
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao validar a sessão de Alunos:",
+                error
+            );
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+
+            return null;
+        }
+    }
+
+
+    const usuarioSessao =
+        await obterSessaoServidor();
+
+
+    if (
+        !usuarioSessao
+    ) {
+
+        return;
+    }
+
 
     /*====================================================
                     ELEMENTOS
     ====================================================*/
 
     const tableBody =
-        document.querySelector("#studentsTableBody");
+        document.querySelector(
+            "#studentsTableBody"
+        );
 
     const emptyState =
-        document.querySelector("#studentsEmpty");
+        document.querySelector(
+            "#studentsEmpty"
+        );
 
     const searchInput =
-        document.querySelector("#studentSearch");
+        document.querySelector(
+            "#studentSearch"
+        );
 
     const classFilter =
-        document.querySelector("#classFilter");
+        document.querySelector(
+            "#classFilter"
+        );
 
     const statusFilter =
-        document.querySelector("#statusFilter");
-
+        document.querySelector(
+            "#statusFilter"
+        );
 
     const newStudentButton =
-        document.querySelector("#newStudentButton");
+        document.querySelector(
+            "#newStudentButton"
+        );
 
 
     /* CARDS */
 
     const totalStudents =
-        document.querySelector("#totalStudents");
+        document.querySelector(
+            "#totalStudents"
+        );
 
     const activeStudents =
-        document.querySelector("#activeStudents");
+        document.querySelector(
+            "#activeStudents"
+        );
 
     const newStudents =
-        document.querySelector("#newStudents");
+        document.querySelector(
+            "#newStudents"
+        );
 
     const pendingStudents =
-        document.querySelector("#pendingStudents");
+        document.querySelector(
+            "#pendingStudents"
+        );
 
 
-    /* FORM */
+    /* FORMULÁRIO */
 
     const studentModal =
-        document.querySelector("#studentModal");
+        document.querySelector(
+            "#studentModal"
+        );
 
     const studentModalOverlay =
-        document.querySelector(".student-modal-overlay");
+        document.querySelector(
+            ".student-modal-overlay"
+        );
 
     const studentModalClose =
-        document.querySelector("#studentModalClose");
+        document.querySelector(
+            "#studentModalClose"
+        );
 
     const studentCancelButton =
-        document.querySelector("#studentCancelButton");
+        document.querySelector(
+            "#studentCancelButton"
+        );
 
     const studentModalTitle =
-        document.querySelector("#studentModalTitle");
+        document.querySelector(
+            "#studentModalTitle"
+        );
 
     const studentForm =
-        document.querySelector("#studentForm");
-
+        document.querySelector(
+            "#studentForm"
+        );
 
     const studentId =
-        document.querySelector("#studentId");
+        document.querySelector(
+            "#studentId"
+        );
 
     const studentName =
-        document.querySelector("#studentName");
+        document.querySelector(
+            "#studentName"
+        );
 
     const studentRegistration =
-        document.querySelector("#studentRegistration");
+        document.querySelector(
+            "#studentRegistration"
+        );
 
     const studentClass =
-        document.querySelector("#studentClass");
+        document.querySelector(
+            "#studentClass"
+        );
 
     const studentAverage =
-        document.querySelector("#studentAverage");
+        document.querySelector(
+            "#studentAverage"
+        );
 
     const studentAttendance =
-        document.querySelector("#studentAttendance");
+        document.querySelector(
+            "#studentAttendance"
+        );
 
     const studentStatus =
-        document.querySelector("#studentStatus");
+        document.querySelector(
+            "#studentStatus"
+        );
 
 
-    /* VISUALIZAR */
+    /* VISUALIZAÇÃO */
 
     const studentViewModal =
-        document.querySelector("#studentViewModal");
+        document.querySelector(
+            "#studentViewModal"
+        );
 
     const studentViewOverlay =
-        document.querySelector(".student-view-overlay");
+        document.querySelector(
+            ".student-view-overlay"
+        );
 
     const studentViewClose =
-        document.querySelector("#studentViewClose");
+        document.querySelector(
+            "#studentViewClose"
+        );
 
     const viewStudentName =
-        document.querySelector("#viewStudentName");
+        document.querySelector(
+            "#viewStudentName"
+        );
 
     const viewStudentRegistration =
-        document.querySelector("#viewStudentRegistration");
+        document.querySelector(
+            "#viewStudentRegistration"
+        );
 
     const viewStudentClass =
-        document.querySelector("#viewStudentClass");
+        document.querySelector(
+            "#viewStudentClass"
+        );
 
     const viewStudentAverage =
-        document.querySelector("#viewStudentAverage");
+        document.querySelector(
+            "#viewStudentAverage"
+        );
 
     const viewStudentAttendance =
-        document.querySelector("#viewStudentAttendance");
+        document.querySelector(
+            "#viewStudentAttendance"
+        );
 
     const viewStudentStatus =
-        document.querySelector("#viewStudentStatus");
+        document.querySelector(
+            "#viewStudentStatus"
+        );
 
 
     /* EXCLUSÃO */
 
     const deleteStudentModal =
-        document.querySelector("#deleteStudentModal");
+        document.querySelector(
+            "#deleteStudentModal"
+        );
 
     const deleteStudentOverlay =
-        document.querySelector(".delete-student-overlay");
+        document.querySelector(
+            ".delete-student-overlay"
+        );
 
     const deleteStudentCancel =
-        document.querySelector("#deleteStudentCancel");
+        document.querySelector(
+            "#deleteStudentCancel"
+        );
 
     const deleteStudentConfirm =
-        document.querySelector("#deleteStudentConfirm");
+        document.querySelector(
+            "#deleteStudentConfirm"
+        );
 
     const deleteStudentMessage =
-        document.querySelector("#deleteStudentMessage");
+        document.querySelector(
+            "#deleteStudentMessage"
+        );
 
+
+    /* SESSÃO */
 
     const logoutButton =
-        document.querySelector("#logoutButton");
+        document.querySelector(
+            "#logoutButton"
+        );
+
+
+    /*====================================================
+                VALIDAÇÃO DA ESTRUTURA
+    ====================================================*/
+
+    const elementosObrigatorios = [
+
+        tableBody,
+        emptyState,
+
+        searchInput,
+        classFilter,
+        statusFilter,
+
+        newStudentButton,
+
+        totalStudents,
+        activeStudents,
+        newStudents,
+        pendingStudents,
+
+        studentModal,
+        studentModalOverlay,
+        studentModalClose,
+        studentCancelButton,
+        studentModalTitle,
+        studentForm,
+
+        studentId,
+        studentName,
+        studentRegistration,
+        studentClass,
+        studentAverage,
+        studentAttendance,
+        studentStatus,
+
+        studentViewModal,
+        studentViewOverlay,
+        studentViewClose,
+
+        viewStudentName,
+        viewStudentRegistration,
+        viewStudentClass,
+        viewStudentAverage,
+        viewStudentAttendance,
+        viewStudentStatus,
+
+        deleteStudentModal,
+        deleteStudentOverlay,
+        deleteStudentCancel,
+        deleteStudentConfirm,
+        deleteStudentMessage
+
+    ];
+
+
+    if (
+        elementosObrigatorios.some(
+            elemento =>
+                !elemento
+        )
+    ) {
+
+        console.error(
+            "Alunos: a estrutura esperada da página não foi encontrada."
+        );
+
+        return;
+
+    }
 
 
     /*====================================================
@@ -244,25 +658,406 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
 
+    const defaultClasses = [
+
+        {
+            name: "1º Ano A",
+            status: "Ativa"
+        },
+
+        {
+            name: "2º Ano B",
+            status: "Ativa"
+        },
+
+        {
+            name: "3º Ano A",
+            status: "Ativa"
+        },
+
+        {
+            name: "4º Ano B",
+            status: "Ativa"
+        }
+
+    ];
+
+
+    /*====================================================
+                    ESTADO DA PÁGINA
+    ====================================================*/
+
     let students =
         carregarAlunos();
 
     let studentToDelete =
         null;
 
+    const focoAnteriorPorModal =
+        new WeakMap();
+
+
+    /*====================================================
+                    UTILITÁRIOS
+    ====================================================*/
+
+    async function requisicaoJson(
+        url,
+        opcoes = {}
+    ) {
+        const {
+            headers: cabecalhosExtras = {},
+            ...opcoesFetch
+        } = opcoes;
+
+        const response =
+            await fetch(
+                url,
+                {
+                    ...opcoesFetch,
+                    credentials: "same-origin",
+                    cache: "no-store",
+                    headers: {
+                        "Accept": "application/json",
+                        ...(opcoesFetch.body
+                            ? {
+                                "Content-Type": "application/json"
+                            }
+                            : {}),
+                        ...cabecalhosExtras
+                    }
+                }
+            );
+
+        const data =
+            await lerJsonSeguro(response);
+
+        if (response.status === 401) {
+            limparSessaoCompatibilidade();
+            window.location.replace(PAGINA_LOGIN);
+        }
+
+        return {
+            response,
+            data
+        };
+    }
+
+
+    async function carregarAlunosServidor() {
+        const { response, data } =
+            await requisicaoJson(
+                STUDENTS_API_URL,
+                {
+                    method: "GET"
+                }
+            );
+
+        if (
+            !response.ok ||
+            !data?.success ||
+            !Array.isArray(data.students)
+        ) {
+            throw new Error(
+                data?.message ||
+                "Não foi possível carregar os alunos."
+            );
+        }
+
+        return data.students
+            .map(normalizarAluno)
+            .filter(Boolean);
+    }
+
+
+    async function carregarTurmasServidor() {
+        const { response, data } =
+            await requisicaoJson(
+                CLASSES_API_URL,
+                {
+                    method: "GET"
+                }
+            );
+
+        if (
+            !response.ok ||
+            !data?.success ||
+            !Array.isArray(data.classes)
+        ) {
+            throw new Error(
+                data?.message ||
+                "Não foi possível carregar as turmas."
+            );
+        }
+
+        localStorage.setItem(
+            CLASSES_STORAGE_KEY,
+            JSON.stringify(data.classes)
+        );
+
+        return data.classes;
+    }
+
+
+    async function salvarAlunoServidor(dados) {
+        const { response, data } =
+            await requisicaoJson(
+                STUDENT_SAVE_API_URL,
+                {
+                    method: "POST",
+                    body: JSON.stringify(dados)
+                }
+            );
+
+        if (
+            !response.ok ||
+            !data?.success
+        ) {
+            throw new Error(
+                data?.message ||
+                "Não foi possível salvar o aluno."
+            );
+        }
+
+        return data.student;
+    }
+
+
+    async function excluirAlunoServidor(id) {
+        const { response, data } =
+            await requisicaoJson(
+                STUDENT_DELETE_API_URL,
+                {
+                    method: "POST",
+                    body: JSON.stringify({ id })
+                }
+            );
+
+        if (
+            !response.ok ||
+            !data?.success
+        ) {
+            throw new Error(
+                data?.message ||
+                "Não foi possível excluir o aluno."
+            );
+        }
+    }
+
+
+    async function atualizarAlunosServidor() {
+        students =
+            await carregarAlunosServidor();
+
+        salvarAlunos(students);
+    }
+
+    function clonarAlunosPadrao() {
+
+        return [];
+
+    }
+
+
+    function clonarTurmasPadrao() {
+
+        return [];
+
+    }
+
+
+    function normalizarTexto(
+        valor
+    ) {
+
+        return String(
+            valor ?? ""
+        )
+            .normalize(
+                "NFD"
+            )
+            .replace(
+                /[\u0300-\u036f]/g,
+                ""
+            )
+            .toLowerCase()
+            .trim();
+
+    }
+
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
+    }
+
+
+    function numeroSeguro(
+        valor,
+        padrao = 0
+    ) {
+
+        const numero =
+            Number(
+                valor
+            );
+
+
+        return Number.isFinite(
+            numero
+        )
+            ? numero
+            : padrao;
+
+    }
+
+
+    function formatarMedia(
+        valor
+    ) {
+
+        return numeroSeguro(
+            valor
+        ).toFixed(
+            1
+        );
+
+    }
+
+
+    function formatarFrequencia(
+        valor
+    ) {
+
+        return `${
+            numeroSeguro(
+                valor
+            )
+        }%`;
+
+    }
+
+
+    function obterClasseStatus(
+        status
+    ) {
+
+        const statusNormalizado =
+            normalizarTexto(
+                status
+            );
+
+
+        if (
+            statusNormalizado ===
+            "ativo"
+        ) {
+
+            return "active";
+
+        }
+
+
+        if (
+            statusNormalizado ===
+            "inativo"
+        ) {
+
+            return "inactive";
+
+        }
+
+
+        return "pending";
+
+    }
+
+
+    function gerarNovoId() {
+
+        const maiorId =
+            students.reduce(
+                function (
+                    maior,
+                    student
+                ) {
+
+                    const idAtual =
+                        Number(
+                            student.id
+                        );
+
+
+                    return Number.isFinite(
+                        idAtual
+                    )
+                        ? Math.max(
+                            maior,
+                            idAtual
+                        )
+                        : maior;
+
+                },
+                0
+            );
+
+
+        return Math.max(
+            Date.now(),
+            maiorId + 1
+        );
+
+    }
+
 
     /*====================================================
                     COMPATIBILIDADE
     ====================================================*/
+
+    /*
+        Mantém compatibilidade com versões antigas
+        dos dados que utilizaram:
+
+        className
+        class
+        turma
+
+        A chave oficial permanece className.
+    */
 
     function obterTurmaAluno(
         aluno
     ) {
 
         return (
-            aluno.className ||
-            aluno.class ||
-            aluno.turma ||
+            aluno?.className ||
+            aluno?.class ||
+            aluno?.turma ||
             ""
         );
 
@@ -270,31 +1065,96 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function normalizarAluno(
-        aluno
+        aluno,
+        indice = 0
     ) {
 
-        if (!aluno.className) {
+        if (
+            !aluno ||
+            typeof aluno !==
+                "object"
+        ) {
 
-            aluno.className =
-                obterTurmaAluno(
-                    aluno
-                );
+            return null;
 
         }
 
-        delete aluno.class;
-        delete aluno.turma;
 
-        return aluno;
+        const idConvertido =
+            Number(
+                aluno.id
+            );
+
+
+        const normalizado = {
+
+            ...aluno,
+
+            id:
+                Number.isFinite(
+                    idConvertido
+                )
+                    ? idConvertido
+                    : Date.now() + indice,
+
+            name:
+                String(
+                    aluno.name ??
+                    ""
+                ).trim(),
+
+            registration:
+                String(
+                    aluno.registration ??
+                    ""
+                ).trim(),
+
+            className:
+                String(
+                    obterTurmaAluno(
+                        aluno
+                    )
+                ).trim(),
+
+            average:
+                numeroSeguro(
+                    aluno.average
+                ),
+
+            attendance:
+                numeroSeguro(
+                    aluno.attendance
+                ),
+
+            status:
+                String(
+                    aluno.status ||
+                    "Pendente"
+                ),
+
+            newStudent:
+                aluno.newStudent ===
+                    true ||
+                aluno.newStudent ===
+                    "true"
+
+        };
+
+
+        delete normalizado.class;
+
+        delete normalizado.turma;
+
+
+        return normalizado;
 
     }
 
 
     /*====================================================
-                    STORAGE
+                    STORAGE - ALUNOS
     ====================================================*/
-
-    function carregarAlunos() {
+        function carregarAlunos() {
 
         try {
 
@@ -306,45 +1166,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!saved) {
 
-                return JSON.parse(
-                    JSON.stringify(
-                        defaultStudents
-                    )
-                );
+                return clonarAlunosPadrao();
 
             }
 
 
             const dados =
-                JSON.parse(saved);
-
-
-            if (!Array.isArray(dados)) {
-
-                return JSON.parse(
-                    JSON.stringify(
-                        defaultStudents
-                    )
+                JSON.parse(
+                    saved
                 );
+
+
+            if (
+                !Array.isArray(
+                    dados
+                )
+            ) {
+
+                return clonarAlunosPadrao();
 
             }
 
 
-            const normalizados =
-                dados.map(
+            return dados
+                .map(
                     normalizarAluno
-                );
-
-
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(
-                    normalizados
                 )
-            );
-
-
-            return normalizados;
+                .filter(
+                    Boolean
+                );
 
         } catch (erro) {
 
@@ -354,31 +1204,46 @@ document.addEventListener("DOMContentLoaded", function () {
             );
 
 
-            return JSON.parse(
-                JSON.stringify(
-                    defaultStudents
-                )
-            );
+            return clonarAlunosPadrao();
 
         }
 
     }
 
 
-    function salvarAlunos() {
+    function salvarAlunos(
+        lista = students
+    ) {
 
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(
-                students
-            )
-        );
+        try {
+
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify(
+                    lista
+                )
+            );
+
+
+            return true;
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao salvar alunos:",
+                erro
+            );
+
+
+            return false;
+
+        }
 
     }
 
 
     /*====================================================
-                    TURMAS
+                    STORAGE - TURMAS
     ====================================================*/
 
     function carregarTurmas() {
@@ -393,35 +1258,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!saved) {
 
-                return [
-                    {
-                        name: "1º Ano A",
-                        status: "Ativa"
-                    },
-                    {
-                        name: "2º Ano B",
-                        status: "Ativa"
-                    },
-                    {
-                        name: "3º Ano A",
-                        status: "Ativa"
-                    },
-                    {
-                        name: "4º Ano B",
-                        status: "Ativa"
-                    }
-                ];
+                return clonarTurmasPadrao();
 
             }
 
 
             const turmas =
-                JSON.parse(saved);
+                JSON.parse(
+                    saved
+                );
 
 
-            return Array.isArray(turmas)
-                ? turmas
-                : [];
+            if (
+                !Array.isArray(
+                    turmas
+                )
+            ) {
+
+                return clonarTurmasPadrao();
+
+            }
+
+
+            return turmas.filter(
+                function (turma) {
+
+                    return (
+                        turma &&
+                        typeof turma ===
+                            "object" &&
+                        String(
+                            turma.name ??
+                            ""
+                        ).trim()
+                    );
+
+                }
+            );
 
         } catch (erro) {
 
@@ -430,54 +1303,139 @@ document.addEventListener("DOMContentLoaded", function () {
                 erro
             );
 
-            return [];
+
+            return clonarTurmasPadrao();
 
         }
 
     }
 
 
+    function turmaEstaAtiva(
+        turma
+    ) {
+
+        const status =
+            normalizarTexto(
+                turma.status
+            );
+
+
+        /*
+            Turmas antigas sem status continuam
+            disponíveis por compatibilidade.
+        */
+
+        return (
+            !status ||
+            status === "ativa" ||
+            status === "ativo"
+        );
+
+    }
+
+
+    function ordenarNomesTurmas(
+        nomes
+    ) {
+
+        return [
+            ...nomes
+        ].sort(
+            function (
+                a,
+                b
+            ) {
+
+                return a.localeCompare(
+                    b,
+                    "pt-BR",
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    /*====================================================
+                SELECT DE TURMAS DO FORM
+    ====================================================*/
+
     function preencherSelectTurmas(
         turmaAtual = ""
     ) {
 
-        if (!studentClass) {
-
-            return;
-
-        }
-
-
         const turmas =
-            carregarTurmas()
+            carregarTurmas();
+
+
+        const turmasAtivas =
+            turmas
                 .filter(
+                    turmaEstaAtiva
+                )
+                .map(
                     turma =>
-                        turma.status === "Ativa"
+                        String(
+                            turma.name
+                        ).trim()
+                )
+                .filter(
+                    Boolean
                 );
 
 
-        studentClass.innerHTML = `
+        const nomesAtivos =
+            ordenarNomesTurmas(
+                new Set(
+                    turmasAtivas
+                )
+            );
 
-            <option value="">
-                Selecione uma turma
-            </option>
 
-        `;
+        studentClass.replaceChildren();
 
 
-        turmas.forEach(
-            function (turma) {
+        const placeholder =
+            document.createElement(
+                "option"
+            );
+
+
+        placeholder.value =
+            "";
+
+        placeholder.textContent =
+            "Sem turma (vincular depois)";
+
+
+        studentClass.appendChild(
+            placeholder
+        );
+
+
+        nomesAtivos.forEach(
+            function (
+                nomeTurma
+            ) {
 
                 const option =
                     document.createElement(
                         "option"
                     );
 
+
                 option.value =
-                    turma.name;
+                    nomeTurma;
 
                 option.textContent =
-                    turma.name;
+                    nomeTurma;
+
 
                 studentClass.appendChild(
                     option
@@ -488,16 +1446,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         /*
-         * Se aluno estiver numa turma que foi
-         * inativada, continua mostrando para edição.
-         */
+            Se o aluno estiver em uma turma que
+            deixou de estar ativa ou cadastrada,
+            preservamos a turma atual durante a edição.
+        */
 
         if (
             turmaAtual &&
-            !turmas.some(
-                turma =>
-                    turma.name ===
-                    turmaAtual
+            !nomesAtivos.includes(
+                turmaAtual
             )
         ) {
 
@@ -506,11 +1463,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     "option"
                 );
 
+
             option.value =
                 turmaAtual;
 
             option.textContent =
-                `${turmaAtual} (inativa)`;
+                `${turmaAtual} (indisponível)`;
+
 
             studentClass.appendChild(
                 option
@@ -525,45 +1484,123 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /*====================================================
+                FILTRO DE TURMAS
+    ====================================================*/
+
+    function obterNomesTurmasParaFiltro() {
+
+        const nomes =
+            new Set();
+
+
+        /*
+            Primeiro considera as turmas cadastradas
+            no módulo Turmas.
+        */
+
+        carregarTurmas().forEach(
+            function (turma) {
+
+                const nome =
+                    String(
+                        turma.name ??
+                        ""
+                    ).trim();
+
+
+                if (nome) {
+
+                    nomes.add(
+                        nome
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+            Também inclui turmas já presentes nos alunos.
+
+            Isso evita que um aluno fique impossível de
+            filtrar caso sua turma seja inativada ou
+            removida posteriormente.
+        */
+
+        students.forEach(
+            function (student) {
+
+                if (
+                    student.className
+                ) {
+
+                    nomes.add(
+                        student.className
+                    );
+
+                }
+
+            }
+        );
+
+
+        return ordenarNomesTurmas(
+            nomes
+        );
+
+    }
+
+
     function preencherFiltroTurmas() {
-
-        if (!classFilter) {
-
-            return;
-
-        }
-
 
         const atual =
             classFilter.value;
 
 
-        const turmas =
-            carregarTurmas();
+        const nomesTurmas =
+            obterNomesTurmasParaFiltro();
 
 
-        classFilter.innerHTML = `
-
-            <option value="">
-                Todas as turmas
-            </option>
-
-        `;
+        classFilter.replaceChildren();
 
 
-        turmas.forEach(
-            function (turma) {
+        const todas =
+            document.createElement(
+                "option"
+            );
+
+
+        todas.value =
+            "";
+
+        todas.textContent =
+            "Todas as turmas";
+
+
+        classFilter.appendChild(
+            todas
+        );
+
+
+        nomesTurmas.forEach(
+            function (
+                nomeTurma
+            ) {
 
                 const option =
                     document.createElement(
                         "option"
                     );
 
+
                 option.value =
-                    turma.name;
+                    nomeTurma;
 
                 option.textContent =
-                    turma.name;
+                    nomeTurma;
+
 
                 classFilter.appendChild(
                     option
@@ -574,9 +1611,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            turmas.some(
-                turma =>
-                    turma.name === atual
+            atual &&
+            nomesTurmas.includes(
+                atual
             )
         ) {
 
@@ -589,54 +1626,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    ESCAPE HTML
-    ====================================================*/
-
-    function escapeHtml(
-        value
-    ) {
-
-        return String(value ?? "")
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;")
-            .replaceAll("'", "&#039;");
-
-    }
-
-
-    /*====================================================
                     RESUMO
     ====================================================*/
 
     function atualizarResumo() {
 
         totalStudents.textContent =
-            students.length;
+            String(
+                students.length
+            );
 
 
         activeStudents.textContent =
-            students.filter(
-                student =>
-                    student.status ===
-                    "Ativo"
-            ).length;
+            String(
+                students.filter(
+                    student =>
+                        normalizarTexto(
+                            student.status
+                        ) ===
+                        "ativo"
+                ).length
+            );
 
 
         newStudents.textContent =
-            students.filter(
-                student =>
-                    student.newStudent
-            ).length;
+            String(
+                students.filter(
+                    student =>
+                        student.newStudent
+                ).length
+            );
 
 
         pendingStudents.textContent =
-            students.filter(
-                student =>
-                    student.status ===
-                    "Pendente"
-            ).length;
+            String(
+                students.filter(
+                    student =>
+                        normalizarTexto(
+                            student.status
+                        ) ===
+                        "pendente"
+                ).length
+            );
 
     }
 
@@ -648,12 +1679,14 @@ document.addEventListener("DOMContentLoaded", function () {
     function pegarAlunosFiltrados() {
 
         const termo =
-            searchInput.value
-                .trim()
-                .toLowerCase();
+            normalizarTexto(
+                searchInput.value
+            );
+
 
         const turma =
             classFilter.value;
+
 
         const status =
             statusFilter.value;
@@ -663,26 +1696,30 @@ document.addEventListener("DOMContentLoaded", function () {
             function (student) {
 
                 const texto =
-                    [
-                        student.name,
-                        student.registration,
-                        student.className
-                    ]
-                        .join(" ")
-                        .toLowerCase();
+                    normalizarTexto(
+                        [
+                            student.name,
+                            student.registration,
+                            student.className
+                        ].join(
+                            " "
+                        )
+                    );
 
 
                 return (
-                    texto.includes(termo) &&
+                    texto.includes(
+                        termo
+                    ) &&
                     (
                         !turma ||
                         student.className ===
-                        turma
+                            turma
                     ) &&
                     (
                         !status ||
                         student.status ===
-                        status
+                            status
                     )
                 );
 
@@ -698,8 +1735,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderStudents() {
 
-        tableBody.innerHTML =
-            "";
+        tableBody.replaceChildren();
 
 
         const filtrados =
@@ -716,15 +1752,26 @@ document.addEventListener("DOMContentLoaded", function () {
             function (student) {
 
                 const statusClass =
-                    student.status ===
-                    "Ativo"
-                        ? "active"
-                        : "pending";
+                    obterClasseStatus(
+                        student.status
+                    );
 
 
                 const row =
                     document.createElement(
                         "tr"
+                    );
+
+
+                const nomeSeguro =
+                    escapeHtml(
+                        student.name
+                    );
+
+
+                const idSeguro =
+                    escapeHtml(
+                        student.id
                     );
 
 
@@ -734,14 +1781,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         <div class="student-cell">
 
-                            <div class="student-avatar">
+                            <div
+                                class="student-avatar"
+                                aria-hidden="true"
+                            >
 
-                                <i class="fa-solid fa-user-graduate"></i>
+                                <i
+                                    class="fa-solid fa-user-graduate"
+                                    aria-hidden="true"
+                                ></i>
 
                             </div>
 
                             <strong>
-                                ${escapeHtml(student.name)}
+                                ${nomeSeguro}
                             </strong>
 
                         </div>
@@ -755,17 +1808,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>
                         ${
                             student.className
-                                ? escapeHtml(student.className)
+                                ? escapeHtml(
+                                    student.className
+                                )
                                 : "Sem turma"
                         }
                     </td>
 
                     <td>
-                        ${Number(student.average).toFixed(1)}
+                        ${formatarMedia(student.average)}
                     </td>
 
                     <td>
-                        ${Number(student.attendance)}%
+                        ${formatarFrequencia(student.attendance)}
                     </td>
 
                     <td>
@@ -784,30 +1839,42 @@ document.addEventListener("DOMContentLoaded", function () {
                                 type="button"
                                 class="student-action-button"
                                 data-action="view"
-                                data-id="${student.id}"
+                                data-id="${idSeguro}"
                                 title="Visualizar"
+                                aria-label="Visualizar ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-eye"></i>
+                                <i
+                                    class="fa-solid fa-eye"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                             <button
                                 type="button"
                                 class="student-action-button"
                                 data-action="edit"
-                                data-id="${student.id}"
+                                data-id="${idSeguro}"
                                 title="Editar"
+                                aria-label="Editar ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-pen"></i>
+                                <i
+                                    class="fa-solid fa-pen"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                             <button
                                 type="button"
                                 class="student-action-button delete"
                                 data-action="delete"
-                                data-id="${student.id}"
+                                data-id="${idSeguro}"
                                 title="Excluir"
+                                aria-label="Excluir ${nomeSeguro}"
                             >
-                                <i class="fa-solid fa-trash"></i>
+                                <i
+                                    class="fa-solid fa-trash"
+                                    aria-hidden="true"
+                                ></i>
                             </button>
 
                         </div>
@@ -831,8 +1898,189 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    MODAL
+                    MODAIS
     ====================================================*/
+
+    function existeModalAtivo() {
+
+        return [
+            studentModal,
+            studentViewModal,
+            deleteStudentModal
+        ].some(
+            modal =>
+                modal.classList.contains(
+                    "active"
+                )
+        );
+
+    }
+
+
+    function abrirModal(
+        modal,
+        focoInicial = null
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        const elementoAtivo =
+            document.activeElement;
+
+
+        if (
+            elementoAtivo instanceof
+                HTMLElement
+        ) {
+
+            focoAnteriorPorModal.set(
+                modal,
+                elementoAtivo
+            );
+
+        }
+
+
+        modal.classList.add(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+
+
+        document.body.classList.add(
+            "modal-open"
+        );
+
+
+        if (
+            focoInicial &&
+            typeof focoInicial.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    focoInicial.focus();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    function fecharModal(
+        modal
+    ) {
+
+        if (!modal) {
+
+            return;
+
+        }
+
+
+        modal.classList.remove(
+            "active"
+        );
+
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+
+        if (
+            !existeModalAtivo()
+        ) {
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        const focoAnterior =
+            focoAnteriorPorModal.get(
+                modal
+            );
+
+
+        focoAnteriorPorModal.delete(
+            modal
+        );
+
+
+        /*
+            Se o elemento que abriu o modal ainda
+            existir, o foco retorna para ele.
+
+            Se ele tiver sido removido por um novo
+            render da tabela, o foco retorna para
+            "Novo aluno".
+        */
+
+        const destinoFoco =
+            (
+                focoAnterior &&
+                focoAnterior.isConnected &&
+                typeof focoAnterior.focus ===
+                    "function"
+            )
+                ? focoAnterior
+                : newStudentButton;
+
+
+        if (
+            destinoFoco &&
+            typeof destinoFoco.focus ===
+                "function"
+        ) {
+
+            requestAnimationFrame(
+                function () {
+
+                    destinoFoco.focus();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /*====================================================
+                ABRIR FORMULÁRIO
+    ====================================================*/
+
+    function limparValidacoesFormulario() {
+
+        studentName.setCustomValidity(
+            ""
+        );
+
+
+        studentRegistration.setCustomValidity(
+            ""
+        );
+
+    }
+
 
     function abrirModalAluno(
         student = null
@@ -841,29 +2089,39 @@ document.addEventListener("DOMContentLoaded", function () {
         studentForm.reset();
 
 
+        limparValidacoesFormulario();
+
+
         if (student) {
 
             studentModalTitle.textContent =
                 "Editar aluno";
 
+
             studentId.value =
                 student.id;
+
 
             studentName.value =
                 student.name;
 
+
             studentRegistration.value =
                 student.registration;
+
 
             preencherSelectTurmas(
                 student.className
             );
 
+
             studentAverage.value =
                 student.average;
 
+
             studentAttendance.value =
                 student.attendance;
+
 
             studentStatus.value =
                 student.status;
@@ -873,28 +2131,119 @@ document.addEventListener("DOMContentLoaded", function () {
             studentModalTitle.textContent =
                 "Novo aluno";
 
+
             studentId.value =
                 "";
 
+
             preencherSelectTurmas();
+
 
             studentAverage.value =
                 0;
 
+
             studentAttendance.value =
                 100;
+
 
             studentStatus.value =
                 "Ativo";
 
         }
-
-
-        abrirModal(
-            studentModal
+                abrirModal(
+            studentModal,
+            studentName
         );
 
-        studentName.focus();
+    }
+
+
+    /*====================================================
+                VALIDAR FORMULÁRIO
+    ====================================================*/
+
+    function validarCamposTexto() {
+
+        const nome =
+            studentName.value
+                .trim();
+
+
+        const matricula =
+            studentRegistration.value
+                .trim();
+
+
+        studentName.setCustomValidity(
+            nome
+                ? ""
+                : "Informe o nome do aluno."
+        );
+
+
+        if (!nome) {
+
+            studentName.reportValidity();
+
+            return null;
+
+        }
+
+
+        studentRegistration.setCustomValidity(
+            matricula
+                ? ""
+                : "Informe a matrícula."
+        );
+
+
+        if (!matricula) {
+
+            studentRegistration.reportValidity();
+
+            return null;
+
+        }
+
+
+        return {
+            nome,
+            matricula
+        };
+
+    }
+
+
+    function matriculaJaExiste(
+        matricula,
+        idAtual
+    ) {
+
+        const matriculaNormalizada =
+            normalizarTexto(
+                matricula
+            );
+
+
+        return students.some(
+            function (student) {
+
+                return (
+                    Number(
+                        student.id
+                    ) !==
+                        Number(
+                            idAtual
+                        ) &&
+                    normalizarTexto(
+                        student.registration
+                    ) ===
+                        matriculaNormalizada
+                );
+
+            }
+        );
 
     }
 
@@ -905,9 +2254,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     studentForm.addEventListener(
         "submit",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
+
+
+            const textos =
+                validarCamposTexto();
+
+
+            if (!textos) {
+
+                return;
+
+            }
 
 
             const id =
@@ -915,41 +2275,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     ? Number(
                         studentId.value
                     )
-                    : Date.now();
+                    : null;
 
 
-            /*
-             * Evita matrícula duplicada.
-             */
-
-            const matricula =
-                studentRegistration.value
-                    .trim();
-
-
-            const duplicada =
-                students.some(
-                    function (student) {
-
-                        return (
-                            student.id !== id &&
-                            student.registration
-                                .trim()
-                                .toLowerCase() ===
-                            matricula.toLowerCase()
-                        );
-
-                    }
-                );
-
-
-            if (duplicada) {
+            if (
+                matriculaJaExiste(
+                    textos.matricula,
+                    id
+                )
+            ) {
 
                 studentRegistration.setCustomValidity(
                     "Esta matrícula já está cadastrada."
                 );
 
+
                 studentRegistration.reportValidity();
+
 
                 return;
 
@@ -964,76 +2306,97 @@ document.addEventListener("DOMContentLoaded", function () {
             const existente =
                 students.find(
                     student =>
-                        student.id === id
+                        Number(
+                            student.id
+                        ) ===
+                        Number(
+                            id
+                        )
                 );
+
+
+            const nomeTurmaSelecionada =
+                studentClass.value.trim();
+
+            const turmaSelecionada =
+                nomeTurmaSelecionada
+                    ? carregarTurmas().find(
+                        turma =>
+                            normalizarTexto(turma.name) ===
+                            normalizarTexto(nomeTurmaSelecionada)
+                    )
+                    : null;
+
+
+            if (
+                nomeTurmaSelecionada &&
+                (
+                    !turmaSelecionada ||
+                    !Number.isInteger(Number(turmaSelecionada.id)) ||
+                    Number(turmaSelecionada.id) < 1
+                )
+            ) {
+                alert(
+                    "A turma selecionada ainda não está sincronizada com o servidor. Atualize o cadastro de turmas e tente novamente."
+                );
+
+                return;
+            }
 
 
             const dados = {
 
-                id,
+                ...(id !== null ? { id } : {}),
 
                 name:
-                    studentName.value.trim(),
+                    textos.nome,
 
                 registration:
-                    matricula,
+                    textos.matricula,
 
-                className:
-                    studentClass.value,
-
-                average:
-                    Number(
-                        studentAverage.value
-                    ),
-
-                attendance:
-                    Number(
-                        studentAttendance.value
-                    ),
+                classId:
+                    turmaSelecionada
+                        ? Number(turmaSelecionada.id)
+                        : null,
 
                 status:
                     studentStatus.value,
 
                 newStudent:
                     existente
-                        ? Boolean(
-                            existente.newStudent
-                        )
+                        ? Boolean(existente.newStudent)
                         : true
 
             };
 
 
-            const index =
-                students.findIndex(
-                    student =>
-                        student.id === id
+            try {
+                await salvarAlunoServidor(dados);
+                await atualizarAlunosServidor();
+            } catch (error) {
+                console.error(
+                    "Erro ao salvar aluno:",
+                    error
                 );
 
-
-            if (index >= 0) {
-
-                students[index] =
-                    dados;
-
-            } else {
-
-                students.unshift(
-                    dados
+                alert(
+                    error?.message ||
+                    "Não foi possível salvar o aluno. Tente novamente."
                 );
 
+                return;
             }
 
-
-            salvarAlunos();
-
-            preencherFiltroTurmas();
-
-            renderStudents();
 
             fecharModal(
                 studentModal
             );
+
+
+            preencherFiltroTurmas();
+
+
+            renderStudents();
 
         }
     );
@@ -1050,26 +2413,35 @@ document.addEventListener("DOMContentLoaded", function () {
         viewStudentName.textContent =
             student.name;
 
+
         viewStudentRegistration.textContent =
             student.registration;
+
 
         viewStudentClass.textContent =
             student.className ||
             "Sem turma";
 
+
         viewStudentAverage.textContent =
-            Number(student.average)
-                .toFixed(1);
+            formatarMedia(
+                student.average
+            );
+
 
         viewStudentAttendance.textContent =
-            `${student.attendance}%`;
+            formatarFrequencia(
+                student.attendance
+            );
+
 
         viewStudentStatus.textContent =
             student.status;
 
 
         abrirModal(
-            studentViewModal
+            studentViewModal,
+            studentViewClose
         );
 
     }
@@ -1084,12 +2456,30 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
 
         studentToDelete =
-            student.id;
+            Number(
+                student.id
+            );
+
 
         deleteStudentMessage.textContent =
             `Deseja realmente excluir "${student.name}"?`;
 
+
         abrirModal(
+            deleteStudentModal,
+            deleteStudentCancel
+        );
+
+    }
+
+
+    function fecharExclusao() {
+
+        studentToDelete =
+            null;
+
+
+        fecharModal(
             deleteStudentModal
         );
 
@@ -1098,7 +2488,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     deleteStudentConfirm.addEventListener(
         "click",
-        function () {
+        async function () {
 
             if (
                 studentToDelete ===
@@ -1110,31 +2500,47 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            students =
-                students.filter(
-                    student =>
-                        student.id !==
-                        studentToDelete
+            try {
+                await excluirAlunoServidor(
+                    studentToDelete
                 );
 
+                await atualizarAlunosServidor();
+            } catch (error) {
+                console.error(
+                    "Erro ao excluir aluno:",
+                    error
+                );
 
-            salvarAlunos();
+                alert(
+                    error?.message ||
+                    "Não foi possível excluir o aluno. Tente novamente."
+                );
+
+                return;
+            }
+
 
             studentToDelete =
                 null;
 
-            renderStudents();
 
             fecharModal(
                 deleteStudentModal
             );
+
+
+            preencherFiltroTurmas();
+
+
+            renderStudents();
 
         }
     );
 
 
     /*====================================================
-                    AÇÕES TABELA
+                AÇÕES DA TABELA
     ====================================================*/
 
     tableBody.addEventListener(
@@ -1147,7 +2553,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-            if (!button) {
+            if (
+                !button ||
+                !tableBody.contains(
+                    button
+                )
+            ) {
 
                 return;
 
@@ -1157,8 +2568,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const student =
                 students.find(
                     item =>
-                        Number(item.id) ===
-                        Number(button.dataset.id)
+                        Number(
+                            item.id
+                        ) ===
+                        Number(
+                            button.dataset.id
+                        )
                 );
 
 
@@ -1206,50 +2621,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /*====================================================
-                    MODAIS
-    ====================================================*/
-
-    function abrirModal(
-        modal
-    ) {
-
-        modal.classList.add(
-            "active"
-        );
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-    }
-
-
-    function fecharModal(
-        modal
-    ) {
-
-        modal.classList.remove(
-            "active"
-        );
-
-        modal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
-    }
-
-
-    /*====================================================
                     EVENTOS
     ====================================================*/
 
@@ -1269,6 +2640,38 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    /*
+        Escape dentro da busca limpa o termo,
+        quando nenhum modal estiver utilizando
+        primeiro esse comando.
+    */
+
+    searchInput.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key !==
+                    "Escape" ||
+                searchInput.value ===
+                    ""
+            ) {
+
+                return;
+
+            }
+
+
+            searchInput.value =
+                "";
+
+
+            renderStudents();
+
+        }
+    );
+
+
     classFilter.addEventListener(
         "change",
         renderStudents
@@ -1281,87 +2684,139 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
 
+    /*
+        Remove mensagens de validade personalizadas
+        assim que o usuário volta a editar os campos.
+    */
+
+    studentName.addEventListener(
+        "input",
+        function () {
+
+            studentName.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    studentRegistration.addEventListener(
+        "input",
+        function () {
+
+            /*
+                Isto é especialmente importante depois
+                de uma matrícula duplicada.
+
+                Sem esta limpeza, o navegador pode
+                continuar impedindo o envio mesmo depois
+                que o valor for corrigido.
+            */
+
+            studentRegistration.setCustomValidity(
+                ""
+            );
+
+        }
+    );
+
+
+    /*====================================================
+                FECHAR MODAL DO FORM
+    ====================================================*/
+
     studentModalClose.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 studentModal
-            )
+            );
+
+        }
     );
 
 
     studentCancelButton.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 studentModal
-            )
+            );
+
+        }
     );
 
 
     studentModalOverlay.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 studentModal
-            )
+            );
+
+        }
     );
 
 
+    /*====================================================
+            FECHAR MODAL DE VISUALIZAÇÃO
+    ====================================================*/
+
     studentViewClose.addEventListener(
         "click",
-        () =>
+        function () {
+
             fecharModal(
                 studentViewModal
-            )
+            );
+
+        }
     );
 
 
     studentViewOverlay.addEventListener(
         "click",
-        () =>
-            fecharModal(
-                studentViewModal
-            )
-    );
-
-
-    deleteStudentCancel.addEventListener(
-        "click",
         function () {
 
-            studentToDelete =
-                null;
-
             fecharModal(
-                deleteStudentModal
+                studentViewModal
             );
 
         }
+    );
+
+
+    /*====================================================
+                FECHAR EXCLUSÃO
+    ====================================================*/
+
+    deleteStudentCancel.addEventListener(
+        "click",
+        fecharExclusao
     );
 
 
     deleteStudentOverlay.addEventListener(
         "click",
-        function () {
-
-            studentToDelete =
-                null;
-
-            fecharModal(
-                deleteStudentModal
-            );
-
-        }
+        fecharExclusao
     );
 
+
+    /*====================================================
+                        ESC
+    ====================================================*/
 
     document.addEventListener(
         "keydown",
         function (event) {
 
             if (
-                event.key !== "Escape"
+                event.key !==
+                "Escape"
             ) {
 
                 return;
@@ -1369,62 +2824,298 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            [
-                studentModal,
-                studentViewModal,
-                deleteStudentModal
-            ].forEach(
-                function (modal) {
+            /*
+                Fecha somente o modal de maior
+                prioridade que estiver aberto.
+            */
 
-                    if (
-                        modal.classList.contains(
-                            "active"
-                        )
-                    ) {
+            if (
+                deleteStudentModal.classList.contains(
+                    "active"
+                )
+            ) {
 
-                        fecharModal(
-                            modal
-                        );
+                fecharExclusao();
 
-                    }
+                return;
 
-                }
-            );
+            }
+
+
+            if (
+                studentViewModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharModal(
+                    studentViewModal
+                );
+
+                return;
+
+            }
+
+
+            if (
+                studentModal.classList.contains(
+                    "active"
+                )
+            ) {
+
+                fecharModal(
+                    studentModal
+                );
+
+            }
 
         }
     );
 
 
-    if (logoutButton) {
+    /*====================================================
+                    LOGOUT PHP
+    ====================================================*/
 
-        logoutButton.addEventListener(
-            "click",
-            function () {
+    let logoutEmAndamento =
+        false;
 
-                sessionStorage.removeItem(
-                    "primewayLogado"
+
+    async function fazerLogout() {
+
+        if (
+            logoutEmAndamento
+        ) {
+
+            return;
+        }
+
+
+        logoutEmAndamento =
+            true;
+
+
+        if (
+            logoutButton
+        ) {
+
+            logoutButton.setAttribute(
+                "aria-busy",
+                "true"
+            );
+
+
+            if (
+                "disabled" in
+                logoutButton
+            ) {
+
+                logoutButton.disabled =
+                    true;
+            }
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    AUTH_LOGOUT_URL,
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            "Accept":
+                                "application/json"
+                        }
+                    }
                 );
 
-                sessionStorage.removeItem(
-                    "primewayUsuario"
+
+            const data =
+                await lerJsonSeguro(
+                    response
                 );
 
-                window.location.href =
-                    "login.html";
+
+            if (
+                !response.ok ||
+                !data?.success
+            ) {
+
+                throw new Error(
+                    data?.message ||
+                    "O servidor não confirmou o logout."
+                );
+            }
+
+
+            limparSessaoCompatibilidade();
+
+
+            window.location.replace(
+                PAGINA_LOGIN
+            );
+
+        } catch (
+            error
+        ) {
+
+            console.error(
+                "Erro ao encerrar a sessão:",
+                error
+            );
+
+
+            alert(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
+
+
+            logoutEmAndamento =
+                false;
+
+
+            if (
+                logoutButton
+            ) {
+
+                logoutButton.setAttribute(
+                    "aria-busy",
+                    "false"
+                );
+
+
+                if (
+                    "disabled" in
+                    logoutButton
+                ) {
+
+                    logoutButton.disabled =
+                        false;
+                }
+            }
+        }
+    }
+
+
+    logoutButton?.addEventListener(
+        "click",
+        fazerLogout
+    );
+
+
+    /*====================================================
+            SINCRONIZAÇÃO ENTRE ABAS
+    ====================================================*/
+
+    /*
+        Caso o protótipo esteja aberto em duas abas,
+        mudanças feitas em Alunos ou Turmas são
+        refletidas nesta página sem recarregar.
+    */
+
+    window.addEventListener(
+        "storage",
+        function (event) {
+
+            if (
+                event.key ===
+                STORAGE_KEY
+            ) {
+
+                students =
+                    carregarAlunos();
+
+
+                preencherFiltroTurmas();
+
+
+                renderStudents();
+
+
+                return;
 
             }
-        );
 
-    }
+
+            if (
+                event.key ===
+                CLASSES_STORAGE_KEY
+            ) {
+
+                preencherFiltroTurmas();
+
+
+                /*
+                    Se o formulário estiver aberto,
+                    atualiza também a lista de turmas,
+                    preservando a seleção atual.
+                */
+
+                if (
+                    studentModal.classList.contains(
+                        "active"
+                    )
+                ) {
+
+                    preencherSelectTurmas(
+                        studentClass.value
+                    );
+
+                }
+
+            }
+
+        }
+    );
 
 
     /*====================================================
                     INICIALIZAÇÃO
     ====================================================*/
 
-    salvarAlunos();
+    /*
+        Persiste os dados padrão na primeira abertura
+        e consolida a migração:
+
+        class / turma
+            ↓
+        className
+    */
+
+    try {
+        const [alunosServidor] =
+            await Promise.all([
+                carregarAlunosServidor(),
+                carregarTurmasServidor()
+            ]);
+
+        students =
+            alunosServidor;
+
+        salvarAlunos(students);
+    } catch (error) {
+        console.error(
+            "Erro ao carregar Alunos do servidor:",
+            error
+        );
+
+        alert(
+            "Não foi possível atualizar os alunos pelo servidor. A última cópia local disponível será exibida."
+        );
+    }
+
 
     preencherFiltroTurmas();
+
 
     renderStudents();
 
