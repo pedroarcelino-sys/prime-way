@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Atividades | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/aluno_atividades.css?v=20260914-1"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+    <!-- ================================================
+                        SIDEBAR
+    ================================================= -->
+
+    <aside
+        class="sidebar"
+        aria-label="Menu do aluno"
+    >
+
+        <div class="sidebar-logo">
+
+            <img
+                src="../img/logo.png"
+                alt="PrimeWay School"
+            >
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="aluno_portal.html">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>Meu painel</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#disciplinas">
+
+                <i class="fa-solid fa-book-open"></i>
+
+                <span>Disciplinas</span>
+
+            </a>
+
+
+            <a
+                href="aluno_atividades.html"
+                class="active"
+                aria-current="page"
+            >
+
+                <i class="fa-solid fa-list-check"></i>
+
+                <span>Atividades</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#notas">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <span>Notas</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#frequencia">
+
+                <i class="fa-solid fa-user-check"></i>
+
+                <span>Frequência</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#agenda">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <span>Agenda</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#avisos">
+
+                <i class="fa-solid fa-bell"></i>
+
+                <span>Comunicados</span>
+
+            </a>
+
+
+            <a href="aluno_portal.html#dados">
+
+                <i class="fa-solid fa-address-card"></i>
+
+                <span>Meus dados</span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logoutButton"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>Sair</span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================================================
+                        CONTEÚDO
+    ================================================= -->
+
+    <main class="activities-page">
+
+
+        <!-- CABEÇALHO -->
+
+        <header class="activities-header">
+
+            <div>
+
+                <span class="section-label">
+                    Área do aluno
+                </span>
+
+                <h1>
+                    Atividades
+                </h1>
+
+                <p id="studentContext">
+                    Consulte, realize e acompanhe suas atividades.
+                </p>
+
+            </div>
+
+
+            <a
+                href="aluno_portal.html"
+                class="back-button"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Voltar ao painel
+
+            </a>
+
+        </header>
+
+
+        <!-- ================================================
+                            RESUMO
+        ================================================= -->
+
+        <section
+            class="activities-summary"
+            aria-label="Resumo das atividades"
+        >
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-list"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Total</span>
+
+                    <strong id="totalActivities">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon warning">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Pendentes</span>
+
+                    <strong id="pendingActivities">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Entregues</span>
+
+                    <strong id="submittedActivities">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+                <div>
+
+                    <span>Corrigidas</span>
+
+                    <strong id="correctedActivities">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================================================
+                            FILTROS
+        ================================================= -->
+
+        <section class="activities-toolbar">
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                    type="search"
+                    id="activitySearch"
+                    placeholder="Pesquisar atividade ou disciplina..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                class="activity-filters"
+                id="activityFilters"
+            >
+
+                <button
+                    type="button"
+                    class="filter-button active"
+                    data-filter="all"
+                >
+                    Todas
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    data-filter="pending"
+                >
+                    Pendentes
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    data-filter="submitted"
+                >
+                    Entregues
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    data-filter="late"
+                >
+                    Atrasadas
+                </button>
+
+
+                <button
+                    type="button"
+                    class="filter-button"
+                    data-filter="corrected"
+                >
+                    Corrigidas
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================
+                        LISTA DE ATIVIDADES
+        ================================================= -->
+
+        <section class="activities-panel">
+
+            <div class="activities-panel-header">
+
+                <div>
+
+                    <h2>
+                        Minhas atividades
+                    </h2>
+
+                    <p>
+                        Atividades publicadas pelos seus professores.
+                    </p>
+
+                </div>
+
+
+                <span id="resultsCount">
+                    0 atividades
+                </span>
+
+            </div>
+
+
+            <div
+                class="activities-list"
+                id="activitiesList"
+            >
+
+                <div class="loading-state">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    <span>
+                        Carregando atividades...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ====================================================
+                MODAL DA ATIVIDADE
+===================================================== -->
+
+<div
+    class="activity-modal hidden"
+    id="activityModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modalActivityTitle"
+>
+
+    <div
+        class="modal-overlay"
+        data-close-modal
+    ></div>
+
+
+    <div class="activity-modal-card">
+
+
+        <!-- HEADER DO MODAL -->
+
+        <header class="activity-modal-header">
+
+            <div class="activity-modal-heading">
+
+                <div class="modal-title-row">
+
+                    <span
+                        class="activity-status"
+                        id="modalActivityStatus"
+                    >
+                        —
+                    </span>
+
+
+                    <span
+                        class="activity-subject"
+                        id="modalActivitySubject"
+                    >
+                        —
+                    </span>
+
+                </div>
+
+
+                <h2 id="modalActivityTitle">
+                    Atividade
+                </h2>
+
+
+                <p id="modalActivityTeacher">
+                    —
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close-button"
+                id="closeActivityModal"
+                aria-label="Fechar atividade"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <!-- INFORMAÇÕES -->
+
+        <div class="activity-meta-grid">
+
+            <div>
+
+                <span>Período</span>
+
+                <strong id="modalPeriod">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>Publicada em</span>
+
+                <strong id="modalPublishedAt">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>Prazo</span>
+
+                <strong id="modalDueAt">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>Tipo de entrega</span>
+
+                <strong id="modalSubmissionType">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- CORPO -->
+
+        <div class="activity-modal-body">
+
+
+            <!-- COLUNA PRINCIPAL -->
+
+            <div class="activity-main-column">
+
+
+                <!-- DESCRIÇÃO -->
+
+                <section class="modal-section">
+
+                    <div class="modal-section-title">
+
+                        <i class="fa-solid fa-align-left"></i>
+
+                        <h3>
+                            Descrição
+                        </h3>
+
+                    </div>
+
+
+                    <p
+                        class="activity-description"
+                        id="modalDescription"
+                    >
+                        —
+                    </p>
+
+
+                    <div
+                        class="instructions-box hidden"
+                        id="instructionsBox"
+                    >
+
+                        <strong>
+                            Instruções
+                        </strong>
+
+                        <p id="modalInstructions"></p>
+
+                    </div>
+
+                </section>
+
+
+                <!-- MATERIAL DO PROFESSOR -->
+
+                <section class="modal-section">
+
+                    <div class="modal-section-title">
+
+                        <i class="fa-solid fa-paperclip"></i>
+
+                        <h3>
+                            Material do professor
+                        </h3>
+
+                    </div>
+
+
+                    <div
+                        class="file-list"
+                        id="teacherFiles"
+                    ></div>
+
+                </section>
+
+
+                <!-- ENTREGA DO ALUNO -->
+
+                <section class="modal-section submission-section">
+
+                    <div class="modal-section-title submission-heading">
+
+                        <div>
+
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                            <h3>
+                                Minha entrega
+                            </h3>
+
+                        </div>
+
+
+                        <span
+                            class="submission-status"
+                            id="submissionStatus"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="submission-message hidden"
+                        id="submissionMessage"
+                    ></div>
+
+
+                    <div
+                        class="form-group"
+                        id="textAnswerGroup"
+                    >
+
+                        <label for="activityAnswer">
+                            Resposta
+                        </label>
+
+
+                        <textarea
+                            id="activityAnswer"
+                            maxlength="100000"
+                            placeholder="Digite sua resposta..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div
+                        class="form-group"
+                        id="linkAnswerGroup"
+                    >
+
+                        <label for="activityLink">
+                            Link da atividade
+                        </label>
+
+
+                        <input
+                            type="url"
+                            id="activityLink"
+                            maxlength="1000"
+                            placeholder="https://..."
+                        >
+
+                    </div>
+
+
+                    <!-- ARQUIVOS -->
+
+                    <div class="submission-files">
+
+                        <div class="submission-files-header">
+
+                            <div>
+
+                                <strong>
+                                    Arquivos
+                                </strong>
+
+                                <span id="fileLimitText">
+                                    —
+                                </span>
+
+                            </div>
+
+
+                            <label
+                                class="upload-button"
+                                for="activityFileInput"
+                                id="uploadLabel"
+                            >
+
+                                <i class="fa-solid fa-plus"></i>
+
+                                Adicionar arquivo
+
+                            </label>
+
+
+                            <input
+                                type="file"
+                                id="activityFileInput"
+                                hidden
+                                accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="file-list"
+                            id="submissionFiles"
+                        ></div>
+
+                    </div>
+
+
+                    <!-- AÇÕES -->
+
+                    <div class="submission-actions">
+
+                        <button
+                            type="button"
+                            class="secondary-button"
+                            id="saveDraftButton"
+                        >
+
+                            <i class="fa-regular fa-floppy-disk"></i>
+
+                            Salvar rascunho
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="delete-outline-button hidden"
+                            id="withdrawButton"
+                        >
+
+                            <i class="fa-solid fa-rotate-left"></i>
+
+                            Retirar entrega
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            id="submitActivityButton"
+                        >
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            Enviar atividade
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- COMENTÁRIOS -->
+
+                <section class="modal-section">
+
+                    <div class="modal-section-title">
+
+                        <i class="fa-regular fa-comments"></i>
+
+                        <h3>
+                            Comentários
+                        </h3>
+
+                    </div>
+
+
+                    <div
+                        class="comments-list"
+                        id="activityComments"
+                    ></div>
+
+
+                    <div
+                        class="comment-form"
+                        id="commentForm"
+                    >
+
+                        <textarea
+                            id="commentInput"
+                            maxlength="5000"
+                            placeholder="Escreva uma mensagem para o professor..."
+                        ></textarea>
+
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                            id="sendCommentButton"
+                        >
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            Comentar
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- COLUNA LATERAL -->
+
+            <aside class="activity-side-column">
+
+
+                <!-- NOTA -->
+
+                <section class="side-card grade-card">
+
+                    <span class="side-card-label">
+                        Nota
+                    </span>
+
+
+                    <strong id="activityGrade">
+                        —
+                    </strong>
+
+
+                    <p id="activityGradeInfo">
+                        Aguardando correção
+                    </p>
+
+                </section>
+
+
+                <!-- CORREÇÃO -->
+
+                <section
+                    class="side-card hidden"
+                    id="correctionCard"
+                >
+
+                    <div class="side-card-heading">
+
+                        <i class="fa-solid fa-check-double"></i>
+
+                        <strong>
+                            Correção
+                        </strong>
+
+                    </div>
+
+
+                    <p id="correctionFeedback">
+                        —
+                    </p>
+
+
+                    <div
+                        class="file-list compact"
+                        id="correctionFiles"
+                    ></div>
+
+                </section>
+
+
+                <!-- HISTÓRICO -->
+
+                <section class="side-card">
+
+                    <div class="side-card-heading">
+
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+
+                        <strong>
+                            Histórico
+                        </strong>
+
+                    </div>
+
+
+                    <div
+                        class="version-history"
+                        id="versionHistory"
+                    ></div>
+
+                </section>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../js/core.js?v=20260914-4"></script>
+
+<script src="../js/aluno_atividades.js?v=20260914-1"></script>
+
+</body>
+
+</html>

@@ -388,7 +388,8 @@ try {
             [
                 'admin',
                 'professor',
-                'responsavel'
+                'responsavel',
+                'aluno'
             ],
             true
         )

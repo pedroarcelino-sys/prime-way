@@ -1,8 +1,6 @@
 /*====================================================
         LOGIN - PRIMEWAY SCHOOL
 ====================================================*/
-
-
 /*====================================================
                     CONSTANTES
 ====================================================*/
@@ -36,6 +34,9 @@ const PAGINA_PROFESSOR =
 const PAGINA_RESPONSAVEL =
     "responsavel.html";
 
+const PAGINA_ALUNO =
+    "aluno_portal.html";
+
 
 const PAGINAS_INICIAIS_VALIDAS =
     new Set([
@@ -49,7 +50,8 @@ const PERFIS_COM_AREA =
     new Set([
         "admin",
         "professor",
-        "responsavel"
+        "responsavel",
+        "aluno"
     ]);
 
 
@@ -161,6 +163,7 @@ function obterPaginaInicial(
 
     }
 
+
     if (
         perfil ===
         "responsavel"
@@ -171,11 +174,19 @@ function obterPaginaInicial(
     }
 
 
+    if (
+        perfil ===
+        "aluno"
+    ) {
+
+        return PAGINA_ALUNO;
+
+    }
+
+
     return obterPaginaInicialAdmin();
 
 }
-
-
 /*====================================================
             VISIBILIDADE DA SENHA
 ====================================================*/
