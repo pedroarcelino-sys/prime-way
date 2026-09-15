@@ -726,14 +726,13 @@
 
                             </label>
 
-
-                            <input
-                                type="file"
-                                id="activityFileInput"
-                                hidden
-                                accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
-                            >
-
+<input
+    type="file"
+    id="activityFileInput"
+    hidden
+    multiple
+    accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+>
                         </div>
 
 
@@ -930,7 +929,92 @@
     </div>
 
 </div>
+<!-- ================================================
+                FEEDBACK DO SISTEMA
+================================================= -->
 
+<div
+    id="activityFeedback"
+    class="activity-feedback"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<!-- ================================================
+                CONFIRMAÇÃO PRIMEWAY
+================================================= -->
+
+<div
+    id="confirmationModal"
+    class="confirmation-modal hidden"
+    aria-hidden="true"
+>
+
+    <div
+        class="confirmation-overlay"
+        id="confirmationOverlay"
+    ></div>
+
+
+    <div
+        class="confirmation-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirmationTitle"
+    >
+
+        <div class="confirmation-icon">
+
+            <i
+                class="fa-solid fa-circle-question"
+                id="confirmationIcon"
+            ></i>
+
+        </div>
+
+
+        <div class="confirmation-content">
+
+            <h3 id="confirmationTitle">
+                Confirmar ação
+            </h3>
+
+            <p id="confirmationMessage">
+                Deseja continuar?
+            </p>
+
+        </div>
+
+
+        <div class="confirmation-actions">
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="confirmationCancel"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                type="button"
+                class="primary-button"
+                id="confirmationConfirm"
+            >
+
+                <i class="fa-solid fa-check"></i>
+
+                Confirmar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script src="../js/core.js?v=20260914-4"></script>
 

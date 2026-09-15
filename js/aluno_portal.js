@@ -85,23 +85,131 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    function renderActivities(items) {
-        const container = document.querySelector("#studentActivities");
-        container.replaceChildren();
-        if (!items.length) { container.append(empty("Nenhuma atividade foi publicada.")); return; }
-        for (const item of items) {
-            const row = document.createElement("article");
-            row.className = "list-item";
-            row.append(
-                textElement("h3", "", item.title),
-                textElement("span", "badge", item.subject),
-                textElement("p", "", item.description || "Sem descrição."),
-                textElement("span", "meta", `Entrega: ${formatDate(item.dueAt, Boolean(item.dueAt))} • ${item.period}`)
-            );
-            container.append(row);
-        }
+   function renderActivities(items) {
+
+    const container =
+        document.querySelector(
+            "#studentActivities"
+        );
+
+    container.replaceChildren();
+
+
+    if (!items.length) {
+
+        container.append(
+            empty(
+                "Nenhuma atividade foi publicada."
+            )
+        );
+
+        return;
     }
 
+
+    for (const item of items) {
+
+        const row =
+            document.createElement(
+                "article"
+            );
+
+        row.className =
+            "list-item";
+
+
+        /* TÍTULO */
+
+        const title =
+            textElement(
+                "h3",
+                "",
+                item.title
+            );
+
+
+        /* DISCIPLINA */
+
+        const badge =
+            textElement(
+                "span",
+                "badge",
+                item.subject
+            );
+
+
+        /* DESCRIÇÃO */
+
+        const description =
+            textElement(
+                "p",
+                "",
+                item.description ||
+                "Sem descrição."
+            );
+
+
+        /* DATA / PERÍODO */
+
+        const meta =
+            textElement(
+                "span",
+                "meta",
+                `Entrega: ${
+                    formatDate(
+                        item.dueAt,
+                        Boolean(
+                            item.dueAt
+                        )
+                    )
+                } • ${
+                    item.period
+                }`
+            );
+
+
+        /*============================================
+                    BOTÃO ABRIR
+        ============================================*/
+
+        const button =
+            document.createElement(
+                "a"
+            );
+
+
+        button.href =
+            `aluno_atividades.html?id=${encodeURIComponent(
+                item.id
+            )}`;
+
+
+        button.className =
+            "activity-access-button";
+
+
+        button.innerHTML = `
+            <i class="fa-regular fa-eye"></i>
+            Abrir atividade
+        `;
+
+
+        /* ADICIONAR NA TELA */
+
+        row.append(
+            title,
+            badge,
+            description,
+            meta,
+            button
+        );
+
+
+        container.append(
+            row
+        );
+    }
+}
     function renderGrades(items) {
         const container = document.querySelector("#studentGrades");
         container.replaceChildren();

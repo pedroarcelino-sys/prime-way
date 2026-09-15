@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Atividades | PrimeWay School
+    </title>
+
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_atividades.css"
+    >
+
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <div class="app-layout">
+
+
+        <!-- ==========================================
+                        SIDEBAR
+        =========================================== -->
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        >
+
+
+            <div class="sidebar-logo">
+
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+
+            </div>
+
+
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação do professor"
+            >
+
+
+                <a href="professor.html">
+
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Meu painel
+                    </span>
+
+                </a>
+
+
+                <a
+                    href="professor_atividades.html"
+                    class="active"
+                    aria-current="page"
+                >
+
+                    <i
+                        class="fa-solid fa-list-check"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Atividades
+                    </span>
+
+                </a>
+
+
+                <a href="calendario.html">
+
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Calendário
+                    </span>
+
+                </a>
+
+
+                <a href="notificacoes.html">
+
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Notificações
+                    </span>
+
+                </a>
+
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span>
+                        Sair
+                    </span>
+
+                </button>
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- ==========================================
+                        CONTEÚDO
+        =========================================== -->
+
+        <main class="activities-page">
+
+
+            <!-- CABEÇALHO -->
+
+            <header class="activities-header">
+
+
+                <div>
+
+                    <span class="page-eyebrow">
+                        ÁREA DO PROFESSOR
+                    </span>
+
+                    <h1>
+                        ATIVIDADES
+                    </h1>
+
+                    <p>
+                        Crie, publique e acompanhe atividades das suas turmas.
+                    </p>
+
+                </div>
+
+
+                <div class="header-actions">
+
+
+                    <a
+                        href="professor.html"
+                        class="secondary-button"
+                    >
+
+                        <i
+                            class="fa-solid fa-arrow-left"
+                            aria-hidden="true"
+                        ></i>
+
+                        Voltar ao painel
+
+                    </a>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="newActivityButton"
+                    >
+
+                        <i
+                            class="fa-solid fa-plus"
+                            aria-hidden="true"
+                        ></i>
+
+                        Nova atividade
+
+                    </button>
+
+
+                </div>
+
+
+            </header>
+
+<div
+    id="activityFeedback"
+    class="activity-feedback"
+    role="status"
+    aria-live="polite"
+></div>
+
+            <!-- ==========================================
+                        RESUMO
+            =========================================== -->
+
+            <section
+                class="summary-grid"
+                aria-label="Resumo das atividades"
+            >
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-list-check"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Total
+                        </span>
+
+                        <strong id="totalActivities">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-paper-plane"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Publicadas
+                        </span>
+
+                        <strong id="publishedActivities">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-clock"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Agendadas
+                        </span>
+
+                        <strong id="scheduledActivities">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+                <article class="summary-card">
+
+                    <div class="summary-icon">
+
+                        <i
+                            class="fa-solid fa-file-pen"
+                            aria-hidden="true"
+                        ></i>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            Rascunhos
+                        </span>
+
+                        <strong id="draftActivities">
+                            0
+                        </strong>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- ==========================================
+                        FILTROS
+            =========================================== -->
+
+            <section class="filters-bar">
+
+
+                <div class="search-box">
+
+                    <i
+                        class="fa-solid fa-magnifying-glass"
+                        aria-hidden="true"
+                    ></i>
+
+                    <input
+                        type="search"
+                        id="activitySearch"
+                        placeholder="Pesquisar atividade, turma ou disciplina..."
+                        autocomplete="off"
+                    >
+
+                </div>
+
+
+                <select
+                    id="statusFilter"
+                    aria-label="Filtrar por status"
+                >
+
+                    <option value="">
+                        Todos os status
+                    </option>
+
+                    <option value="Publicada">
+                        Publicadas
+                    </option>
+
+                    <option value="Agendada">
+                        Agendadas
+                    </option>
+
+                    <option value="Rascunho">
+                        Rascunhos
+                    </option>
+
+                    <option value="Encerrada">
+                        Encerradas
+                    </option>
+
+                    <option value="Cancelada">
+                        Canceladas
+                    </option>
+
+                </select>
+
+
+            </section>
+
+
+
+            <!-- ==========================================
+                    LISTA DE ATIVIDADES
+            =========================================== -->
+
+            <section class="activities-panel">
+
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <h2>
+                            Minhas atividades
+                        </h2>
+
+                        <p>
+                            Atividades criadas para suas turmas e disciplinas.
+                        </p>
+
+                    </div>
+
+
+                    <span id="activitiesCounter">
+                        0 atividades
+                    </span>
+
+
+                </div>
+
+
+                <div
+                    class="activities-list"
+                    id="activitiesList"
+                >
+
+
+                    <div class="empty-state">
+
+                        <i
+                            class="fa-regular fa-folder-open"
+                            aria-hidden="true"
+                        ></i>
+
+                        <strong>
+                            Nenhuma atividade encontrada.
+                        </strong>
+
+                        <span>
+                            Crie sua primeira atividade.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+                    MODAL DE ATIVIDADE
+    ====================================================== -->
+
+    <div
+        class="activity-modal"
+        id="activityModal"
+        aria-hidden="true"
+    >
+
+
+        <div
+            class="activity-modal-overlay"
+            id="activityModalOverlay"
+        ></div>
+
+
+        <div
+            class="activity-modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="activityModalTitle"
+        >
+
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <span class="modal-eyebrow">
+                        ATIVIDADE
+                    </span>
+
+                    <h2 id="activityModalTitle">
+                        Nova atividade
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    id="activityModalClose"
+                    aria-label="Fechar"
+                >
+
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+
+                </button>
+
+
+            </div>
+
+
+
+            <form id="activityForm">
+
+
+                <input
+                    type="hidden"
+                    id="activityId"
+                >
+
+
+
+                <div class="form-group">
+
+                    <label for="classSubject">
+                        Turma e disciplina
+                    </label>
+
+                    <select
+                        id="classSubject"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="activityPeriod">
+                        Período letivo
+                    </label>
+
+                    <select
+                        id="activityPeriod"
+                        required
+                    >
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="activityTitle">
+                        Título
+                    </label>
+
+                    <input
+                        type="text"
+                        id="activityTitle"
+                        maxlength="190"
+                        required
+                        placeholder="Ex: Lista de exercícios - Equações"
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="activityDescription">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="activityDescription"
+                        rows="4"
+                        placeholder="Descreva a atividade..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="activityInstructions">
+                        Instruções
+                    </label>
+
+                    <textarea
+                        id="activityInstructions"
+                        rows="4"
+                        placeholder="Informe as orientações para realização..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="submissionType">
+                            Tipo de entrega
+                        </label>
+
+                        <select
+                            id="submissionType"
+                            required
+                        >
+
+                            <option value="Livre">
+                                Livre
+                            </option>
+
+                            <option value="Texto">
+                                Texto
+                            </option>
+
+                            <option value="Arquivo">
+                                Arquivo
+                            </option>
+
+                            <option value="Texto e arquivo">
+                                Texto e arquivo
+                            </option>
+
+                            <option value="Link">
+                                Link
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="activityStatus">
+                            Status
+                        </label>
+
+                        <select
+                            id="activityStatus"
+                            required
+                        >
+
+                            <option value="Rascunho">
+                                Rascunho
+                            </option>
+
+                            <option value="Publicada">
+                                Publicar agora
+                            </option>
+
+                            <option value="Agendada">
+                                Agendar publicação
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="publishAt">
+                            Data de publicação
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="publishAt"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="dueAt">
+                            Data de entrega
+                        </label>
+
+                        <input
+                            type="datetime-local"
+                            id="dueAt"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="maxFiles">
+                            Máximo de arquivos
+                        </label>
+
+                        <input
+                            type="number"
+                            id="maxFiles"
+                            min="1"
+                            max="10"
+                            value="5"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="maxFileSize">
+                            Tamanho máximo por arquivo
+                        </label>
+
+                        <div class="input-suffix">
+
+                            <input
+                                type="number"
+                                id="maxFileSize"
+                                min="1"
+                                max="100"
+                                value="20"
+                                required
+                            >
+
+                            <span>
+                                MB
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <fieldset class="permissions-fieldset">
+
+
+                    <legend>
+                        Permissões
+                    </legend>
+
+
+                    <label class="checkbox-option">
+
+                        <input
+                            type="checkbox"
+                            id="allowsLateSubmission"
+                        >
+
+                        <span>
+
+                            <strong>
+                                Permitir entrega atrasada
+                            </strong>
+
+                            <small>
+                                O aluno poderá enviar depois do prazo.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+
+                    <label class="checkbox-option">
+
+                        <input
+                            type="checkbox"
+                            id="allowsResubmission"
+                            checked
+                        >
+
+                        <span>
+
+                            <strong>
+                                Permitir reenvio
+                            </strong>
+
+                            <small>
+                                O aluno poderá retirar e enviar novamente.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+
+                    <label class="checkbox-option">
+
+                        <input
+                            type="checkbox"
+                            id="allowsComments"
+                            checked
+                        >
+
+                        <span>
+
+                            <strong>
+                                Permitir comentários
+                            </strong>
+
+                            <small>
+                                Professor e aluno poderão conversar na atividade.
+                            </small>
+
+                        </span>
+
+                    </label>
+
+
+                </fieldset>
+
+
+
+                <div class="modal-actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="cancelActivityButton"
+                    >
+
+                        Cancelar
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="primary-button"
+                        id="saveActivityButton"
+                    >
+
+                        <i
+                            class="fa-solid fa-floppy-disk"
+                            aria-hidden="true"
+                        ></i>
+
+                        Salvar atividade
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <script src="../js/core.js"></script>
+
+    <script src="../js/professor_atividades.js"></script>
+
+
+</body>
+
+</html>

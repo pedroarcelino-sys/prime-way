@@ -6,3 +6,55 @@
 .empty-state{grid-column:1/-1;margin:0;padding:34px 20px;color:var(--texto-secundario);font:13px Arial,sans-serif;text-align:center}.profile-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:0;padding:8px 22px 18px}.profile-data div{padding:13px 12px 8px 0}.profile-data dt{margin-bottom:5px;color:var(--texto-secundario);font:11px Arial,sans-serif}.profile-data dd{margin:0;overflow-wrap:anywhere;color:var(--texto);font:700 13px Arial,sans-serif}
 @media(max-width:1100px){.portal-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-data{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.student-portal{padding:24px 18px 36px}.portal-header{align-items:flex-start;flex-direction:column}.today{width:100%}.portal-summary,.card-grid,.portal-columns,.profile-data{grid-template-columns:1fr}.list-item{grid-template-columns:1fr}.list-item .value{grid-column:1;grid-row:auto}}
+/*====================================================
+                BOTÃO ABRIR ATIVIDADE
+====================================================*/
+
+.activity-access-button {
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    margin-top: 9px;
+
+    padding: 9px 14px;
+
+    border-radius: 8px;
+
+    background: var(--secundaria);
+
+    color: #ffffff;
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        opacity .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.activity-access-button:hover {
+    opacity: .92;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(30, 58, 138, .15);
+}
+
+
+.activity-access-button i {
+    font-size: 10px;
+}

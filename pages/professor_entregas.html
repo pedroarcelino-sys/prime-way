@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Entregas | PrimeWay School</title>
+
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_entregas.css"
+    >
+
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<div class="app-layout">
+
+
+    <!-- ================================================
+                        SIDEBAR
+    ================================================= -->
+
+    <aside
+        class="sidebar"
+        aria-label="Menu do professor"
+    >
+
+        <div class="sidebar-logo">
+
+            <img
+                src="../img/logo.png"
+                alt="PrimeWay School"
+            >
+
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="professor.html">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>
+                    Meu painel
+                </span>
+
+            </a>
+
+
+            <a
+                href="professor_atividades.html"
+                class="active"
+            >
+
+                <i class="fa-solid fa-list-check"></i>
+
+                <span>
+                    Atividades
+                </span>
+
+            </a>
+
+
+            <a href="calendario.html">
+
+                <i class="fa-solid fa-calendar-days"></i>
+
+                <span>
+                    Calendário
+                </span>
+
+            </a>
+
+
+            <a href="notificacoes.html">
+
+                <i class="fa-solid fa-bell"></i>
+
+                <span>
+                    Notificações
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <button
+                type="button"
+                id="logoutButton"
+            >
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    Sair
+                </span>
+
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================================================
+                        CONTEÚDO
+    ================================================= -->
+
+    <main class="submissions-page">
+
+
+        <!-- ================================================
+                        CABEÇALHO
+        ================================================= -->
+
+        <header class="submissions-header">
+
+            <div>
+
+                <span class="section-label">
+                    Área do professor
+                </span>
+
+
+                <h1>
+                    Entregas da atividade
+                </h1>
+
+
+                <p id="activityContext">
+                    Carregando dados da atividade...
+                </p>
+
+            </div>
+
+
+            <a
+                href="professor_atividades.html"
+                class="back-button"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Voltar às atividades
+
+            </a>
+
+        </header>
+
+
+        <!-- ================================================
+                        ATIVIDADE
+        ================================================= -->
+
+        <section class="activity-overview">
+
+            <div class="activity-overview-icon">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+            </div>
+
+
+            <div class="activity-overview-main">
+
+                <span id="activitySubject">
+                    Disciplina
+                </span>
+
+
+                <h2 id="activityTitle">
+                    Carregando...
+                </h2>
+
+
+                <p id="activityDescription">
+                    —
+                </p>
+
+            </div>
+
+
+            <div class="activity-overview-meta">
+
+                <div>
+
+                    <span>
+                        Turma
+                    </span>
+
+                    <strong id="activityClass">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Período
+                    </span>
+
+                    <strong id="activityPeriod">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Prazo
+                    </span>
+
+                    <strong id="activityDue">
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================
+                        RESUMO
+        ================================================= -->
+
+        <section class="submissions-summary">
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Alunos
+                    </span>
+
+                    <strong id="totalStudents">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Entregues
+                    </span>
+
+                    <strong id="totalSubmitted">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-clock"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Pendentes
+                    </span>
+
+                    <strong id="totalPending">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="summary-card">
+
+                <div class="summary-icon">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Corrigidas
+                    </span>
+
+                    <strong id="totalCorrected">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!-- ================================================
+                        FILTROS
+        ================================================= -->
+
+        <section class="submissions-toolbar">
+
+            <div class="search-box">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+
+                <input
+                    type="search"
+                    id="submissionSearch"
+                    placeholder="Pesquisar aluno..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <select id="submissionStatusFilter">
+
+                <option value="">
+                    Todos os status
+                </option>
+
+                <option value="Pendente">
+                    Pendente
+                </option>
+
+                <option value="Rascunho">
+                    Rascunho
+                </option>
+
+                <option value="Entregue">
+                    Entregue
+                </option>
+
+                <option value="Atrasada">
+                    Entregue com atraso
+                </option>
+
+                <option value="Reenviada">
+                    Reenviada
+                </option>
+
+                <option value="Corrigida">
+                    Corrigida
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- ================================================
+                        LISTA DE ALUNOS
+        ================================================= -->
+
+        <section class="submissions-panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h2>
+                        Alunos
+                    </h2>
+
+                    <p>
+                        Consulte as respostas e realize a correção.
+                    </p>
+
+                </div>
+
+
+                <span id="submissionsCounter">
+                    0 alunos
+                </span>
+
+            </div>
+
+
+            <div
+                id="submissionsList"
+                class="submissions-list"
+            >
+
+                <div class="loading-state">
+
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+
+                    <span>
+                        Carregando entregas...
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- ================================================
+                    MODAL DE CORREÇÃO
+================================================= -->
+
+<div
+    id="correctionModal"
+    class="correction-modal hidden"
+    aria-hidden="true"
+>
+
+    <div
+        class="correction-overlay"
+        data-close-correction
+    ></div>
+
+
+    <div class="correction-card">
+
+
+        <!-- HEADER -->
+
+        <header class="correction-header">
+
+            <div>
+
+                <span class="section-label">
+                    Correção da atividade
+                </span>
+
+
+                <h2 id="correctionStudentName">
+                    Aluno
+                </h2>
+
+
+                <p id="correctionSubmissionInfo">
+                    —
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="modal-close-button"
+                id="closeCorrectionModal"
+                aria-label="Fechar"
+            >
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </header>
+
+
+        <!-- BODY -->
+
+        <div class="correction-body">
+
+
+            <!-- RESPOSTA -->
+
+            <section class="correction-section">
+
+                <div class="correction-section-title">
+
+                    <i class="fa-regular fa-message"></i>
+
+                    <h3>
+                        Resposta do aluno
+                    </h3>
+
+                </div>
+
+
+                <div
+                    id="studentAnswer"
+                    class="student-answer"
+                >
+                    Nenhuma resposta escrita.
+                </div>
+
+            </section>
+
+
+            <!-- LINK -->
+
+            <section
+                class="correction-section hidden"
+                id="studentLinkSection"
+            >
+
+                <div class="correction-section-title">
+
+                    <i class="fa-solid fa-link"></i>
+
+                    <h3>
+                        Link enviado
+                    </h3>
+
+                </div>
+
+
+                <a
+                    id="studentLink"
+                    href="#"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Abrir link
+                </a>
+
+            </section>
+
+
+            <!-- ARQUIVOS -->
+
+            <section class="correction-section">
+
+                <div class="correction-section-title">
+
+                    <i class="fa-regular fa-folder-open"></i>
+
+                    <h3>
+                        Arquivos enviados
+                    </h3>
+
+                </div>
+
+
+                <div
+                    id="studentFiles"
+                    class="student-files"
+                >
+
+                    <div class="empty-state-small">
+                        Nenhum arquivo enviado.
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- NOTA -->
+
+            <section class="correction-section">
+
+                <div class="correction-section-title">
+
+                    <i class="fa-solid fa-star"></i>
+
+                    <h3>
+                        Avaliação
+                    </h3>
+
+                </div>
+
+
+                <div class="grade-grid">
+
+                    <div class="form-group">
+
+                        <label for="gradeValue">
+                            Nota
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="gradeValue"
+                            min="0"
+                            step="0.1"
+                            placeholder="Ex.: 8.5"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="gradeMaximum">
+                            Valor máximo
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="gradeMaximum"
+                            min="0.1"
+                            step="0.1"
+                            value="10"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="correctionFeedback">
+                        Feedback para o aluno
+                    </label>
+
+
+                    <textarea
+                        id="correctionFeedback"
+                        maxlength="5000"
+                        placeholder="Escreva uma orientação, observação ou comentário sobre a atividade..."
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+
+            <!-- AÇÕES -->
+
+            <div class="correction-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelCorrectionButton"
+                >
+                    Cancelar
+                </button>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    id="publishCorrectionButton"
+                >
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Publicar correção
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================================================
+                    FEEDBACK
+================================================= -->
+
+<div
+    id="submissionFeedback"
+    class="submission-feedback"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<script src="../js/core.js?v=20260915-1"></script>
+
+<script src="../js/professor_entregas.js?v=20260915-1"></script>
+
+
+</body>
+
+</html>
