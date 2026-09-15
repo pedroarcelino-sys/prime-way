@@ -156,58 +156,7 @@ document.addEventListener(
                 "#logoutButton"
             );
 
-/*====================================================
-                FEEDBACK / CONFIRMAÇÃO
-====================================================*/
 
-const activityFeedback =
-    document.querySelector(
-        "#activityFeedback"
-    );
-
-
-const confirmationModal =
-    document.querySelector(
-        "#confirmationModal"
-    );
-
-
-const confirmationOverlay =
-    document.querySelector(
-        "#confirmationOverlay"
-    );
-
-
-const confirmationTitle =
-    document.querySelector(
-        "#confirmationTitle"
-    );
-
-
-const confirmationMessage =
-    document.querySelector(
-        "#confirmationMessage"
-    );
-
-
-const confirmationConfirm =
-    document.querySelector(
-        "#confirmationConfirm"
-    );
-
-
-const confirmationCancel =
-    document.querySelector(
-        "#confirmationCancel"
-    );
-
-
-let feedbackTimer =
-    null;
-
-
-let confirmationResolver =
-    null;
         /*====================================================
                         JSON SEGURO
         ====================================================*/
@@ -224,226 +173,11 @@ let confirmationResolver =
 
                 return null;
             }
-
         }
 
-        /*====================================================
-                FEEDBACK PRIMEWAY
-====================================================*/
-
-function showFeedback(
-    message,
-    type = "success"
-) {
-
-    if (!activityFeedback) {
-
-        return;
-    }
-
-
-    if (feedbackTimer) {
-
-        clearTimeout(
-            feedbackTimer
-        );
-    }
-
-
-    activityFeedback.replaceChildren();
-
-
-    const icon =
-        document.createElement(
-            "i"
-        );
-
-
-    icon.className =
-        type === "success"
-            ? "fa-solid fa-circle-check"
-            : type === "error"
-                ? "fa-solid fa-circle-exclamation"
-                : "fa-solid fa-circle-info";
-
-
-    const text =
-        document.createElement(
-            "span"
-        );
-
-
-    text.textContent =
-        String(message);
-
-
-    activityFeedback.append(
-        icon,
-        text
-    );
-
-
-    activityFeedback.className =
-        `activity-feedback show ${type}`;
-
-
-    feedbackTimer =
-        setTimeout(
-            function () {
-
-                activityFeedback.className =
-                    "activity-feedback";
-
-                activityFeedback.replaceChildren();
-
-            },
-            4000
-        );
-}
-
-
-/*====================================================
-                CONFIRMAÇÃO PRIMEWAY
-====================================================*/
-
-function askConfirmation(
-    message,
-    options = {}
-) {
-
-    if (
-        confirmationResolver
-    ) {
-
-        confirmationResolver(
-            false
-        );
-    }
-
-
-    confirmationTitle.textContent =
-        options.title ||
-        "Confirmar ação";
-
-
-    confirmationMessage.textContent =
-        message;
-
-
-    confirmationConfirm.replaceChildren();
-
-
-    const icon =
-        document.createElement(
-            "i"
-        );
-
-
-    icon.className =
-        `fa-solid ${
-            options.icon ||
-            "fa-check"
-        }`;
-
-
-    confirmationConfirm.append(
-        icon,
-        document.createTextNode(
-            options.confirmText ||
-            "Confirmar"
-        )
-    );
-
-
-    confirmationModal.classList.remove(
-        "hidden"
-    );
-
-
-    confirmationModal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    return new Promise(
-        function (resolve) {
-
-            confirmationResolver =
-                resolve;
-        }
-    );
-}
-
-
-function closeConfirmation(
-    result
-) {
-
-    confirmationModal.classList.add(
-        "hidden"
-    );
-
-
-    confirmationModal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    if (
-        confirmationResolver
-    ) {
-
-        const resolver =
-            confirmationResolver;
-
-
-        confirmationResolver =
-            null;
-
-
-        resolver(
-            result
-        );
-    }
-}
-
-
-confirmationConfirm.addEventListener(
-    "click",
-    function () {
-
-        closeConfirmation(
-            true
-        );
-    }
-);
-
-
-confirmationCancel.addEventListener(
-    "click",
-    function () {
-
-        closeConfirmation(
-            false
-        );
-    }
-);
-
-
-confirmationOverlay.addEventListener(
-    "click",
-    function () {
-
-        closeConfirmation(
-            false
-        );
-    }
-);
 
         /*====================================================
-                        SESSÃO
+                            SESSÃO
         ====================================================*/
 
         async function validateSession() {
@@ -507,7 +241,6 @@ confirmationOverlay.addEventListener(
 
                 return false;
             }
-
         }
 
 
@@ -663,7 +396,6 @@ confirmationOverlay.addEventListener(
                 default:
                     return "pending";
             }
-
         }
 
 
@@ -868,13 +600,18 @@ confirmationOverlay.addEventListener(
                             <span>Tente atualizar a página.</span>
                         </div>
                     `;
-            }
 
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível carregar as atividades."
+                );
+            }
         }
 
 
         /*====================================================
-                        FILTRO
+                            FILTRO
         ====================================================*/
 
         function activityMatchesFilter(
@@ -1187,7 +924,6 @@ confirmationOverlay.addEventListener(
                     row
                 );
             }
-
         }
 
 
@@ -1245,10 +981,9 @@ confirmationOverlay.addEventListener(
                     !data?.success
                 ) {
 
-                    showFeedback(
+                    PrimeWayFeedback.error(
                         data?.message ||
-                        "Não foi possível abrir a atividade.",
-                        "error"
+                        "Não foi possível abrir a atividade."
                     );
 
                     return;
@@ -1279,12 +1014,25 @@ confirmationOverlay.addEventListener(
                 );
 
 
+            } catch (error) {
+
+                console.error(
+                    "Erro ao abrir atividade:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível abrir a atividade."
+                );
+
+
             } finally {
 
                 operationRunning =
                     false;
             }
-
         }
 
 
@@ -1307,11 +1055,6 @@ confirmationOverlay.addEventListener(
 
             const permissions =
                 data.permissions ||
-                {};
-
-
-            const grade =
-                data.grade ||
                 {};
 
 
@@ -1498,7 +1241,6 @@ confirmationOverlay.addEventListener(
                     "hidden"
                 );
             }
-
         }
 
 
@@ -1566,7 +1308,6 @@ confirmationOverlay.addEventListener(
 
                     break;
             }
-
         }
 
 
@@ -1748,7 +1489,6 @@ confirmationOverlay.addEventListener(
                     )
                 );
             }
-
         }
 
 
@@ -1803,7 +1543,6 @@ confirmationOverlay.addEventListener(
                     )
                 );
             }
-
         }
 
 
@@ -1938,7 +1677,6 @@ confirmationOverlay.addEventListener(
                     item
                 );
             }
-
         }
 
 
@@ -2012,7 +1750,6 @@ confirmationOverlay.addEventListener(
                     item
                 );
             }
-
         }
 
 
@@ -2145,7 +1882,6 @@ confirmationOverlay.addEventListener(
                     "hidden"
                 );
             }
-
         }
 
 
@@ -2220,7 +1956,6 @@ confirmationOverlay.addEventListener(
                 linkInput.disabled =
                     true;
             }
-
         }
 
 
@@ -2325,23 +2060,35 @@ confirmationOverlay.addEventListener(
                     !data?.success
                 ) {
 
-                    showFeedback(
+                    PrimeWayFeedback.error(
                         data?.message ||
-                        "Não foi possível salvar o rascunho.",
-                        "error"
+                        "Não foi possível salvar o rascunho."
                     );
 
                     return;
                 }
 
 
-                showFeedback(
-                    "Rascunho salvo com sucesso.",
-                    "success"
+                PrimeWayFeedback.success(
+                    "Rascunho salvo com sucesso."
                 );
 
 
                 await refreshCurrentActivity();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao salvar rascunho:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível salvar o rascunho."
+                );
 
 
             } finally {
@@ -2349,12 +2096,11 @@ confirmationOverlay.addEventListener(
                 operationRunning =
                     false;
             }
-
         }
 
 
         /*====================================================
-                        ENVIAR
+                            ENVIAR
         ====================================================*/
 
         async function submitActivity() {
@@ -2368,26 +2114,26 @@ confirmationOverlay.addEventListener(
             }
 
 
-     const confirmed =
-    await askConfirmation(
-        "Ao enviar, o professor poderá visualizar sua resposta e os arquivos anexados.",
-        {
-            title:
-                "Enviar atividade?",
+            const confirmed =
+                await PrimeWayConfirm.info(
+                    "Ao enviar, o professor poderá visualizar sua resposta e os arquivos anexados.",
+                    {
+                        title:
+                            "Enviar atividade?",
 
-            confirmText:
-                "Enviar atividade",
+                        confirmText:
+                            "Enviar atividade",
 
-            icon:
-                "fa-paper-plane"
-        }
-    );
+                        cancelText:
+                            "Cancelar"
+                    }
+                );
 
 
-if (!confirmed) {
+            if (!confirmed) {
 
-    return;
-}
+                return;
+            }
 
 
             operationRunning =
@@ -2422,20 +2168,19 @@ if (!confirmed) {
                     !data?.success
                 ) {
 
-                   showFeedback(
-    data?.message ||
-    "Não foi possível enviar a atividade.",
-    "error"
-);
+                    PrimeWayFeedback.error(
+                        data?.message ||
+                        "Não foi possível enviar a atividade."
+                    );
 
                     return;
                 }
 
-showFeedback(
-    data.message ||
-    "Atividade enviada com sucesso.",
-    "success"
-);
+
+                PrimeWayFeedback.success(
+                    data.message ||
+                    "Atividade enviada com sucesso."
+                );
 
 
                 await loadActivities();
@@ -2443,17 +2188,30 @@ showFeedback(
                 await refreshCurrentActivity();
 
 
+            } catch (error) {
+
+                console.error(
+                    "Erro ao enviar atividade:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível enviar a atividade."
+                );
+
+
             } finally {
 
                 operationRunning =
                     false;
             }
-
         }
 
 
         /*====================================================
-                        RETIRAR
+                            RETIRAR
         ====================================================*/
 
         async function withdrawActivity() {
@@ -2468,7 +2226,7 @@ showFeedback(
 
 
             const confirmed =
-                await askConfirmation(
+                await PrimeWayConfirm.warning(
                     "Você precisará enviar a atividade novamente para que ela seja considerada entregue.",
                     {
                         title:
@@ -2477,8 +2235,8 @@ showFeedback(
                         confirmText:
                             "Retirar entrega",
 
-                        icon:
-                            "fa-rotate-left"
+                        cancelText:
+                            "Cancelar"
                     }
                 );
 
@@ -2515,20 +2273,18 @@ showFeedback(
                     !data?.success
                 ) {
 
-                    showFeedback(
+                    PrimeWayFeedback.error(
                         data?.message ||
-                        "Não foi possível retirar a entrega.",
-                        "error"
+                        "Não foi possível retirar a entrega."
                     );
 
                     return;
                 }
 
 
-                showFeedback(
+                PrimeWayFeedback.success(
                     data.message ||
-                    "Entrega retirada com sucesso.",
-                    "success"
+                    "Entrega retirada com sucesso."
                 );
 
 
@@ -2537,17 +2293,30 @@ showFeedback(
                 await refreshCurrentActivity();
 
 
+            } catch (error) {
+
+                console.error(
+                    "Erro ao retirar entrega:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível retirar a entrega."
+                );
+
+
             } finally {
 
                 operationRunning =
                     false;
             }
-
         }
 
 
         /*====================================================
-                        COMENTAR
+                            COMENTAR
         ====================================================*/
 
         async function sendComment() {
@@ -2566,6 +2335,12 @@ showFeedback(
 
 
             if (!comment) {
+
+                PrimeWayFeedback.warning(
+                    "Digite um comentário antes de enviar."
+                );
+
+                commentInput.focus();
 
                 return;
             }
@@ -2599,10 +2374,9 @@ showFeedback(
                     !data?.success
                 ) {
 
-                    showFeedback(
+                    PrimeWayFeedback.error(
                         data?.message ||
-                        "Não foi possível enviar o comentário.",
-                        "error"
+                        "Não foi possível enviar o comentário."
                     );
 
                     return;
@@ -2613,13 +2387,26 @@ showFeedback(
                     "";
 
 
-                showFeedback(
-                    "Comentário enviado com sucesso.",
-                    "success"
+                PrimeWayFeedback.success(
+                    "Comentário enviado com sucesso."
                 );
 
 
                 await refreshCurrentActivity();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao enviar comentário:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível enviar o comentário."
+                );
 
 
             } finally {
@@ -2627,308 +2414,304 @@ showFeedback(
                 operationRunning =
                     false;
             }
-
         }
-
 
 
         /*====================================================
-                ENVIAR UM ARQUIVO
-====================================================*/
+                    ENVIAR UM ARQUIVO
+        ====================================================*/
 
-async function uploadSingleFile(
-    file
-) {
-
-    const formData =
-        new FormData();
-
-
-    formData.append(
-        "activityId",
-        currentActivity
-            .activity
-            .id
-    );
-
-
-    formData.append(
-        "file",
-        file
-    );
-
-
-    const response =
-        await fetch(
-            UPLOAD_URL,
-            {
-                method: "POST",
-
-                credentials: "same-origin",
-
-                cache: "no-store",
-
-                headers: {
-                    Accept: "application/json",
-
-                    "X-CSRF-Token":
-                        csrfToken
-                },
-
-                body:
-                    formData
-            }
-        );
-
-
-    const data =
-        await readJson(
-            response
-        );
-
-
-    return {
-        response,
-        data
-    };
-}
-
-
-/*====================================================
-            ENVIAR ARQUIVOS SELECIONADOS
-====================================================*/
-
-async function uploadFiles(
-    selectedFiles
-) {
-
-    if (
-        !currentActivity ||
-        operationRunning
-    ) {
-
-        return;
-    }
-
-
-    const files =
-        Array.from(
-            selectedFiles || []
-        );
-
-
-    if (
-        files.length === 0
-    ) {
-
-        return;
-    }
-
-
-    const existingFiles =
-        currentActivity
-            ?.submission
-            ?.files
-            ?.length || 0;
-
-
-    const maximumFiles =
-        Number(
-            currentActivity
-                ?.activity
-                ?.maxFiles || 1
-        );
-
-
-    /* LIMITE DE QUANTIDADE */
-
-    if (
-        existingFiles +
-        files.length >
-        maximumFiles
-    ) {
-
-        showFeedback(
-            `Esta atividade permite no máximo ${maximumFiles} arquivo(s).`,
-            "error"
-        );
-
-
-        fileInput.value =
-            "";
-
-
-        return;
-    }
-
-
-    /* LIMITE DE TAMANHO */
-
-    const maximumMb =
-        Number(
-            currentActivity
-                ?.activity
-                ?.maxFileSizeMb || 20
-        );
-
-
-    const maximumBytes =
-        maximumMb *
-        1024 *
-        1024;
-
-
-    for (
-        const file
-        of files
-    ) {
-
-        if (
-            file.size >
-            maximumBytes
+        async function uploadSingleFile(
+            file
         ) {
 
-            showFeedback(
-                `${file.name} ultrapassa o limite de ${maximumMb} MB.`,
-                "error"
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "activityId",
+                currentActivity
+                    .activity
+                    .id
             );
 
 
-            fileInput.value =
-                "";
+            formData.append(
+                "file",
+                file
+            );
 
 
-            return;
-        }
-    }
+            const response =
+                await fetch(
+                    UPLOAD_URL,
+                    {
+                        method:
+                            "POST",
+
+                        credentials:
+                            "same-origin",
+
+                        cache:
+                            "no-store",
+
+                        headers: {
+                            Accept:
+                                "application/json",
+
+                            "X-CSRF-Token":
+                                csrfToken
+                        },
+
+                        body:
+                            formData
+                    }
+                );
 
 
-    operationRunning =
-        true;
+            const data =
+                await readJson(
+                    response
+                );
 
 
-    const originalLabel =
-        uploadLabel.innerHTML;
-
-
-    uploadLabel.classList.add(
-        "disabled"
-    );
-
-
-    uploadLabel.innerHTML = `
-        <i class="fa-solid fa-spinner fa-spin"></i>
-        Enviando...
-    `;
-
-
-    let uploaded =
-        0;
-
-
-    let uploadFailed =
-        false;
-
-
-    try {
-
-        for (
-            const file
-            of files
-        ) {
-
-            const {
+            return {
                 response,
                 data
-            } =
-                await uploadSingleFile(
-                    file
+            };
+        }
+
+
+        /*====================================================
+                ENVIAR ARQUIVOS SELECIONADOS
+        ====================================================*/
+
+        async function uploadFiles(
+            selectedFiles
+        ) {
+
+            if (
+                !currentActivity ||
+                operationRunning
+            ) {
+
+                return;
+            }
+
+
+            const files =
+                Array.from(
+                    selectedFiles || []
                 );
 
 
             if (
-                !response.ok ||
-                !data?.success
+                files.length === 0
             ) {
 
-                uploadFailed =
-                    true;
-
-
-                showFeedback(
-                    data?.message ||
-                    `Não foi possível enviar ${file.name}.`,
-                    "error"
-                );
-
-
-                break;
+                return;
             }
 
 
-            uploaded++;
-        }
+            const existingFiles =
+                currentActivity
+                    ?.submission
+                    ?.files
+                    ?.length || 0;
 
 
-        await refreshCurrentActivity();
+            const maximumFiles =
+                Number(
+                    currentActivity
+                        ?.activity
+                        ?.maxFiles || 1
+                );
 
 
-        if (
-            uploaded > 0 &&
-            !uploadFailed
-        ) {
+            /* LIMITE DE QUANTIDADE */
 
-            showFeedback(
-                uploaded === 1
-                    ? "Arquivo adicionado com sucesso."
-                    : `${uploaded} arquivos adicionados com sucesso.`,
-                "success"
-            );
-        }
+            if (
+                existingFiles +
+                files.length >
+                maximumFiles
+            ) {
 
-
-    } catch (
-        error
-    ) {
-
-        console.error(
-            "Erro ao enviar arquivo:",
-            error
-        );
+                PrimeWayFeedback.error(
+                    `Esta atividade permite no máximo ${maximumFiles} arquivo(s).`
+                );
 
 
-        showFeedback(
-            "Não foi possível enviar o arquivo.",
-            "error"
-        );
+                fileInput.value =
+                    "";
 
 
-    } finally {
-
-        operationRunning =
-            false;
+                return;
+            }
 
 
-        fileInput.value =
-            "";
+            /* LIMITE DE TAMANHO */
+
+            const maximumMb =
+                Number(
+                    currentActivity
+                        ?.activity
+                        ?.maxFileSizeMb || 20
+                );
 
 
-        uploadLabel.innerHTML =
-            originalLabel;
+            const maximumBytes =
+                maximumMb *
+                1024 *
+                1024;
 
 
-        if (
-            currentActivity
-                ?.permissions
-                ?.canSaveDraft
-        ) {
+            for (
+                const file
+                of files
+            ) {
 
-            uploadLabel.classList.remove(
+                if (
+                    file.size >
+                    maximumBytes
+                ) {
+
+                    PrimeWayFeedback.error(
+                        `${file.name} ultrapassa o limite de ${maximumMb} MB.`
+                    );
+
+
+                    fileInput.value =
+                        "";
+
+
+                    return;
+                }
+            }
+
+
+            operationRunning =
+                true;
+
+
+            const originalLabel =
+                uploadLabel.innerHTML;
+
+
+            uploadLabel.classList.add(
                 "disabled"
             );
+
+
+            uploadLabel.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                Enviando...
+            `;
+
+
+            let uploaded =
+                0;
+
+
+            let uploadFailed =
+                false;
+
+
+            try {
+
+                for (
+                    const file
+                    of files
+                ) {
+
+                    const {
+                        response,
+                        data
+                    } =
+                        await uploadSingleFile(
+                            file
+                        );
+
+
+                    if (
+                        !response.ok ||
+                        !data?.success
+                    ) {
+
+                        uploadFailed =
+                            true;
+
+
+                        PrimeWayFeedback.error(
+                            data?.message ||
+                            `Não foi possível enviar ${file.name}.`
+                        );
+
+
+                        break;
+                    }
+
+
+                    uploaded++;
+                }
+
+
+                await refreshCurrentActivity();
+
+
+                if (
+                    uploaded > 0 &&
+                    !uploadFailed
+                ) {
+
+                    PrimeWayFeedback.success(
+                        uploaded === 1
+                            ? "Arquivo adicionado com sucesso."
+                            : `${uploaded} arquivos adicionados com sucesso.`
+                    );
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao enviar arquivo:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    "Não foi possível enviar o arquivo."
+                );
+
+
+            } finally {
+
+                operationRunning =
+                    false;
+
+
+                fileInput.value =
+                    "";
+
+
+                uploadLabel.innerHTML =
+                    originalLabel;
+
+
+                if (
+                    currentActivity
+                        ?.permissions
+                        ?.canSaveDraft
+                ) {
+
+                    uploadLabel.classList.remove(
+                        "disabled"
+                    );
+                }
+            }
         }
-    }
-}
+
 
         /*====================================================
                     REMOVER ARQUIVO
@@ -2947,7 +2730,7 @@ async function uploadFiles(
 
 
             const confirmed =
-                await askConfirmation(
+                await PrimeWayConfirm.danger(
                     "O arquivo será removido desta entrega.",
                     {
                         title:
@@ -2956,8 +2739,8 @@ async function uploadFiles(
                         confirmText:
                             "Remover",
 
-                        icon:
-                            "fa-trash"
+                        cancelText:
+                            "Cancelar"
                     }
                 );
 
@@ -2991,24 +2774,36 @@ async function uploadFiles(
                     !data?.success
                 ) {
 
-                    showFeedback(
+                    PrimeWayFeedback.error(
                         data?.message ||
-                        "Não foi possível remover o arquivo.",
-                        "error"
+                        "Não foi possível remover o arquivo."
                     );
 
                     return;
                 }
 
 
-                showFeedback(
+                PrimeWayFeedback.success(
                     data.message ||
-                    "Arquivo removido com sucesso.",
-                    "success"
+                    "Arquivo removido com sucesso."
                 );
 
 
                 await refreshCurrentActivity();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao remover arquivo:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    error.message ||
+                    "Não foi possível remover o arquivo."
+                );
 
 
             } finally {
@@ -3016,7 +2811,6 @@ async function uploadFiles(
                 operationRunning =
                     false;
             }
-
         }
 
 
@@ -3040,34 +2834,45 @@ async function uploadFiles(
                     .id;
 
 
-            const response =
-                await fetch(
-                    `${VIEW_ACTIVITY_URL}?id=${encodeURIComponent(id)}`,
-                    {
-                        credentials:
-                            "same-origin",
+            try {
 
-                        cache:
-                            "no-store",
+                const response =
+                    await fetch(
+                        `${VIEW_ACTIVITY_URL}?id=${encodeURIComponent(id)}`,
+                        {
+                            credentials:
+                                "same-origin",
 
-                        headers: {
-                            Accept:
-                                "application/json"
+                            cache:
+                                "no-store",
+
+                            headers: {
+                                Accept:
+                                    "application/json"
+                            }
                         }
-                    }
-                );
+                    );
 
 
-            const data =
-                await readJson(
-                    response
-                );
+                const data =
+                    await readJson(
+                        response
+                    );
 
 
-            if (
-                response.ok &&
-                data?.success
-            ) {
+                if (
+                    !response.ok ||
+                    !data?.success
+                ) {
+
+                    PrimeWayFeedback.error(
+                        data?.message ||
+                        "Não foi possível atualizar a atividade."
+                    );
+
+                    return;
+                }
+
 
                 currentActivity =
                     data;
@@ -3081,8 +2886,20 @@ async function uploadFiles(
                 renderModal(
                     data
                 );
-            }
 
+
+            } catch (error) {
+
+                console.error(
+                    "Erro ao atualizar atividade:",
+                    error
+                );
+
+
+                PrimeWayFeedback.error(
+                    "Não foi possível atualizar a atividade."
+                );
+            }
         }
 
 
@@ -3108,7 +2925,7 @@ async function uploadFiles(
 
 
         /*====================================================
-                        EVENTOS
+                            EVENTOS
         ====================================================*/
 
         activitySearch.addEventListener(
@@ -3200,6 +3017,9 @@ async function uploadFiles(
                 if (
                     event.key ===
                     "Escape" &&
+                    !document.querySelector(
+                        ".primeway-confirm.show"
+                    ) &&
                     !modal.classList.contains(
                         "hidden"
                     )
@@ -3256,31 +3076,78 @@ async function uploadFiles(
             "click",
             async function () {
 
+                logoutButton.disabled =
+                    true;
+
+
                 try {
 
-                    await fetch(
-                        LOGOUT_URL,
-                        {
-                            method:
-                                "POST",
+                    const response =
+                        await fetch(
+                            LOGOUT_URL,
+                            {
+                                method:
+                                    "POST",
 
-                            credentials:
-                                "same-origin",
+                                credentials:
+                                    "same-origin",
 
-                            headers: {
-                                "X-CSRF-Token":
-                                    csrfToken
+                                cache:
+                                    "no-store",
+
+                                headers: {
+                                    Accept:
+                                        "application/json",
+
+                                    "X-CSRF-Token":
+                                        csrfToken
+                                }
                             }
-                        }
-                    );
+                        );
 
-                } finally {
+
+                    const data =
+                        await readJson(
+                            response
+                        );
+
+
+                    if (
+                        !response.ok ||
+                        !data?.success
+                    ) {
+
+                        throw new Error(
+                            data?.message ||
+                            "Não foi possível sair."
+                        );
+                    }
+
 
                     sessionStorage.clear();
+
 
                     window.location.replace(
                         LOGIN_PAGE
                     );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Erro ao sair:",
+                        error
+                    );
+
+
+                    PrimeWayFeedback.error(
+                        error.message ||
+                        "Não foi possível sair."
+                    );
+
+
+                    logoutButton.disabled =
+                        false;
                 }
             }
         );
@@ -3307,6 +3174,7 @@ async function uploadFiles(
             Permite abrir diretamente:
             aluno_atividades.html?id=10
         */
+
         const params =
             new URLSearchParams(
                 window.location.search
@@ -3333,6 +3201,5 @@ async function uploadFiles(
                 activityFromUrl
             );
         }
-
     }
 );

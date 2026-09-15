@@ -1495,3 +1495,635 @@ body.modal-open {
     }
 
 }
+
+/*====================================================
+            FEEDBACK / TOAST GLOBAL - PRIMEWAY
+====================================================*/
+
+.primeway-toast-container {
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    z-index: 10000;
+
+    width: min(
+        390px,
+        calc(100vw - 32px)
+    );
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+
+    pointer-events: none;
+}
+
+
+.primeway-toast {
+    pointer-events: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        auto
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        13px
+        14px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-left-width: 4px;
+
+    border-radius:
+        var(--raio-m);
+
+    background:
+        var(--branco);
+
+    color:
+        var(--texto);
+
+    box-shadow:
+        var(--sombra-g);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    animation:
+        primewayToastEntrada
+        .22s
+        ease;
+}
+
+
+.primeway-toast.is-leaving {
+    animation:
+        primewayToastSaida
+        .18s
+        ease
+        forwards;
+}
+
+
+.primeway-toast-icon {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+}
+
+
+.primeway-toast-content {
+    min-width: 0;
+}
+
+
+.primeway-toast-title {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.primeway-toast-message {
+    display: block;
+
+    font-size: 10px;
+
+    line-height: 1.45;
+
+    overflow-wrap: anywhere;
+}
+
+
+.primeway-toast-close {
+    width: 28px;
+    height: 28px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+
+    color:
+        var(--texto-claro);
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition:
+        background
+        var(--transicao),
+        color
+        var(--transicao);
+}
+
+
+.primeway-toast-close:hover {
+    background:
+        var(--cinza-100);
+
+    color:
+        var(--texto);
+}
+
+
+/* SUCESSO */
+
+.primeway-toast.success {
+    border-left-color:
+        var(--sucesso);
+}
+
+
+.primeway-toast.success
+.primeway-toast-icon {
+    background:
+        var(--sucesso-fundo);
+
+    color:
+        var(--sucesso);
+}
+
+
+/* ERRO */
+
+.primeway-toast.error {
+    border-left-color:
+        var(--erro);
+}
+
+
+.primeway-toast.error
+.primeway-toast-icon {
+    background:
+        var(--erro-fundo);
+
+    color:
+        var(--erro);
+}
+
+
+/* ALERTA */
+
+.primeway-toast.warning {
+    border-left-color:
+        var(--alerta);
+}
+
+
+.primeway-toast.warning
+.primeway-toast-icon {
+    background:
+        var(--alerta-fundo);
+
+    color:
+        var(--alerta);
+}
+
+
+/* INFORMAÇÃO */
+
+.primeway-toast.info {
+    border-left-color:
+        var(--informacao);
+}
+
+
+.primeway-toast.info
+.primeway-toast-icon {
+    background:
+        var(--informacao-fundo);
+
+    color:
+        var(--informacao);
+}
+
+
+/* ANIMAÇÕES */
+
+@keyframes primewayToastEntrada {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-8px)
+            scale(.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes primewayToastSaida {
+
+    from {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+    to {
+        opacity: 0;
+
+        transform:
+            translateY(-6px);
+    }
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    .primeway-toast-container {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+
+        width: auto;
+    }
+}
+
+/*====================================================
+            CONFIRMAÇÃO GLOBAL - PRIMEWAY
+====================================================*/
+
+.primeway-confirm {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 11000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity .2s ease,
+        visibility .2s ease;
+}
+
+
+.primeway-confirm.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* FUNDO */
+
+.primeway-confirm-backdrop {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(
+            17,
+            24,
+            39,
+            .55
+        );
+
+    backdrop-filter:
+        blur(3px);
+}
+
+
+/* CAIXA */
+
+.primeway-confirm-dialog {
+    position: relative;
+
+    z-index: 1;
+
+    width: 100%;
+    max-width: 420px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius:
+        var(--raio-g);
+
+    background:
+        var(--branco);
+
+    box-shadow:
+        var(--sombra-g);
+
+    transform:
+        translateY(8px)
+        scale(.98);
+
+    transition:
+        transform .2s ease;
+}
+
+
+.primeway-confirm.show
+.primeway-confirm-dialog {
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+/* CONTEÚDO */
+
+.primeway-confirm-content {
+    display: flex;
+
+    gap: 14px;
+
+    padding:
+        22px
+        22px
+        18px;
+}
+
+
+.primeway-confirm-icon {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        var(--informacao-fundo);
+
+    color:
+        var(--informacao);
+
+    font-size: 17px;
+}
+
+
+.primeway-confirm-text {
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.primeway-confirm-title {
+    margin:
+        1px
+        0
+        6px;
+
+    color:
+        var(--secundaria);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.primeway-confirm-message {
+    margin: 0;
+
+    color:
+        var(--texto-secundario);
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* AÇÕES */
+
+.primeway-confirm-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    padding:
+        14px
+        22px
+        18px;
+
+    border-top:
+        1px solid
+        var(--borda-clara);
+}
+
+
+.primeway-confirm-button {
+    min-height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding:
+        0
+        15px;
+
+    border-radius: 8px;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background var(--transicao),
+        border-color var(--transicao),
+        color var(--transicao),
+        transform var(--transicao);
+}
+
+
+/* CANCELAR */
+
+.primeway-confirm-cancel {
+    border:
+        1px solid
+        var(--borda);
+
+    background:
+        var(--branco);
+
+    color:
+        var(--texto-secundario);
+}
+
+
+.primeway-confirm-cancel:hover {
+    background:
+        var(--cinza-50);
+
+    border-color:
+        var(--cinza-300);
+
+    color:
+        var(--secundaria);
+}
+
+
+/* CONFIRMAR */
+
+.primeway-confirm-accept {
+    border: none;
+
+    background:
+        var(--secundaria);
+
+    color:
+        var(--branco);
+}
+
+
+.primeway-confirm-accept:hover {
+    background:
+        var(--primaria);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* PERIGO */
+
+.primeway-confirm.danger
+.primeway-confirm-icon {
+    background:
+        var(--erro-fundo);
+
+    color:
+        var(--erro);
+}
+
+
+.primeway-confirm.danger
+.primeway-confirm-accept {
+    background:
+        var(--erro);
+}
+
+
+.primeway-confirm.danger
+.primeway-confirm-accept:hover {
+    background:
+        #991B1B;
+}
+
+
+/* ALERTA */
+
+.primeway-confirm.warning
+.primeway-confirm-icon {
+    background:
+        var(--alerta-fundo);
+
+    color:
+        var(--alerta);
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width: 520px) {
+
+    .primeway-confirm {
+        padding: 14px;
+    }
+
+
+    .primeway-confirm-content {
+        padding:
+            19px
+            17px
+            16px;
+    }
+
+
+    .primeway-confirm-actions {
+        flex-direction: column-reverse;
+
+        padding:
+            13px
+            17px
+            17px;
+    }
+
+
+    .primeway-confirm-button {
+        width: 100%;
+    }
+}

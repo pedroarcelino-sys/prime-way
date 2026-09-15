@@ -112,12 +112,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector("#logoutButton");
 
 
-const activityFeedback =
-    document.querySelector(
-        "#activityFeedback"
-    );
-
-let feedbackTimer = null;
     /*====================================================
                         JSON
     ====================================================*/
@@ -207,65 +201,7 @@ let feedbackTimer = null;
             .replaceAll("'", "&#039;");
     }
 
-/*====================================================
-                FEEDBACK DA PÁGINA
-====================================================*/
 
-function showFeedback(
-    message,
-    type = "success"
-) {
-
-    const feedback =
-        document.querySelector(
-            "#activityFeedback"
-        );
-
-    if (!feedback) {
-
-        console.log(message);
-
-        return;
-    }
-
-    if (showFeedback.timer) {
-
-        clearTimeout(
-            showFeedback.timer
-        );
-    }
-
-    feedback.className =
-        `activity-feedback show ${type}`;
-
-    feedback.innerHTML = `
-        <i class="fa-solid ${
-            type === "success"
-                ? "fa-circle-check"
-                : "fa-circle-exclamation"
-        }"></i>
-
-        <span>
-            ${escapeHtml(message)}
-        </span>
-    `;
-
-    showFeedback.timer =
-        setTimeout(
-            () => {
-
-                feedback.className =
-                    "activity-feedback";
-
-                feedback.innerHTML =
-                    "";
-
-            },
-            4000
-        );
-}
-
-showFeedback.timer = null;
     /*====================================================
                     FORMATAR DATA
     ====================================================*/
@@ -810,6 +746,11 @@ showFeedback.timer = null;
             renderEmpty(
                 error.message
             );
+
+            PrimeWayFeedback.error(
+                error.message ||
+                "Não foi possível carregar as atividades."
+            );
         }
     }
 
@@ -942,9 +883,8 @@ showFeedback.timer = null;
             numericId <= 0
         ) {
 
-            showFeedback(
-                "Atividade inválida.",
-                "error"
+            PrimeWayFeedback.error(
+                "Atividade inválida."
             );
 
             return;
@@ -968,6 +908,10 @@ showFeedback.timer = null;
             !Number.isInteger(numericId) ||
             numericId <= 0
         ) {
+
+            PrimeWayFeedback.error(
+                "Atividade inválida."
+            );
 
             return;
         }
@@ -1095,8 +1039,9 @@ showFeedback.timer = null;
                 error
             );
 
-            alert(
-                error.message
+            PrimeWayFeedback.error(
+                error.message ||
+                "Não foi possível abrir a atividade."
             );
         }
     }
@@ -1207,9 +1152,11 @@ showFeedback.timer = null;
             !payload.classSubjectId
         ) {
 
-            alert(
+            PrimeWayFeedback.warning(
                 "Selecione a turma e a disciplina."
             );
+
+            classSubject.focus();
 
             return;
         }
@@ -1218,9 +1165,11 @@ showFeedback.timer = null;
             !payload.periodId
         ) {
 
-            alert(
+            PrimeWayFeedback.warning(
                 "Selecione o período letivo."
             );
+
+            activityPeriod.focus();
 
             return;
         }
@@ -1281,11 +1230,10 @@ showFeedback.timer = null;
                 );
             }
 
-          showFeedback(
-    data.message ||
-    "Atividade salva com sucesso.",
-    "success"
-);
+            PrimeWayFeedback.success(
+                data.message ||
+                "Atividade salva com sucesso."
+            );
 
             operationRunning =
                 false;
@@ -1301,11 +1249,10 @@ showFeedback.timer = null;
                 error
             );
 
-           showFeedback(
-    error.message ||
-    "Não foi possível salvar a atividade.",
-    "error"
-);
+            PrimeWayFeedback.error(
+                error.message ||
+                "Não foi possível salvar a atividade."
+            );
 
         } finally {
 
@@ -1382,8 +1329,9 @@ showFeedback.timer = null;
                 error
             );
 
-            alert(
-                error.message
+            PrimeWayFeedback.error(
+                error.message ||
+                "Não foi possível sair."
             );
 
             logoutButton.disabled =

@@ -617,8 +617,7 @@
 ====================================================*/
 
 .student-modal,
-.student-view-modal,
-.delete-student-modal {
+.student-view-modal {
     position: fixed;
 
     inset: 0;
@@ -638,14 +637,8 @@
 }
 
 
-.delete-student-modal {
-    z-index: 1200;
-}
-
-
 .student-modal.active,
-.student-view-modal.active,
-.delete-student-modal.active {
+.student-view-modal.active {
     display: flex;
 }
 
@@ -655,8 +648,7 @@
 ====================================================*/
 
 .student-modal-overlay,
-.student-view-overlay,
-.delete-student-overlay {
+.student-view-overlay {
     position: absolute;
 
     inset: 0;
@@ -678,8 +670,7 @@
 ====================================================*/
 
 .student-modal-box,
-.student-view-box,
-.delete-student-box {
+.student-view-box {
     position: relative;
 
     z-index: 2;
@@ -826,8 +817,7 @@
             AÇÕES DO FORMULÁRIO
 ====================================================*/
 
-.student-form-actions,
-.delete-student-actions {
+.student-form-actions {
     display: grid;
 
     grid-template-columns:
@@ -945,70 +935,6 @@
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: 600;
-}
-
-
-/*====================================================
-                EXCLUSÃO
-====================================================*/
-
-.delete-student-box {
-    width:
-        min(
-            380px,
-            100%
-        );
-
-    padding:
-        27px
-        23px;
-
-    text-align: center;
-}
-
-
-.delete-student-icon {
-    width: 55px;
-    height: 55px;
-
-    margin:
-        0
-        auto
-        14px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: var(--erro-fundo);
-
-    color: var(--erro);
-
-    font-size: 19px;
-}
-
-
-.delete-student-box h2 {
-    margin: 0 0 8px;
-
-    color: var(--secundaria);
-
-    font-size: 17px;
-    font-weight: 600;
-}
-
-
-.delete-student-box p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    line-height: 1.6;
 }
 
 
@@ -1230,8 +1156,7 @@
 
 
     .student-view-content,
-    .student-form-actions,
-    .delete-student-actions {
+    .student-form-actions {
         grid-template-columns: 1fr;
     }
 
@@ -1239,14 +1164,6 @@
     .student-view-content {
         padding: 16px;
     }
-
-
-    .delete-student-box {
-        padding:
-            24px
-            18px;
-    }
-
 }
 
 
@@ -1278,9 +1195,16 @@
 
 }
 
+
 .student-form small {
     display: block;
+
     margin-top: 6px;
+
     color: var(--texto-secundario);
-    font: 10px/1.4 Arial, sans-serif;
+
+    font:
+        10px/1.4
+        Arial,
+        sans-serif;
 }
