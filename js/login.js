@@ -316,7 +316,7 @@ if (
             event.preventDefault();
 
 
-            alert(
+            PrimeWayFeedback.info(
                 "A recuperação de senha ainda não está disponível nesta etapa."
             );
 
@@ -652,13 +652,13 @@ if (
                         401
                     ) {
 
-                        alert(
+                        PrimeWayFeedback.error(
                             "E-mail ou senha incorretos."
                         );
 
                     } else {
 
-                        alert(
+                        PrimeWayFeedback.error(
                             data?.message ||
                             "Não foi possível realizar o login. Tente novamente."
                         );
@@ -690,7 +690,7 @@ if (
                     limparSessaoCompatibilidade();
 
 
-                    alert(
+                    PrimeWayFeedback.error(
                         "A sessão retornada pelo servidor é inválida para esta área."
                     );
 
@@ -745,7 +745,7 @@ if (
                 limparSessaoCompatibilidade();
 
 
-                alert(
+                PrimeWayFeedback.error(
                     "Não foi possível conectar ao servidor. Verifique se o PHP está em execução e tente novamente."
                 );
 

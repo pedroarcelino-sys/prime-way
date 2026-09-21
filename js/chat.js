@@ -369,52 +369,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                MODAL DE CONFIRMAÇÃO
-    ====================================================*/
-
-    const confirmChatModal =
-        document.querySelector(
-            "#confirmChatModal"
-        );
-
-
-    const confirmChatOverlay =
-        document.querySelector(
-            ".confirm-chat-overlay"
-        );
-
-
-    const confirmChatIcon =
-        document.querySelector(
-            "#confirmChatIcon"
-        );
-
-
-    const confirmChatTitle =
-        document.querySelector(
-            "#confirmChatTitle"
-        );
-
-
-    const confirmChatMessage =
-        document.querySelector(
-            "#confirmChatMessage"
-        );
-
-
-    const confirmChatCancel =
-        document.querySelector(
-            "#confirmChatCancel"
-        );
-
-
-    const confirmChatConfirm =
-        document.querySelector(
-            "#confirmChatConfirm"
-        );
-
-
-    /*====================================================
                         MOBILE
     ====================================================*/
 
@@ -666,8 +620,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         {};
 
 
-    let confirmacaoAtual =
-        null;
 
 
     const focoAnteriorPorModal =
@@ -1097,9 +1049,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             newChatModal,
 
-            infoChatModal,
-
-            confirmChatModal
+            infoChatModal
 
         ].some(
             modal =>
@@ -3123,159 +3073,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                MODAL DE CONFIRMAÇÃO
-    ====================================================*/
-
-    function abrirConfirmacao(
-        configuracao
-    ) {
-
-        if (
-            !confirmChatModal
-        ) {
-
-            return;
-        }
-
-
-        confirmacaoAtual =
-            configuracao.onConfirm ||
-            null;
-
-
-        if (
-            confirmChatTitle
-        ) {
-
-            confirmChatTitle.textContent =
-                configuracao.title ||
-                "Confirmar ação";
-        }
-
-
-        if (
-            confirmChatMessage
-        ) {
-
-            confirmChatMessage.textContent =
-                configuracao.message ||
-                "Deseja continuar?";
-        }
-
-
-        if (
-            confirmChatIcon
-        ) {
-
-            const perigoso =
-                configuracao.danger ===
-                true;
-
-
-            confirmChatIcon
-                .classList
-                .toggle(
-                    "danger",
-                    perigoso
-                );
-
-
-            definirIcone(
-                confirmChatIcon,
-                perigoso
-                    ? "fa-trash"
-                    : "fa-broom"
-            );
-        }
-
-
-        if (
-            confirmChatConfirm
-        ) {
-
-            confirmChatConfirm
-                .classList
-                .toggle(
-                    "danger",
-                    configuracao.danger ===
-                        true
-                );
-
-
-            confirmChatConfirm.textContent =
-                configuracao.confirmText ||
-                "Confirmar";
-        }
-
-
-        fecharMenuConversa();
-
-
-        abrirModalChat(
-            confirmChatModal,
-            confirmChatCancel
-        );
-    }
-
-
-    function fecharConfirmacao() {
-
-        confirmacaoAtual =
-            null;
-
-
-        fecharModalChat(
-            confirmChatModal,
-            conversationOptionsButton
-        );
-    }
-
-
-    confirmChatCancel
-        ?.addEventListener(
-            "click",
-            fecharConfirmacao
-        );
-
-
-    confirmChatOverlay
-        ?.addEventListener(
-            "click",
-            fecharConfirmacao
-        );
-
-
-    confirmChatConfirm
-        ?.addEventListener(
-            "click",
-            function () {
-
-                const acao =
-                    confirmacaoAtual;
-
-
-                fecharConfirmacao();
-
-
-                if (
-                    typeof acao ===
-                    "function"
-                ) {
-
-                    acao();
-                }
-            }
-        );
-
-
-    /*====================================================
                     LIMPAR CONVERSA
     ====================================================*/
 
     clearConversationButton
         ?.addEventListener(
             "click",
-            function () {
+            async function () {
 
                 const nomeConversa =
                     pegarNomeConversaAtiva();
@@ -3292,67 +3096,75 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
-                abrirConfirmacao(
-                    {
-
-                        title:
-                            "Limpar conversa",
-
-                        message:
-                            `Todas as mensagens da conversa "${nomeConversa}" serão removidas deste protótipo.`,
-
-                        confirmText:
-                            "Limpar",
-
-                        danger:
-                            false,
-
-                        onConfirm:
-                            function () {
-
-                                const conversa =
-                                    chatData[
-                                        nomeConversa
-                                    ];
+                fecharMenuConversa();
 
 
-                                if (
-                                    !conversa
-                                ) {
-
-                                    return;
-                                }
-
-
-                                conversa.messages =
-                                    [];
-
-
-                                conversa.unread =
-                                    0;
+                const confirmado =
+                    await PrimeWayConfirm.warning(
+                        `Todas as mensagens da conversa "${nomeConversa}" serão removidas.`,
+                        {
+                            title:
+                                "Limpar conversa?",
+                            confirmText:
+                                "Limpar",
+                            cancelText:
+                                "Cancelar"
+                        }
+                    );
 
 
-                                atualizarContador(
-                                    nomeConversa
-                                );
+                if (
+                    !confirmado
+                ) {
+
+                    return;
+                }
 
 
-                                renderMessages(
-                                    nomeConversa
-                                );
+                const conversa =
+                    chatData[
+                        nomeConversa
+                    ];
 
 
-                                atualizarPreview(
-                                    nomeConversa,
-                                    "Conversa limpa",
-                                    "Agora"
-                                );
+                if (
+                    !conversa
+                ) {
+
+                    return;
+                }
 
 
-                                salvarEstadoChat();
-                            }
+                conversa.messages =
+                    [];
 
-                    }
+
+                conversa.unread =
+                    0;
+
+
+                atualizarContador(
+                    nomeConversa
+                );
+
+
+                renderMessages(
+                    nomeConversa
+                );
+
+
+                atualizarPreview(
+                    nomeConversa,
+                    "Conversa limpa",
+                    "Agora"
+                );
+
+
+                salvarEstadoChat();
+
+
+                PrimeWayFeedback.success(
+                    "Conversa limpa com sucesso."
                 );
             }
         );
@@ -3438,7 +3250,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     deleteConversationButton
         ?.addEventListener(
             "click",
-            function () {
+            async function () {
 
                 const nomeConversa =
                     pegarNomeConversaAtiva();
@@ -3452,63 +3264,69 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
 
-                abrirConfirmacao(
-                    {
-
-                        title:
-                            "Excluir conversa",
-
-                        message:
-                            `A conversa "${nomeConversa}" será removida da sua lista.`,
-
-                        confirmText:
-                            "Excluir",
-
-                        danger:
-                            true,
-
-                        onConfirm:
-                            function () {
-
-                                encontrarConversa(
-                                    nomeConversa
-                                )?.remove();
+                fecharMenuConversa();
 
 
-                                delete chatData[
-                                    nomeConversa
-                                ];
+                const confirmado =
+                    await PrimeWayConfirm.danger(
+                        `A conversa "${nomeConversa}" será removida da sua lista.`,
+                        {
+                            title:
+                                "Excluir conversa?",
+                            confirmText:
+                                "Excluir",
+                            cancelText:
+                                "Cancelar"
+                        }
+                    );
 
 
-                                limparPesquisaConversas();
+                if (
+                    !confirmado
+                ) {
+
+                    return;
+                }
 
 
-                                const proximaConversa =
-                                    document.querySelector(
-                                        ".conversation"
-                                    );
+                encontrarConversa(
+                    nomeConversa
+                )?.remove();
 
 
-                                if (
-                                    proximaConversa
-                                ) {
-
-                                    ativarConversa(
-                                        proximaConversa
-                                    );
+                delete chatData[
+                    nomeConversa
+                ];
 
 
-                                    return;
-                                }
+                limparPesquisaConversas();
 
 
-                                mostrarEstadoSemConversa();
+                const proximaConversa =
+                    document.querySelector(
+                        ".conversation"
+                    );
 
 
-                                salvarEstadoChat();
-                            }
+                if (
+                    proximaConversa
+                ) {
 
-                    }
+                    ativarConversa(
+                        proximaConversa
+                    );
+
+                } else {
+
+                    mostrarEstadoSemConversa();
+
+
+                    salvarEstadoChat();
+                }
+
+
+                PrimeWayFeedback.success(
+                    "Conversa excluída com sucesso."
                 );
             }
         );
@@ -3581,15 +3399,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             if (
-                confirmChatModal
-                    ?.classList
-                    .contains(
-                        "active"
-                    )
+                document.querySelector(
+                    ".primeway-confirm.show"
+                )
             ) {
-
-                fecharConfirmacao();
-
 
                 return;
             }
@@ -3740,7 +3553,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 

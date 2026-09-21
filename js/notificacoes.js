@@ -445,37 +445,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         document.querySelector(
             "#deleteNotificationButton"
         );
-
-
-    /* EXCLUSÃO */
-
-    const deleteNotificationModal =
-        document.querySelector(
-            "#deleteNotificationModal"
-        );
-
-    const deleteNotificationOverlay =
-        document.querySelector(
-            ".delete-notification-overlay"
-        );
-
-    const deleteNotificationCancel =
-        document.querySelector(
-            "#deleteNotificationCancel"
-        );
-
-    const deleteNotificationConfirm =
-        document.querySelector(
-            "#deleteNotificationConfirm"
-        );
-
-    const deleteNotificationMessage =
-        document.querySelector(
-            "#deleteNotificationMessage"
-        );
-
-
-    /* LOGOUT */
+/* LOGOUT */
 
     const logoutButton =
         document.querySelector(
@@ -529,11 +499,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         toggleReadButton,
         deleteNotificationButton,
 
-        deleteNotificationModal,
-        deleteNotificationOverlay,
-        deleteNotificationCancel,
-        deleteNotificationConfirm,
-        deleteNotificationMessage
 
     ];
 
@@ -1257,17 +1222,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let selectedNotificationId =
         null;
-
-
-    let notificationToDelete =
-        null;
-
-
-    let focoRetornoExclusao =
-        null;
-
-
-    const focoAnteriorPorModal =
+const focoAnteriorPorModal =
         new WeakMap();
 
 
@@ -2382,8 +2337,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return [
 
             notificationModal,
-            notificationViewModal,
-            deleteNotificationModal
+            notificationViewModal
 
         ].some(
             modal =>
@@ -2851,7 +2805,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     "Não foi possível salvar a notificação. Tente novamente."
                 );
 
@@ -2869,6 +2823,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             renderNotifications();
+
+
+            PrimeWayFeedback.success(
+                "Notificação publicada com sucesso."
+            );
 
         }
     );
@@ -3204,7 +3163,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             )
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 "Não foi possível alterar o status da notificação."
             );
 
@@ -3242,6 +3201,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         renderNotifications();
+
+
+
+        PrimeWayFeedback.success(
+            novoEstado
+                ? "Notificação marcada como lida."
+                : "Notificação marcada como não lida."
+        );
 
     }
 
@@ -3291,7 +3258,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             )
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 "Não foi possível marcar as notificações como lidas."
             );
 
@@ -3343,6 +3310,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         renderNotifications();
 
+
+
+        PrimeWayFeedback.success(
+            "Todas as notificações foram marcadas como lidas."
+        );
+
     }
 
 
@@ -3350,7 +3323,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     EXCLUSÃO
     ====================================================*/
 
-    function abrirExclusao() {
+    async function abrirExclusao() {
 
         if (
             !usuarioPodeGerenciarNotificacoes
@@ -3382,20 +3355,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        notificationToDelete =
-            notification.id;
-
-
-        deleteNotificationMessage.textContent =
-            `Deseja realmente excluir "${notification.title}"?`;
-
-
-        /*
-            Guarda o elemento que abriu a visualização
-            para poder devolver o foco depois.
-        */
-
-        focoRetornoExclusao =
+        const focoRetorno =
             focoAnteriorPorModal.get(
                 notificationViewModal
             ) ||
@@ -3415,25 +3375,25 @@ document.addEventListener("DOMContentLoaded", async function () {
             null;
 
 
-        abrirModal(
-            deleteNotificationModal,
-            deleteNotificationCancel
-        );
-
-    }
-
-
-    function cancelarExclusao() {
-
-        notificationToDelete =
-            null;
+        const confirmado =
+            await PrimeWayConfirm.danger(
+                `Deseja realmente excluir "${notification.title}"?`,
+                {
+                    title:
+                        "Excluir notificação?",
+                    confirmText:
+                        "Excluir",
+                    cancelText:
+                        "Cancelar"
+                }
+            );
 
 
         const fallback =
             elementoPodeReceberFoco(
-                focoRetornoExclusao
+                focoRetorno
             )
-                ? focoRetornoExclusao
+                ? focoRetorno
                 : (
                     usuarioPodeGerenciarNotificacoes
                         ? newNotificationButton
@@ -3441,36 +3401,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
 
 
-        fecharModal(
-            deleteNotificationModal,
-            {
-                fallbackFoco:
-                    fallback
+        if (
+            !confirmado
+        ) {
+
+            if (
+                fallback &&
+                typeof fallback.focus ===
+                    "function"
+            ) {
+
+                requestAnimationFrame(
+                    () =>
+                        fallback.focus()
+                );
+
             }
-        );
 
-
-        focoRetornoExclusao =
-            null;
-
-    }
-
-
-    function confirmarExclusao() {
-
-        if (
-            !usuarioPodeGerenciarNotificacoes
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            notificationToDelete ===
-            null
-        ) {
 
             return;
 
@@ -3479,7 +3426,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const idExclusao =
             String(
-                notificationToDelete
+                notification.id
             );
 
 
@@ -3499,9 +3446,23 @@ document.addEventListener("DOMContentLoaded", async function () {
             )
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 "Não foi possível excluir a notificação. Tente novamente."
             );
+
+
+            if (
+                fallback &&
+                typeof fallback.focus ===
+                    "function"
+            ) {
+
+                requestAnimationFrame(
+                    () =>
+                        fallback.focus()
+                );
+
+            }
 
 
             return;
@@ -3513,42 +3474,31 @@ document.addEventListener("DOMContentLoaded", async function () {
             novaLista;
 
 
-        notificationToDelete =
-            null;
+        renderNotifications();
 
 
-        selectedNotificationId =
-            null;
-
-
-        const fallback =
-            elementoPodeReceberFoco(
-                focoRetornoExclusao
-            )
-                ? focoRetornoExclusao
-                : (
-                    usuarioPodeGerenciarNotificacoes
-                        ? newNotificationButton
-                        : notificationSearch
-                );
-
-
-        fecharModal(
-            deleteNotificationModal,
-            {
-                fallbackFoco:
-                    fallback
-            }
+        PrimeWayFeedback.success(
+            "Notificação excluída com sucesso."
         );
 
 
-        focoRetornoExclusao =
-            null;
+        if (
+            fallback &&
+            typeof fallback.focus ===
+                "function"
+        ) {
 
+            requestAnimationFrame(
+                () =>
+                    fallback.focus()
+            );
 
-        renderNotifications();
+        }
 
     }
+
+
+
 
 
     /*====================================================
@@ -3710,15 +3660,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "click",
         abrirExclusao
     );
-
-
-    deleteNotificationConfirm.addEventListener(
-        "click",
-        confirmarExclusao
-    );
-
-
-    /*====================================================
+/*====================================================
                     FILTROS
     ====================================================*/
 
@@ -3854,25 +3796,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         "click",
         fecharVisualizacao
     );
-
-
-    /*====================================================
-                FECHAR EXCLUSÃO
-    ====================================================*/
-
-    deleteNotificationCancel.addEventListener(
-        "click",
-        cancelarExclusao
-    );
-
-
-    deleteNotificationOverlay.addEventListener(
-        "click",
-        cancelarExclusao
-    );
-
-
-    /*====================================================
+/*====================================================
                         ESC
     ====================================================*/
 
@@ -3894,22 +3818,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 Fecha somente o modal de maior
                 prioridade que estiver aberto.
             */
-
-            if (
-                deleteNotificationModal.classList.contains(
-                    "active"
-                )
-            ) {
-
-                cancelarExclusao();
-
-
-                return;
-
-            }
-
-
-            if (
+if (
                 notificationViewModal.classList.contains(
                     "active"
                 )
@@ -4038,7 +3947,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 

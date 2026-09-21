@@ -840,8 +840,7 @@
 ====================================================*/
 
 .notification-modal,
-.notification-view-modal,
-.delete-notification-modal {
+.notification-view-modal {
     position: fixed;
 
     inset: 0;
@@ -861,14 +860,8 @@
 }
 
 
-.delete-notification-modal {
-    z-index: 1200;
-}
-
-
 .notification-modal.active,
-.notification-view-modal.active,
-.delete-notification-modal.active {
+.notification-view-modal.active {
     display: flex;
 }
 
@@ -878,8 +871,7 @@
 ====================================================*/
 
 .notification-modal-overlay,
-.notification-view-overlay,
-.delete-notification-overlay {
+.notification-view-overlay {
     position: absolute;
 
     inset: 0;
@@ -901,8 +893,7 @@
 ====================================================*/
 
 .notification-modal-box,
-.notification-view-box,
-.delete-notification-box {
+.notification-view-box {
     position: relative;
 
     z-index: 2;
@@ -1063,8 +1054,7 @@
 ====================================================*/
 
 .notification-form-actions,
-.notification-view-actions,
-.delete-notification-actions {
+.notification-view-actions {
     display: grid;
 
     grid-template-columns:
@@ -1255,77 +1245,6 @@
         22px;
 }
 
-
-/*====================================================
-            EXCLUIR NOTIFICAÇÃO
-====================================================*/
-
-.delete-notification-box {
-    width:
-        min(
-            380px,
-            100%
-        );
-
-    padding:
-        27px
-        23px;
-
-    text-align: center;
-}
-
-
-.delete-notification-icon {
-    width: 55px;
-    height: 55px;
-
-    margin:
-        0
-        auto
-        14px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: var(--erro-fundo);
-
-    color: var(--erro);
-
-    font-size: 19px;
-}
-
-
-.delete-notification-box h2 {
-    margin:
-        0
-        0
-        8px;
-
-    color: var(--secundaria);
-
-    font-size: 17px;
-    font-weight: 600;
-}
-
-
-.delete-notification-box p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    line-height: 1.6;
-}
-
-
-.delete-notification-actions {
-    margin-top: 19px;
-}
 
 
 /*====================================================
@@ -1627,8 +1546,7 @@
 
     .notification-view-info,
     .notification-form-actions,
-    .notification-view-actions,
-    .delete-notification-actions {
+    .notification-view-actions {
         grid-template-columns: 1fr;
     }
 
@@ -1644,14 +1562,6 @@
             16px
             16px;
     }
-
-
-    .delete-notification-box {
-        padding:
-            24px
-            18px;
-    }
-
 }
 
 

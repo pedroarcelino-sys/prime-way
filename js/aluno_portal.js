@@ -323,8 +323,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!response.ok || !data?.success) throw new Error(data?.message || "Falha ao carregar.");
             render(data);
         } catch (error) {
-            console.error(error);
-            alert(error.message || "Não foi possível carregar sua área.");
+            console.error("Erro ao carregar a área do aluno:", error);
+
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível carregar sua área."
+            );
         }
     }
 
@@ -342,8 +346,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (!response.ok || !data?.success) throw new Error();
             clearSession();
             location.replace(LOGIN_PAGE);
-        } catch {
-            alert("Não foi possível encerrar a sessão.");
+        } catch (error) {
+            console.error("Erro ao encerrar a sessão:", error);
+            PrimeWayFeedback.error("Não foi possível encerrar a sessão.");
         }
     }
 

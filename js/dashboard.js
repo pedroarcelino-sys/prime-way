@@ -728,6 +728,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             renderizarDashboard(data);
         } catch (error) {
             console.error("Erro ao carregar os dados do Dashboard:", error);
+
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível carregar os dados do painel."
+            );
         }
     }
 
@@ -1038,7 +1043,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 

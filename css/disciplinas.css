@@ -610,8 +610,7 @@
 ====================================================*/
 
 .subject-modal,
-.subject-view-modal,
-.delete-subject-modal {
+.subject-view-modal {
     position: fixed;
 
     inset: 0;
@@ -631,14 +630,9 @@
 }
 
 
-.delete-subject-modal {
-    z-index: 1200;
-}
-
 
 .subject-modal.active,
-.subject-view-modal.active,
-.delete-subject-modal.active {
+.subject-view-modal.active {
     display: flex;
 }
 
@@ -648,8 +642,7 @@
 ====================================================*/
 
 .subject-modal-overlay,
-.subject-view-overlay,
-.delete-subject-overlay {
+.subject-view-overlay {
     position: absolute;
 
     inset: 0;
@@ -671,8 +664,7 @@
 ====================================================*/
 
 .subject-modal-box,
-.subject-view-box,
-.delete-subject-box {
+.subject-view-box {
     position: relative;
 
     z-index: 2;
@@ -819,8 +811,7 @@
             AÇÕES DO FORMULÁRIO
 ====================================================*/
 
-.subject-form-actions,
-.delete-subject-actions {
+.subject-form-actions {
     display: grid;
 
     grid-template-columns:
@@ -947,70 +938,6 @@
     font-family: Arial, sans-serif;
     font-size: 10px;
     font-weight: 600;
-}
-
-
-/*====================================================
-                EXCLUIR DISCIPLINA
-====================================================*/
-
-.delete-subject-box {
-    width:
-        min(
-            380px,
-            100%
-        );
-
-    padding:
-        27px
-        23px;
-
-    text-align: center;
-}
-
-
-.delete-subject-icon {
-    width: 55px;
-    height: 55px;
-
-    margin:
-        0
-        auto
-        14px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background: var(--erro-fundo);
-
-    color: var(--erro);
-
-    font-size: 19px;
-}
-
-
-.delete-subject-box h2 {
-    margin: 0 0 8px;
-
-    color: var(--secundaria);
-
-    font-size: 17px;
-    font-weight: 600;
-}
-
-
-.delete-subject-box p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    line-height: 1.6;
 }
 
 
@@ -1232,8 +1159,7 @@
 
 
     .subject-view-content,
-    .subject-form-actions,
-    .delete-subject-actions {
+    .subject-form-actions {
         grid-template-columns: 1fr;
     }
 
@@ -1242,12 +1168,6 @@
         padding: 16px;
     }
 
-
-    .delete-subject-box {
-        padding:
-            24px
-            18px;
-    }
 
 }
 

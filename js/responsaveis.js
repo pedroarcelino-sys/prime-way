@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     const statusFilter = document.querySelector("#statusFilter");
     const dialog = document.querySelector("#guardianDialog");
     const form = document.querySelector("#guardianForm");
-    const feedback = document.querySelector("#guardianFeedback");
     const saveButton = document.querySelector("#saveGuardianButton");
     const studentsSelect = document.querySelector("#guardianStudents");
     const password = document.querySelector("#guardianPassword");
@@ -143,11 +142,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    function resetFeedback() { if (feedback) { feedback.textContent = ""; feedback.classList.remove("success"); } }
 
     function openDialog(guardian = null) {
         if (!dialog || !form) return;
-        form.reset(); resetFeedback();
+        form.reset();
         document.querySelector("#guardianDialogTitle").textContent = guardian ? "Editar responsável" : "Novo responsável";
         document.querySelector("#guardianId").value = guardian?.id || "";
         document.querySelector("#guardianName").value = guardian?.name || "";
@@ -168,7 +166,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         dialog.showModal(); document.querySelector("#guardianName")?.focus();
     }
 
-    function closeDialog() { dialog?.close(); form?.reset(); resetFeedback(); }
+    function closeDialog() { dialog?.close(); form?.reset(); }
 
     async function loadData() {
         const [guardiansResponse, studentsResponse] = await Promise.all([
@@ -183,9 +181,19 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     async function submitGuardian(event) {
-        event.preventDefault(); if (!form?.reportValidity()) return;
-        const studentIds = Array.from(studentsSelect.selectedOptions).map((option) => Number(option.value)).filter((id) => id > 0);
-        if (studentIds.length === 0) { feedback.textContent = "Selecione ao menos um aluno."; return; }
+        event.preventDefault();
+
+        if (!form?.reportValidity()) return;
+
+        const studentIds = Array.from(studentsSelect.selectedOptions)
+            .map((option) => Number(option.value))
+            .filter((id) => id > 0);
+
+        if (studentIds.length === 0) {
+            PrimeWayFeedback.warning("Selecione ao menos um aluno.");
+            return;
+        }
+
         const payload = {
             id: document.querySelector("#guardianId").value || null,
             name: document.querySelector("#guardianName").value,
@@ -201,24 +209,110 @@ document.addEventListener("DOMContentLoaded", async function () {
             primaryContact: document.querySelector("#primaryContact").checked,
             financial: document.querySelector("#financialGuardian").checked
         };
-        saveButton.disabled = true; saveButton.textContent = "Salvando…"; resetFeedback();
+
+        const editing = Boolean(payload.id);
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Salvando…";
+
         try {
             const token = await freshToken();
-            const response = await fetch(SAVE_URL, { method: "POST", credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json", "Content-Type": "application/json", "X-CSRF-Token": token }, body: JSON.stringify(payload) });
+
+            const response = await fetch(SAVE_URL, {
+                method: "POST",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": token
+                },
+                body: JSON.stringify(payload)
+            });
+
             const data = await readJson(response);
-            if (!response.ok || !data?.success) throw new Error(data?.message || "Falha ao salvar responsável.");
-            feedback.textContent = data.message; feedback.classList.add("success"); await loadData(); window.setTimeout(closeDialog, 650);
-        } catch (error) { feedback.textContent = error.message || "Não foi possível salvar o responsável."; }
-        finally { saveButton.disabled = false; saveButton.textContent = "Salvar responsável"; }
+
+            if (!response.ok || !data?.success) {
+                throw new Error(
+                    data?.message ||
+                    "Falha ao salvar responsável."
+                );
+            }
+
+            await loadData();
+            closeDialog();
+
+            PrimeWayFeedback.success(
+                data.message ||
+                (
+                    editing
+                        ? "Responsável atualizado com sucesso."
+                        : "Responsável cadastrado com sucesso."
+                )
+            );
+        } catch (error) {
+            console.error("Erro ao salvar responsável:", error);
+
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível salvar o responsável."
+            );
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Salvar responsável";
+        }
     }
 
     async function deactivateGuardian(guardian) {
-        if (!window.confirm(`Inativar o acesso de ${guardian.name}?`)) return;
+        const confirmed = await PrimeWayConfirm.warning(
+            `Deseja inativar o acesso de "${guardian.name}"?`,
+            {
+                title: "Inativar responsável?",
+                confirmText: "Inativar acesso",
+                cancelText: "Cancelar"
+            }
+        );
+
+        if (!confirmed) return;
+
         try {
             const token = await freshToken();
-            const response = await fetch(DELETE_URL, { method: "POST", credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json", "Content-Type": "application/json", "X-CSRF-Token": token }, body: JSON.stringify({ id: guardian.id }) });
-            const data = await readJson(response); if (!response.ok || !data?.success) throw new Error(data?.message || "Falha ao inativar."); await loadData();
-        } catch (error) { alert(error.message || "Não foi possível inativar o responsável."); }
+
+            const response = await fetch(DELETE_URL, {
+                method: "POST",
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "X-CSRF-Token": token
+                },
+                body: JSON.stringify({ id: guardian.id })
+            });
+
+            const data = await readJson(response);
+
+            if (!response.ok || !data?.success) {
+                throw new Error(
+                    data?.message ||
+                    "Falha ao inativar responsável."
+                );
+            }
+
+            await loadData();
+
+            PrimeWayFeedback.success(
+                data.message ||
+                "Responsável inativado com sucesso."
+            );
+        } catch (error) {
+            console.error("Erro ao inativar responsável:", error);
+
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível inativar o responsável."
+            );
+        }
     }
 
     async function logout() {
@@ -226,11 +320,27 @@ document.addEventListener("DOMContentLoaded", async function () {
             const token = await freshToken();
             const response = await fetch(LOGOUT_URL, { method: "POST", credentials: "same-origin", headers: { Accept: "application/json", "X-CSRF-Token": token } });
             const data = await readJson(response); if (!response.ok || !data?.success) throw new Error(); clearSession(); window.location.replace(LOGIN_PAGE);
-        } catch (error) { alert("Não foi possível encerrar a sessão."); }
+        } catch (error) {
+            console.error("Erro ao encerrar a sessão:", error);
+            PrimeWayFeedback.error("Não foi possível encerrar a sessão.");
+        }
     }
 
     if (!await validateSession()) return;
-    try { await loadData(); } catch (error) { console.error(error); guardians = []; students = []; renderSummary(); renderTable(); }
+    try {
+        await loadData();
+    } catch (error) {
+        console.error("Erro ao carregar responsáveis:", error);
+        guardians = [];
+        students = [];
+        renderSummary();
+        renderTable();
+
+        PrimeWayFeedback.error(
+            error?.message ||
+            "Não foi possível carregar os responsáveis."
+        );
+    }
     search?.addEventListener("input", renderTable); statusFilter?.addEventListener("change", renderTable);
     document.querySelector("#newGuardianButton")?.addEventListener("click", () => openDialog());
     document.querySelector("#closeGuardianDialog")?.addEventListener("click", closeDialog);

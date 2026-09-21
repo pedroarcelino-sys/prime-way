@@ -454,34 +454,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    /* EXCLUSÃO */
-
-    const deleteSubjectModal =
-        document.querySelector(
-            "#deleteSubjectModal"
-        );
-
-    const deleteSubjectOverlay =
-        document.querySelector(
-            ".delete-subject-overlay"
-        );
-
-    const deleteSubjectCancel =
-        document.querySelector(
-            "#deleteSubjectCancel"
-        );
-
-    const deleteSubjectConfirm =
-        document.querySelector(
-            "#deleteSubjectConfirm"
-        );
-
-    const deleteSubjectMessage =
-        document.querySelector(
-            "#deleteSubjectMessage"
-        );
-
-
     /* LOGOUT */
 
     const logoutButton =
@@ -536,13 +508,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         viewSubjectTeacher,
         viewSubjectClass,
         viewSubjectHours,
-        viewSubjectStatus,
-
-        deleteSubjectModal,
-        deleteSubjectOverlay,
-        deleteSubjectCancel,
-        deleteSubjectConfirm,
-        deleteSubjectMessage
+        viewSubjectStatus
 
     ];
 
@@ -1338,10 +1304,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         carregarDisciplinas();
 
 
-    let subjectToDelete =
-        null;
-
-
     const focoAnteriorPorModal =
         new WeakMap();
 
@@ -2021,8 +1983,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         return [
             subjectModal,
-            subjectViewModal,
-            deleteSubjectModal
+            subjectViewModal
         ].some(
             modal =>
                 modal.classList.contains(
@@ -2508,8 +2469,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
+            const editando =
+                subjectId.value !==
+                "";
+
+
             const id =
-                subjectId.value
+                editando
                     ? Number(
                         subjectId.value
                     )
@@ -2613,7 +2579,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     "Não foi possível salvar a disciplina. Tente novamente."
                 );
 
@@ -2631,6 +2597,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             renderSubjects();
+
+
+            PrimeWayFeedback.success(
+                editando
+                    ? "Disciplina atualizada com sucesso."
+                    : "Disciplina cadastrada com sucesso."
+            );
 
         }
     );
@@ -2694,46 +2667,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                     EXCLUSÃO
     ====================================================*/
 
-    function abrirModalExclusao(
+    async function excluirDisciplina(
         item
     ) {
 
-        subjectToDelete =
-            Number(
-                item.id
+        const confirmado =
+            await PrimeWayConfirm.danger(
+                `Deseja realmente excluir a disciplina "${item.name}"?`,
+                {
+                    title: "Excluir disciplina?",
+                    confirmText: "Excluir disciplina",
+                    cancelText: "Cancelar"
+                }
             );
 
 
-        deleteSubjectMessage.textContent =
-            `Deseja realmente excluir a disciplina "${item.name}"?`;
-
-
-        abrirModal(
-            deleteSubjectModal,
-            deleteSubjectCancel
-        );
-
-    }
-
-
-    function fecharModalExclusao() {
-
-        subjectToDelete =
-            null;
-
-
-        fecharModal(
-            deleteSubjectModal
-        );
-
-    }
-
-
-    function confirmarExclusao() {
-
         if (
-            subjectToDelete ===
-            null
+            !confirmado
         ) {
 
             return;
@@ -2743,12 +2693,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const novaLista =
             subjects.filter(
-                item =>
+                disciplina =>
                     Number(
-                        item.id
+                        disciplina.id
                     ) !==
                     Number(
-                        subjectToDelete
+                        item.id
                     )
             );
 
@@ -2759,7 +2709,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             )
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 "Não foi possível excluir a disciplina. Tente novamente."
             );
 
@@ -2773,16 +2723,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             novaLista;
 
 
-        subjectToDelete =
-            null;
-
-
-        fecharModal(
-            deleteSubjectModal
-        );
-
-
         renderSubjects();
+
+
+        PrimeWayFeedback.success(
+            "Disciplina excluída com sucesso."
+        );
 
     }
 
@@ -2872,7 +2818,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 case "delete":
 
-                    abrirModalExclusao(
+                    excluirDisciplina(
                         item
                     );
 
@@ -3049,28 +2995,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                FECHAR EXCLUSÃO
-    ====================================================*/
-
-    deleteSubjectCancel.addEventListener(
-        "click",
-        fecharModalExclusao
-    );
-
-
-    deleteSubjectOverlay.addEventListener(
-        "click",
-        fecharModalExclusao
-    );
-
-
-    deleteSubjectConfirm.addEventListener(
-        "click",
-        confirmarExclusao
-    );
-
-
-    /*====================================================
                         ESC
     ====================================================*/
 
@@ -3088,24 +3012,21 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
 
-            /*
-                Fecha somente o modal de maior
-                prioridade que estiver aberto.
-            */
-
             if (
-                deleteSubjectModal.classList.contains(
-                    "active"
+                document.querySelector(
+                    ".primeway-confirm.show"
                 )
             ) {
-
-                fecharModalExclusao();
-
 
                 return;
 
             }
 
+
+            /*
+                Fecha somente o modal de maior
+                prioridade que estiver aberto.
+            */
 
             if (
                 subjectViewModal.classList.contains(
@@ -3234,7 +3155,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 

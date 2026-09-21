@@ -189,8 +189,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             renderPortal(data);
         } catch (error) {
             console.error("Erro ao carregar a área do professor:", error);
+
             renderClasses([]);
             renderStudents([]);
+
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível carregar a área do professor."
+            );
         }
     }
 
@@ -213,7 +219,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             window.location.replace(LOGIN_PAGE);
         } catch (error) {
             console.error("Erro ao encerrar a sessão:", error);
-            alert("Não foi possível encerrar a sessão. Tente novamente.");
+            PrimeWayFeedback.error(
+                "Não foi possível encerrar a sessão. Tente novamente."
+            );
             if (logoutButton) {
                 logoutButton.disabled = false;
             }

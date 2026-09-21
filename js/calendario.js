@@ -504,34 +504,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    /* EXCLUSÃO */
-
-    const deleteEventModal =
-        document.querySelector(
-            "#deleteEventModal"
-        );
-
-    const deleteEventOverlay =
-        document.querySelector(
-            ".delete-event-overlay"
-        );
-
-    const deleteEventCancel =
-        document.querySelector(
-            "#deleteEventCancel"
-        );
-
-    const deleteEventConfirm =
-        document.querySelector(
-            "#deleteEventConfirm"
-        );
-
-    const deleteEventMessage =
-        document.querySelector(
-            "#deleteEventMessage"
-        );
-
-
     /* LOGOUT */
 
     const logoutButton =
@@ -597,13 +569,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         viewEventDescription,
 
         editEventButton,
-        deleteEventButton,
-
-        deleteEventModal,
-        deleteEventOverlay,
-        deleteEventCancel,
-        deleteEventConfirm,
-        deleteEventMessage
+        deleteEventButton
 
     ];
 
@@ -838,10 +804,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     let selectedEventId =
-        null;
-
-
-    let eventToDelete =
         null;
 
 
@@ -3483,8 +3445,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return [
 
             eventModal,
-            eventViewModal,
-            deleteEventModal
+            eventViewModal
 
         ].some(
             modal =>
@@ -3978,8 +3939,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
 
 
+            const editando =
+                index >= 0;
+
+
             if (
-                index >= 0
+                editando
             ) {
 
                 novaLista[index] =
@@ -4032,7 +3997,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 !salvo
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     "Não foi possível salvar o evento. Tente novamente."
                 );
 
@@ -4073,6 +4038,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             renderCalendar();
+
+
+            PrimeWayFeedback.success(
+                editando
+                    ? "Evento atualizado com sucesso."
+                    : "Evento cadastrado com sucesso."
+            );
 
         }
     );
@@ -4174,7 +4146,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     EXCLUSÃO
     ====================================================*/
 
-    function abrirConfirmacaoExclusao(
+    async function abrirConfirmacaoExclusao(
         eventData
     ) {
 
@@ -4187,74 +4159,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        eventToDelete =
-            Number(
-                eventData.id
+        const confirmado =
+            await PrimeWayConfirm.danger(
+                `Deseja realmente excluir o evento "${eventData.title}"?`,
+                {
+                    title:
+                        "Excluir evento?",
+                    confirmText:
+                        "Excluir evento",
+                    cancelText:
+                        "Cancelar"
+                }
             );
 
 
-        deleteEventMessage.textContent =
-            `Deseja realmente excluir "${eventData.title}"?`;
-
-
-        /*
-            O modal de visualização é encerrado antes
-            da confirmação sem devolver o foco para
-            o calendário neste momento.
-        */
-
-        fecharModal(
-            eventViewModal,
-            {
-                restaurarFoco:
-                    false
-            }
-        );
-
-
-        selectedEventId =
-            null;
-
-
-        abrirModal(
-            deleteEventModal,
-            deleteEventCancel
-        );
-
-    }
-
-
-    function cancelarExclusao() {
-
-        eventToDelete =
-            null;
-
-
-        selectedEventId =
-            null;
-
-
-        fecharModal(
-            deleteEventModal
-        );
-
-    }
-
-
-    function confirmarExclusao() {
-
         if (
-            !usuarioPodeGerenciarCalendario
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            eventToDelete ===
-            null
+            !confirmado
         ) {
 
             return;
@@ -4263,7 +4183,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         const idExclusao =
-            eventToDelete;
+            Number(
+                eventData.id
+            );
 
 
         const novaLista =
@@ -4272,9 +4194,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     Number(
                         evento.id
                     ) !==
-                    Number(
-                        idExclusao
-                    )
+                    idExclusao
             );
 
 
@@ -4316,7 +4236,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             !salvo
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 "Não foi possível excluir o evento. Tente novamente."
             );
 
@@ -4330,16 +4250,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             novaLista;
 
 
-        eventToDelete =
-            null;
-
-
         selectedEventId =
             null;
 
 
         fecharModal(
-            deleteEventModal
+            eventViewModal,
+            {
+                restaurarFoco:
+                    false
+            }
         );
 
 
@@ -4347,6 +4267,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         renderCalendar();
+
+
+        PrimeWayFeedback.success(
+            "Evento excluído com sucesso."
+        );
 
     }
 
@@ -4821,12 +4746,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    deleteEventConfirm.addEventListener(
-        "click",
-        confirmarExclusao
-    );
-
-
     /*====================================================
                 FECHAR MODAL DE EVENTO
     ====================================================*/
@@ -4862,22 +4781,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     eventViewOverlay.addEventListener(
         "click",
         fecharVisualizacao
-    );
-
-
-    /*====================================================
-                FECHAR EXCLUSÃO
-    ====================================================*/
-
-    deleteEventCancel.addEventListener(
-        "click",
-        cancelarExclusao
-    );
-
-
-    deleteEventOverlay.addEventListener(
-        "click",
-        cancelarExclusao
     );
 
 
@@ -4940,18 +4843,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
             /*
-                Fecha somente o modal de maior
-                prioridade que estiver aberto.
+                A confirmação global trata o próprio
+                Escape. Enquanto ela estiver aberta,
+                não fechamos o modal de evento abaixo.
             */
 
             if (
-                deleteEventModal.classList.contains(
-                    "active"
+                document.querySelector(
+                    ".primeway-confirm.show"
                 )
             ) {
-
-                cancelarExclusao();
-
 
                 return;
 
@@ -5087,7 +4988,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 

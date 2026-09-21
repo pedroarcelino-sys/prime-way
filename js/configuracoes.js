@@ -621,38 +621,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
 
 
-    const resetSettingsModal =
-        document.querySelector(
-            "#resetSettingsModal"
-        );
-
-
-    const resetSettingsOverlay =
-        document.querySelector(
-            ".reset-settings-overlay"
-        );
-
-
-    const resetSettingsCancel =
-        document.querySelector(
-            "#resetSettingsCancel"
-        );
-
-
-    const resetSettingsConfirm =
-        document.querySelector(
-            "#resetSettingsConfirm"
-        );
-
-
-    /* TOAST */
-
-    const settingsToast =
-        document.querySelector(
-            "#settingsToast"
-        );
-
-
     /* LOGOUT */
 
     const logoutButton =
@@ -705,13 +673,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         currentNotificationsStatus,
 
         resetSettingsButton,
-        resetSettingsModal,
-        resetSettingsOverlay,
-        resetSettingsCancel,
-        resetSettingsConfirm,
-
-        settingsToast
-
     ];
 
 
@@ -868,23 +829,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         return fallback;
-
-    }
-
-
-    function elementoPodeReceberFoco(
-        elemento
-    ) {
-
-        return Boolean(
-            elemento &&
-            elemento.isConnected &&
-            typeof elemento.focus ===
-                "function" &&
-            elemento
-                .getClientRects()
-                .length > 0
-        );
 
     }
 
@@ -1326,7 +1270,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                erro?.message ||
                 "Não foi possível carregar as configurações do servidor."
             );
 
@@ -1445,12 +1390,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    let toastTimeout =
-        null;
 
 
-    let focoAntesDoReset =
-        null;
 
 
     /*====================================================
@@ -2120,65 +2061,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                        TOAST
-    ====================================================*/
-
-    function mostrarToast(
-        mensagem
-    ) {
-
-        const span =
-            settingsToast.querySelector(
-                "span"
-            );
-
-
-        if (
-            span
-        ) {
-
-            span.textContent =
-                mensagem;
-
-        }
-
-
-        settingsToast.classList.add(
-            "active"
-        );
-
-
-        if (
-            toastTimeout
-        ) {
-
-            clearTimeout(
-                toastTimeout
-            );
-
-        }
-
-
-        toastTimeout =
-            setTimeout(
-                function () {
-
-                    settingsToast.classList.remove(
-                        "active"
-                    );
-
-
-                    toastTimeout =
-                        null;
-
-                },
-                3000
-            );
-
-    }
-
-
-    /*====================================================
                 SALVAR FORMULÁRIO
     ====================================================*/
 
@@ -2227,7 +2109,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             !resultado.success
         ) {
 
-            alert(
+            PrimeWayFeedback.error(
                 resultado.message ||
                 "Não foi possível salvar as configurações. Tente novamente."
             );
@@ -2245,7 +2127,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         preencherFormulario();
 
 
-        mostrarToast(
+        PrimeWayFeedback.success(
             "Configurações salvas com sucesso."
         );
 
@@ -2277,138 +2159,34 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                MODAL RESTAURAR
+            RESTAURAR CONFIGURAÇÕES
     ====================================================*/
-
-    function abrirModalRestaurar() {
-
-        const elementoAtivo =
-            document.activeElement;
-
-
-        focoAntesDoReset =
-            elementoAtivo instanceof
-                HTMLElement
-                ? elementoAtivo
-                : resetSettingsButton;
-
-
-        resetSettingsModal.classList.add(
-            "active"
-        );
-
-
-        resetSettingsModal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-
-        document.body.classList.add(
-            "modal-open"
-        );
-
-
-        requestAnimationFrame(
-            function () {
-
-                resetSettingsCancel.focus();
-
-            }
-        );
-
-    }
-
-
-    function fecharModalRestaurar(
-        restaurarFoco = true
-    ) {
-
-        resetSettingsModal.classList.remove(
-            "active"
-        );
-
-
-        resetSettingsModal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-
-        document.body.classList.remove(
-            "modal-open"
-        );
-
-
-        if (
-            !restaurarFoco
-        ) {
-
-            focoAntesDoReset =
-                null;
-
-
-            return;
-
-        }
-
-
-        const destinoFoco =
-            elementoPodeReceberFoco(
-                focoAntesDoReset
-            )
-                ? focoAntesDoReset
-                : resetSettingsButton;
-
-
-        focoAntesDoReset =
-            null;
-
-
-        requestAnimationFrame(
-            function () {
-
-                destinoFoco.focus();
-
-            }
-        );
-
-    }
-
 
     resetSettingsButton.addEventListener(
         "click",
-        abrirModalRestaurar
-    );
-
-
-    resetSettingsCancel.addEventListener(
-        "click",
-        function () {
-
-            fecharModalRestaurar();
-
-        }
-    );
-
-
-    resetSettingsOverlay.addEventListener(
-        "click",
-        function () {
-
-            fecharModalRestaurar();
-
-        }
-    );
-
-
-    /*====================================================
-            CONFIRMAR RESTAURAÇÃO
-    ====================================================*/
-
-    resetSettingsConfirm.addEventListener(
-        "click",
         async function () {
+
+            const confirmado =
+                await PrimeWayConfirm.warning(
+                    "As configurações gerais serão restauradas para os valores padrão. O ano letivo atual será mantido.",
+                    {
+                        title:
+                            "Restaurar configurações?",
+                        confirmText:
+                            "Restaurar",
+                        cancelText:
+                            "Cancelar"
+                    }
+                );
+
+
+            if (
+                !confirmado
+            ) {
+
+                return;
+            }
+
 
             const padrao =
                 copiarPadrao();
@@ -2418,14 +2196,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 O ano letivo pertence à estrutura
                 acadêmica, não às configurações gerais.
             */
+
             padrao.academic.year =
                 settings.academic.year;
 
-
-            /*
-                Não altera o formulário caso a
-                gravação não possa ser concluída.
-            */
 
             const resultado =
                 await salvarConfiguracoes(
@@ -2437,14 +2211,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 !resultado.success
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     resultado.message ||
                     "Não foi possível restaurar as configurações. Tente novamente."
                 );
 
 
                 return;
-
             }
 
 
@@ -2455,13 +2228,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             preencherFormulario();
 
 
-            fecharModalRestaurar();
-
-
-            mostrarToast(
+            PrimeWayFeedback.success(
                 "Configurações padrão restauradas."
             );
-
         }
     );
 
@@ -2636,35 +2405,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     /*====================================================
-                        ESC
-    ====================================================*/
-
-    document.addEventListener(
-        "keydown",
-        function (
-            event
-        ) {
-
-            if (
-                event.key !==
-                    "Escape" ||
-                !resetSettingsModal.classList.contains(
-                    "active"
-                )
-            ) {
-
-                return;
-
-            }
-
-
-            fecharModalRestaurar();
-
-        }
-    );
-
-
-    /*====================================================
                     LOGOUT PHP
     ====================================================*/
 
@@ -2765,7 +2505,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             );
 
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 
@@ -2807,19 +2548,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     INICIALIZAÇÃO
     ====================================================*/
 
-    /*
-        Garante que o atributo de acessibilidade
-        comece coerente com o estado visual do modal.
-    */
 
-    resetSettingsModal.setAttribute(
-        "aria-hidden",
-        resetSettingsModal.classList.contains(
-            "active"
-        )
-            ? "false"
-            : "true"
-    );
 
 
     /*

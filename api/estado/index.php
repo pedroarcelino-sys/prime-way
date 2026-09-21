@@ -12,6 +12,10 @@ require_once
     '/../_bootstrap.php';
 
 
+/*====================================================
+                    MÉTODO HTTP
+====================================================*/
+
 $metodo =
     strtoupper(
         (string) (
@@ -39,14 +43,29 @@ if (
 }
 
 
-$usuario =
-    primewayExigirPerfis([
-        'admin',
-        'professor'
-    ]);
+/*====================================================
+                USUÁRIO AUTENTICADO
+====================================================*/
 
+/*
+    O core.js chama este endpoint em todas as páginas
+    autenticadas para hidratar o estado compartilhado.
+
+    Por isso, este endpoint não deve limitar o GET
+    apenas a Admin e Professor. Perfis que ainda não
+    usam o estado legado recebem um estado vazio.
+*/
+
+$usuario =
+    primewayExigirAutenticacao();
+
+
+/*====================================================
+            CHAVES DISPONÍVEIS POR PERFIL
+====================================================*/
 
 $chavesPorPerfil = [
+
     'admin' => [
         'primewayGuardians',
         'primewaySubjects',
@@ -55,13 +74,26 @@ $chavesPorPerfil = [
         'primewayNotifications',
         'primewayChatProfessor'
     ],
+
     'professor' => [
         'primewayClasses',
         'primewayCalendarEvents',
         'primewayNotifications',
         'primewayChatProfessor'
-    ]
+    ],
+
+    /*
+        Estes perfis já possuem páginas autenticadas,
+        mas não precisam receber o estado legado neste
+        momento. O GET continua válido e retorna {}.
+    */
+
+    'secretaria' => [],
+    'aluno' => [],
+    'responsavel' => []
+
 ];
+
 
 $chavesPermitidas =
     $chavesPorPerfil[
@@ -69,14 +101,28 @@ $chavesPermitidas =
     ] ??
     [];
 
+
+/*====================================================
+            CHAVES GRAVÁVEIS POR PERFIL
+====================================================*/
+
 $chavesGravaveisPorPerfil = [
-    'admin' => $chavesPorPerfil['admin'],
+
+    'admin' =>
+        $chavesPorPerfil['admin'],
+
     'professor' => [
         'primewayCalendarEvents',
         'primewayNotifications',
         'primewayChatProfessor'
-    ]
+    ],
+
+    'secretaria' => [],
+    'aluno' => [],
+    'responsavel' => []
+
 ];
+
 
 $chavesGravaveis =
     $chavesGravaveisPorPerfil[
@@ -84,26 +130,64 @@ $chavesGravaveis =
     ] ??
     [];
 
+
+/*====================================================
+                ESCOPO DO USUÁRIO
+====================================================*/
+
 $escopoUsuario =
     'usuario:' .
     $usuario['id'];
 
 
 try {
-    $pdo = primewayPdo();
+
+    $pdo =
+        primewayPdo();
+
+
+    /*================================================
+                        GET
+    ================================================*/
 
     if (
         $metodo === 'GET'
     ) {
+
+        /*
+            Perfis sem chaves compartilhadas ainda
+            precisam receber uma resposta 200 válida.
+
+            Isso evita:
+            - HTTP 403 no core.js;
+            - SQL inválido com "IN ()".
+        */
+
+        if (
+            $chavesPermitidas === []
+        ) {
+
+            primewayResponderJson([
+                'success' => true,
+                'state' => [],
+                'writableKeys' => [],
+                'csrfToken' => primewayTokenCsrf()
+            ]);
+        }
+
+
         $marcadores =
             implode(
                 ', ',
                 array_fill(
                     0,
-                    count($chavesPermitidas),
+                    count(
+                        $chavesPermitidas
+                    ),
                     '?'
                 )
             );
+
 
         $stmt =
             $pdo->prepare(
@@ -117,19 +201,27 @@ try {
                         OR escopo = ?
                    )
                  ORDER BY
-                    CASE WHEN escopo = 'global' THEN 0 ELSE 1 END"
+                    CASE
+                        WHEN escopo = 'global'
+                        THEN 0
+                        ELSE 1
+                    END"
             );
+
 
         $stmt->execute([
             ...$chavesPermitidas,
             $escopoUsuario
         ]);
 
+
         $estado = [];
+
 
         foreach (
             $stmt->fetchAll() as $linha
         ) {
+
             $estado[
                 (string) $linha['chave']
             ] = json_decode(
@@ -140,6 +232,7 @@ try {
             );
         }
 
+
         primewayResponderJson([
             'success' => true,
             'state' => $estado,
@@ -149,15 +242,27 @@ try {
     }
 
 
+    /*================================================
+                        POST
+    ================================================*/
+
     primewayExigirCsrf();
+
 
     $dados =
         primewayLerJson();
 
+
     $chave =
-        is_string($dados['key'] ?? null)
-            ? trim($dados['key'])
+        is_string(
+            $dados['key'] ??
+            null
+        )
+            ? trim(
+                $dados['key']
+            )
             : '';
+
 
     if (
         !in_array(
@@ -165,16 +270,22 @@ try {
             $chavesGravaveis,
             true
         ) ||
-        !array_key_exists('value', $dados)
+        !array_key_exists(
+            'value',
+            $dados
+        )
     ) {
+
         primewayResponderJson(
             [
                 'success' => false,
-                'message' => 'Chave de estado inválida.'
+                'message' =>
+                    'Chave de estado inválida ou não permitida para este perfil.'
             ],
             422
         );
     }
+
 
     $valorJson =
         json_encode(
@@ -184,32 +295,49 @@ try {
             JSON_THROW_ON_ERROR
         );
 
+
     if (
-        strlen($valorJson) >
+        strlen(
+            $valorJson
+        ) >
         2 * 1024 * 1024
     ) {
+
         primewayResponderJson(
             [
                 'success' => false,
-                'message' => 'O estado excede o limite de 2 MB.'
+                'message' =>
+                    'O estado excede o limite de 2 MB.'
             ],
             413
         );
     }
 
+
+    /*================================================
+                    ESCOPO DA CHAVE
+    ================================================*/
+
     $pessoal =
         $chave ===
         'primewayChatProfessor';
+
 
     $escopo =
         $pessoal
             ? $escopoUsuario
             : 'global';
 
+
     $usuarioId =
         $pessoal
             ? $usuario['id']
             : null;
+
+
+    /*================================================
+                    PERSISTÊNCIA
+    ================================================*/
 
     $stmt =
         $pdo->prepare(
@@ -233,33 +361,50 @@ try {
                 atualizado_em = CURRENT_TIMESTAMP'
         );
 
+
     $stmt->execute([
-        ':chave' => $chave,
-        ':escopo' => $escopo,
-        ':usuario_id' => $usuarioId,
-        ':valor_json' => $valorJson,
-        ':atualizado_por' => $usuario['id']
+        ':chave' =>
+            $chave,
+
+        ':escopo' =>
+            $escopo,
+
+        ':usuario_id' =>
+            $usuarioId,
+
+        ':valor_json' =>
+            $valorJson,
+
+        ':atualizado_por' =>
+            $usuario['id']
     ]);
+
 
     primewayResponderJson([
         'success' => true,
         'key' => $chave,
-        'updatedAt' => date(DATE_ATOM),
+        'updatedAt' => date(
+            DATE_ATOM
+        ),
         'csrfToken' => primewayTokenCsrf()
     ]);
+
 
 } catch (
     Throwable $erro
 ) {
+
     error_log(
         'PrimeWay estado: ' .
         $erro->getMessage()
     );
 
+
     primewayResponderJson(
         [
             'success' => false,
-            'message' => 'Não foi possível sincronizar os dados.'
+            'message' =>
+                'Não foi possível sincronizar os dados.'
         ],
         500
     );
