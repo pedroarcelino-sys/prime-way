@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Notas | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_notas.css"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        >
+
+            <div class="sidebar-logo">
+                <img
+                    src="../img/logo.png"
+                    alt="PrimeWay School"
+                >
+            </div>
+
+            <nav
+                class="sidebar-menu"
+                aria-label="Navegação do professor"
+            >
+
+                <a href="professor.html">
+                    <i
+                        class="fa-solid fa-house"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Meu painel</span>
+                </a>
+
+                <a href="professor_atividades.html">
+                    <i
+                        class="fa-solid fa-list-check"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Atividades</span>
+                </a>
+
+                <a
+                    href="professor_notas.html"
+                    class="active"
+                    aria-current="page"
+                >
+                    <i
+                        class="fa-solid fa-clipboard-check"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Notas</span>
+                </a>
+
+                <a href="calendario.html">
+                    <i
+                        class="fa-solid fa-calendar-days"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Calendário</span>
+                </a>
+
+                <a href="notificacoes.html">
+                    <i
+                        class="fa-solid fa-bell"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Notificações</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button
+                    type="button"
+                    id="logoutButton"
+                >
+                    <i
+                        class="fa-solid fa-right-from-bracket"
+                        aria-hidden="true"
+                    ></i>
+                    <span>Sair</span>
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <main class="grades-page">
+
+            <header class="grades-header">
+
+                <div>
+                    <span class="section-label">
+                        Área do professor
+                    </span>
+
+                    <h1>Notas e avaliações</h1>
+
+                    <p>
+                        Crie avaliações e lance as notas dos alunos
+                        das suas turmas e disciplinas.
+                    </p>
+                </div>
+
+                <div class="grades-header-actions">
+
+                    <div class="school-year-card">
+                        <span>Ano letivo</span>
+                        <strong id="schoolYearValue">—</strong>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="newEvaluationButton"
+                    >
+                        <i
+                            class="fa-solid fa-plus"
+                            aria-hidden="true"
+                        ></i>
+                        Nova avaliação
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <section
+                class="grades-summary"
+                aria-label="Resumo das avaliações"
+            >
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-clipboard-list"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Total de avaliações</span>
+                        <strong id="totalEvaluations">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-check-double"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Finalizadas</span>
+                        <strong id="finalizedEvaluations">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-pen-to-square"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Notas lançadas</span>
+                        <strong id="launchedGrades">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon warning">
+                        <i
+                            class="fa-solid fa-clock"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Notas pendentes</span>
+                        <strong id="pendingGrades">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+
+            <section class="grades-panel">
+
+                <div class="grades-panel-header">
+
+                    <div>
+                        <h2>Minhas avaliações</h2>
+                        <p>
+                            Filtre por turma, disciplina ou período
+                            e faça o lançamento das notas.
+                        </p>
+                    </div>
+
+                    <div class="grades-filters">
+
+                        <label>
+                            <span class="sr-only">
+                                Buscar avaliação
+                            </span>
+                            <input
+                                type="search"
+                                id="evaluationSearch"
+                                placeholder="Buscar avaliação..."
+                                autocomplete="off"
+                            >
+                        </label>
+
+                        <select
+                            id="classSubjectFilter"
+                            aria-label="Filtrar por turma e disciplina"
+                        >
+                            <option value="">
+                                Todas as turmas e disciplinas
+                            </option>
+                        </select>
+
+                        <select
+                            id="periodFilter"
+                            aria-label="Filtrar por período"
+                        >
+                            <option value="">
+                                Todos os períodos
+                            </option>
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grades-table-wrap">
+
+                    <table class="grades-table">
+
+                        <thead>
+                            <tr>
+                                <th>Avaliação</th>
+                                <th>Turma / disciplina</th>
+                                <th>Período</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Lançamento</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="evaluationsTableBody">
+
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="grades-empty-cell"
+                                >
+                                    Carregando avaliações…
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <dialog
+        class="grades-dialog"
+        id="evaluationDialog"
+        aria-labelledby="evaluationDialogTitle"
+    >
+
+        <form
+            method="dialog"
+            id="evaluationForm"
+        >
+
+            <div class="dialog-heading">
+
+                <div>
+                    <span class="section-label">
+                        Avaliação
+                    </span>
+
+                    <h2 id="evaluationDialogTitle">
+                        Nova avaliação
+                    </h2>
+
+                    <p>
+                        Defina os dados da avaliação antes
+                        de lançar as notas.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="dialog-close"
+                    id="closeEvaluationDialog"
+                    aria-label="Fechar"
+                >
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+            <input
+                type="hidden"
+                id="evaluationId"
+            >
+
+            <div class="evaluation-form-grid">
+
+                <div class="form-group full-field">
+                    <label for="evaluationClassSubject">
+                        Turma e disciplina
+                    </label>
+
+                    <select
+                        id="evaluationClassSubject"
+                        required
+                    >
+                        <option value="">
+                            Selecione
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationPeriod">
+                        Período letivo
+                    </label>
+
+                    <select
+                        id="evaluationPeriod"
+                        required
+                    >
+                        <option value="">
+                            Selecione
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationType">
+                        Tipo
+                    </label>
+
+                    <select
+                        id="evaluationType"
+                        required
+                    >
+                        <option value="Prova">Prova</option>
+                        <option value="Trabalho">Trabalho</option>
+                        <option value="Atividade">Atividade</option>
+                        <option value="Projeto">Projeto</option>
+                        <option value="Recuperação">Recuperação</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-field">
+                    <label for="evaluationTitle">
+                        Título
+                    </label>
+
+                    <input
+                        type="text"
+                        id="evaluationTitle"
+                        maxlength="190"
+                        placeholder="Ex: Prova do 3º bimestre"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationMaximumValue">
+                        Valor máximo
+                    </label>
+
+                    <input
+                        type="number"
+                        id="evaluationMaximumValue"
+                        min="0.01"
+                        max="9999.99"
+                        step="0.01"
+                        value="10"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationWeight">
+                        Peso
+                    </label>
+
+                    <input
+                        type="number"
+                        id="evaluationWeight"
+                        min="0.01"
+                        max="9999.99"
+                        step="0.01"
+                        value="1"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationDate">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="evaluationDate"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="evaluationStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="evaluationStatus"
+                        required
+                    >
+                        <option value="Planejada">Planejada</option>
+                        <option value="Aplicada">Aplicada</option>
+                        <option value="Finalizada">Finalizada</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-field">
+                    <label for="evaluationDescription">
+                        Descrição
+                    </label>
+
+                    <textarea
+                        id="evaluationDescription"
+                        rows="4"
+                        maxlength="5000"
+                        placeholder="Observações gerais sobre a avaliação..."
+                    ></textarea>
+                </div>
+
+            </div>
+
+            <div class="dialog-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelEvaluationButton"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveEvaluationButton"
+                >
+                    <i
+                        class="fa-solid fa-floppy-disk"
+                        aria-hidden="true"
+                    ></i>
+                    Salvar avaliação
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <dialog
+        class="grades-dialog grades-launch-dialog"
+        id="gradesDialog"
+        aria-labelledby="gradesDialogTitle"
+    >
+
+        <form
+            method="dialog"
+            id="gradesForm"
+        >
+
+            <div class="dialog-heading">
+
+                <div>
+                    <span class="section-label">
+                        Lançamento
+                    </span>
+
+                    <h2 id="gradesDialogTitle">
+                        Lançar notas
+                    </h2>
+
+                    <p id="gradesDialogContext">
+                        Selecione uma avaliação.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="dialog-close"
+                    id="closeGradesDialog"
+                    aria-label="Fechar"
+                >
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+
+            <div class="grades-launch-info">
+
+                <div>
+                    <span>Valor máximo</span>
+                    <strong id="gradesMaximumValue">—</strong>
+                </div>
+
+                <div>
+                    <span>Alunos</span>
+                    <strong id="gradesStudentsCount">0</strong>
+                </div>
+
+                <div>
+                    <span>Preenchidas</span>
+                    <strong id="gradesFilledCount">0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="grades-launch-table-wrap">
+
+                <table class="grades-launch-table">
+
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Aluno</th>
+                            <th>Matrícula</th>
+                            <th>Nota</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="gradesStudentsBody">
+
+                        <tr>
+                            <td
+                                colspan="5"
+                                class="grades-empty-cell"
+                            >
+                                Nenhum aluno carregado.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p class="grades-hint">
+                Deixe a nota em branco para remover um lançamento existente.
+            </p>
+
+            <div class="dialog-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelGradesButton"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveGradesButton"
+                >
+                    <i
+                        class="fa-solid fa-check"
+                        aria-hidden="true"
+                    ></i>
+                    Salvar notas
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_notas.js?v=20260921-1"></script>
+
+</body>
+
+</html>

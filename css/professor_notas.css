@@ -1,0 +1,845 @@
+/*====================================================
+        NOTAS DO PROFESSOR - PRIMEWAY SCHOOL
+====================================================*/
+
+
+.grades-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+
+    padding:
+        30px
+        32px
+        45px;
+
+    background: var(--principal);
+}
+
+
+/*====================================================
+                    CABEÇALHO
+====================================================*/
+
+.grades-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 24px;
+
+    margin-bottom: 24px;
+}
+
+
+.grades-header h1 {
+    margin:
+        4px
+        0
+        6px;
+
+    color: var(--secundaria);
+
+    font-size: 27px;
+    font-weight: 600;
+}
+
+
+.grades-header p {
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+.grades-header-actions {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.school-year-card {
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        0
+        13px;
+
+    border:
+        1px solid
+        var(--borda-clara);
+
+    border-radius: 9px;
+
+    background: var(--branco);
+
+    font-family: Arial, sans-serif;
+
+    box-shadow: var(--sombra-p);
+}
+
+
+.school-year-card span {
+    color: var(--texto-claro);
+
+    font-size: 9px;
+}
+
+
+.school-year-card strong {
+    color: var(--secundaria);
+
+    font-size: 11px;
+}
+
+
+/*====================================================
+                    RESUMO
+====================================================*/
+
+.grades-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 16px;
+
+    margin-bottom: 22px;
+}
+
+
+/*====================================================
+                    PAINEL
+====================================================*/
+
+.grades-panel {
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(
+            30,
+            58,
+            138,
+            .05
+        );
+
+    border-radius: 16px;
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-p);
+}
+
+
+.grades-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 22px;
+
+    padding:
+        20px
+        22px;
+
+    border-bottom:
+        1px solid
+        var(--borda-clara);
+}
+
+
+.grades-panel-header h2 {
+    margin:
+        0
+        0
+        4px;
+
+    color: var(--secundaria);
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.grades-panel-header p {
+    margin: 0;
+
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+/*====================================================
+                    FILTROS
+====================================================*/
+
+.grades-filters {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.grades-filters input,
+.grades-filters select {
+    height: 38px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius: 9px;
+
+    background: var(--cinza-50);
+
+    color: #4B5563;
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+}
+
+
+.grades-filters input {
+    width: 180px;
+
+    padding:
+        0
+        11px;
+}
+
+
+.grades-filters select {
+    min-width: 160px;
+
+    padding:
+        0
+        28px
+        0
+        10px;
+}
+
+
+.grades-filters input:focus,
+.grades-filters select:focus {
+    border-color: var(--primaria);
+
+    background: var(--branco);
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+            211,
+            175,
+            55,
+            .10
+        );
+}
+
+
+/*====================================================
+                    TABELA
+====================================================*/
+
+.grades-table-wrap,
+.grades-launch-table-wrap {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.grades-table,
+.grades-launch-table {
+    width: 100%;
+
+    font-family: Arial, sans-serif;
+}
+
+
+.grades-table th,
+.grades-table td,
+.grades-launch-table th,
+.grades-launch-table td {
+    padding:
+        13px
+        14px;
+
+    border-bottom:
+        1px solid
+        #F1F1F1;
+
+    text-align: left;
+    vertical-align: middle;
+}
+
+
+.grades-table th,
+.grades-launch-table th {
+    background: #FAFAFA;
+
+    color: var(--texto-claro);
+
+    font-size: 8px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .04em;
+}
+
+
+.grades-table td,
+.grades-launch-table td {
+    color: #4B5563;
+
+    font-size: 9px;
+}
+
+
+.grades-table tbody tr:hover,
+.grades-launch-table tbody tr:hover {
+    background: #FFFDF7;
+}
+
+
+.evaluation-title {
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.evaluation-title strong {
+    color: var(--secundaria);
+
+    font-size: 10px;
+}
+
+
+.evaluation-title span,
+.table-muted {
+    color: var(--texto-claro);
+
+    font-size: 8px;
+}
+
+
+.grades-empty-cell {
+    padding:
+        35px
+        15px
+        !important;
+
+    color: var(--texto-claro)
+        !important;
+
+    text-align: center
+        !important;
+}
+
+
+.table-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.table-action-button {
+    min-height: 32px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding:
+        0
+        10px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius: 8px;
+
+    background: var(--branco);
+
+    color: var(--secundaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+.table-action-button:hover {
+    border-color: var(--primaria);
+
+    background: #FFFEF7;
+}
+
+
+/*====================================================
+                    DIALOG
+====================================================*/
+
+.grades-dialog {
+    width:
+        min(
+            680px,
+            calc(
+                100vw -
+                30px
+            )
+        );
+
+    max-height:
+        calc(
+            100vh -
+            30px
+        );
+
+    padding: 0;
+
+    border: none;
+    border-radius: 16px;
+
+    background: var(--branco);
+
+    box-shadow: var(--sombra-g);
+}
+
+
+.grades-dialog::backdrop {
+    background:
+        rgba(
+            20,
+            27,
+            45,
+            .50
+        );
+
+    backdrop-filter:
+        blur(
+            3px
+        );
+}
+
+
+.grades-dialog form {
+    max-height:
+        calc(
+            100vh -
+            30px
+        );
+
+    overflow-y: auto;
+}
+
+
+.dialog-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding:
+        21px
+        22px;
+
+    border-bottom:
+        1px solid
+        var(--borda-clara);
+}
+
+
+.dialog-heading h2 {
+    margin:
+        3px
+        0
+        5px;
+
+    color: var(--secundaria);
+
+    font-size: 18px;
+    font-weight: 600;
+}
+
+
+.dialog-heading p {
+    margin: 0;
+
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+
+    line-height: 1.5;
+}
+
+
+.dialog-close {
+    width: 34px;
+    height: 34px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--cinza-100);
+
+    color: var(--texto-secundario);
+}
+
+
+.dialog-close:hover {
+    background: var(--cinza-200);
+
+    color: var(--secundaria);
+}
+
+
+.evaluation-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 15px;
+
+    padding:
+        22px;
+}
+
+
+.full-field {
+    grid-column:
+        1 /
+        -1;
+}
+
+
+.dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding:
+        18px
+        22px;
+
+    border-top:
+        1px solid
+        var(--borda-clara);
+}
+
+
+/*====================================================
+                LANÇAMENTO DE NOTAS
+====================================================*/
+
+.grades-launch-dialog {
+    width:
+        min(
+            980px,
+            calc(
+                100vw -
+                30px
+            )
+        );
+}
+
+
+.grades-launch-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(
+                0,
+                1fr
+            )
+        );
+
+    gap: 10px;
+
+    padding:
+        16px
+        22px;
+
+    background: #FAFAFA;
+
+    border-bottom:
+        1px solid
+        var(--borda-clara);
+}
+
+
+.grades-launch-info div {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.grades-launch-info span {
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+}
+
+
+.grades-launch-info strong {
+    color: var(--secundaria);
+
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+}
+
+
+.grades-launch-table-wrap {
+    max-height: 430px;
+
+    overflow-y: auto;
+}
+
+
+.grade-input {
+    width: 95px;
+    height: 36px;
+
+    padding:
+        0
+        9px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius: 8px;
+
+    background: var(--branco);
+
+    color: #374151;
+
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+}
+
+
+.grade-observation {
+    width: 100%;
+    min-width: 180px;
+    height: 36px;
+
+    padding:
+        0
+        9px;
+
+    border:
+        1px solid
+        var(--borda);
+
+    border-radius: 8px;
+
+    background: var(--branco);
+
+    color: #374151;
+
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+}
+
+
+.grade-input:focus,
+.grade-observation:focus {
+    border-color: var(--primaria);
+
+    box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+            211,
+            175,
+            55,
+            .10
+        );
+}
+
+
+.grades-hint {
+    margin: 0;
+
+    padding:
+        12px
+        22px;
+
+    color: var(--texto-claro);
+
+    font-family: Arial, sans-serif;
+    font-size: 8px;
+
+    border-top:
+        1px solid
+        var(--borda-clara);
+}
+
+
+/*====================================================
+                    RESPONSIVO
+====================================================*/
+
+@media (
+    max-width: 1100px
+) {
+
+    .grades-summary {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+
+
+    .grades-panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .grades-filters {
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
+}
+
+
+@media (
+    max-width: 750px
+) {
+
+    .grades-page {
+        padding:
+            22px
+            18px
+            35px;
+    }
+
+
+    .grades-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+
+    .grades-header-actions {
+        width: 100%;
+
+        flex-wrap: wrap;
+    }
+
+
+    .grades-summary {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .grades-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+    .grades-filters input,
+    .grades-filters select {
+        width: 100%;
+    }
+
+
+    .evaluation-form-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .full-field {
+        grid-column: auto;
+    }
+
+
+    .grades-launch-info {
+        grid-template-columns:
+            1fr;
+    }
+
+}
