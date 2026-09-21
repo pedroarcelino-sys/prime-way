@@ -491,31 +491,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             "#managerStudentSearch"
         );
 
-    const deleteClassModal =
-        document.querySelector(
-            "#deleteClassModal"
-        );
-
-    const deleteClassOverlay =
-        document.querySelector(
-            ".delete-class-overlay"
-        );
-
-    const deleteClassCancel =
-        document.querySelector(
-            "#deleteClassCancel"
-        );
-
-    const deleteClassConfirm =
-        document.querySelector(
-            "#deleteClassConfirm"
-        );
-
-    const deleteClassMessage =
-        document.querySelector(
-            "#deleteClassMessage"
-        );
-
     const logoutButton =
         document.querySelector(
             "#logoutButton"
@@ -574,12 +549,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         availableStudentsList,
         linkedStudentsEmpty,
         availableStudentsEmpty,
-        managerStudentSearch,
-        deleteClassModal,
-        deleteClassOverlay,
-        deleteClassCancel,
-        deleteClassConfirm,
-        deleteClassMessage
+        managerStudentSearch
     ];
 
 
@@ -607,7 +577,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     let professors = [];
     let activeSchoolYear = null;
 
-    let classToDelete = null;
     let managerClassId = null;
     let selectedTeacherId = null;
     let recarregandoDados = false;
@@ -981,7 +950,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 mostrarErro
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     error?.message ||
                     "Não foi possível carregar os dados de Turmas."
                 );
@@ -1618,8 +1587,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return [
             classModal,
             classViewModal,
-            studentsManagerModal,
-            deleteClassModal
+            studentsManagerModal
         ].some(
             modal =>
                 modal.classList.contains(
@@ -2074,7 +2042,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     return;
                 }
 
-                alert(
+                PrimeWayFeedback.error(
                     mensagem
                 );
 
@@ -2094,6 +2062,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 classModal
             );
 
+            PrimeWayFeedback.success(
+                id !== null
+                    ? "Turma atualizada com sucesso."
+                    : "Turma cadastrada com sucesso."
+            );
+
         } catch (error) {
 
             console.error(
@@ -2101,7 +2075,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 error
             );
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível salvar a turma. Tente novamente."
             );
 
@@ -2179,7 +2154,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             )
         ) {
 
-            alert(
+            PrimeWayFeedback.warning(
                 "O gerenciamento de alunos está disponível apenas para turmas do ano letivo ativo."
             );
 
@@ -2571,7 +2546,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 !resultado.ok
             ) {
 
-                alert(
+                PrimeWayFeedback.error(
                     resultado.data?.message ||
                     "Não foi possível alterar a matrícula do aluno."
                 );
@@ -2611,6 +2586,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             }
 
+            PrimeWayFeedback.success(
+                acao === "remove"
+                    ? "Aluno removido da turma com sucesso."
+                    : aluno.classId
+                        ? "Aluno transferido para a turma com sucesso."
+                        : "Aluno adicionado à turma com sucesso."
+            );
+
         } catch (error) {
 
             console.error(
@@ -2618,7 +2601,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 error
             );
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível alterar a matrícula do aluno. Tente novamente."
             );
 
@@ -2639,71 +2623,39 @@ document.addEventListener("DOMContentLoaded", async function () {
                     EXCLUSÃO
     ====================================================*/
 
-    function abrirExclusao(
+    async function excluirTurma(
         turma
     ) {
 
-        classToDelete =
-            Number(
-                turma.id
+        const confirmado =
+            await PrimeWayConfirm.danger(
+                `Deseja realmente excluir a turma "${turma.name}"? Se houver histórico vinculado, o sistema impedirá a exclusão e pedirá a inativação.`,
+                {
+                    title: "Excluir turma?",
+                    confirmText: "Excluir turma",
+                    cancelText: "Cancelar"
+                }
             );
 
-        deleteClassMessage.textContent =
-            `Deseja realmente excluir a turma "${turma.name}"? ` +
-            "Se houver histórico vinculado, o sistema impedirá a exclusão e pedirá a inativação.";
-
-        deleteClassConfirm.hidden =
-            false;
-
-        abrirModal(
-            deleteClassModal,
-            deleteClassCancel
-        );
-    }
-
-
-    function fecharExclusao() {
-
-        classToDelete =
-            null;
-
-        deleteClassConfirm.hidden =
-            false;
-
-        fecharModal(
-            deleteClassModal
-        );
-    }
-
-
-    async function confirmarExclusao() {
-
         if (
-            classToDelete ===
-            null
+            !confirmado
         ) {
 
             return;
         }
 
-        const id =
-            classToDelete;
-
-        deleteClassConfirm.disabled =
-            true;
-
         try {
 
             const resultado =
                 await excluirTurmaServidor(
-                    id
+                    turma.id
                 );
 
             if (
                 !resultado.ok
             ) {
 
-                deleteClassMessage.textContent =
+                const mensagem =
                     resultado.data?.message ||
                     "Não foi possível excluir a turma.";
 
@@ -2712,15 +2664,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                     409
                 ) {
 
-                    deleteClassConfirm.hidden =
-                        true;
+                    PrimeWayFeedback.warning(
+                        mensagem
+                    );
+
+                } else {
+
+                    PrimeWayFeedback.error(
+                        mensagem
+                    );
                 }
 
                 return;
             }
-
-            classToDelete =
-                null;
 
             await Promise.all([
                 carregarTurmasServidor(),
@@ -2729,11 +2685,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             renderClasses();
 
-            deleteClassConfirm.hidden =
-                false;
-
-            fecharModal(
-                deleteClassModal
+            PrimeWayFeedback.success(
+                "Turma excluída com sucesso."
             );
 
         } catch (error) {
@@ -2743,13 +2696,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 error
             );
 
-            deleteClassMessage.textContent =
-                "Não foi possível excluir a turma. Tente novamente.";
-
-        } finally {
-
-            deleteClassConfirm.disabled =
-                false;
+            PrimeWayFeedback.error(
+                error?.message ||
+                "Não foi possível excluir a turma. Tente novamente."
+            );
         }
     }
 
@@ -2833,7 +2783,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 case "delete":
 
-                    abrirExclusao(
+                    excluirTurma(
                         turma
                     );
 
@@ -2899,7 +2849,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 !activeSchoolYear
             ) {
 
-                alert(
+                PrimeWayFeedback.warning(
                     "Nenhum ano letivo ativo foi encontrado."
                 );
 
@@ -3112,24 +3062,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     );
 
 
-    deleteClassCancel.addEventListener(
-        "click",
-        fecharExclusao
-    );
-
-
-    deleteClassOverlay.addEventListener(
-        "click",
-        fecharExclusao
-    );
-
-
-    deleteClassConfirm.addEventListener(
-        "click",
-        confirmarExclusao
-    );
-
-
     /*====================================================
                         ESC
     ====================================================*/
@@ -3147,12 +3079,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             if (
-                deleteClassModal.classList.contains(
-                    "active"
+                document.querySelector(
+                    ".primeway-confirm.show"
                 )
             ) {
-
-                fecharExclusao();
 
                 return;
             }
@@ -3275,7 +3205,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 error
             );
 
-            alert(
+            PrimeWayFeedback.error(
+                error?.message ||
                 "Não foi possível encerrar a sessão. Tente novamente."
             );
 
