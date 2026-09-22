@@ -18,6 +18,11 @@
 
     <link
         rel="stylesheet"
+        href="../css/aluno_shared.css?v=20260921-1"
+    >
+
+    <link
+        rel="stylesheet"
         href="../css/aluno_atividades.css?v=20260914-1"
     >
 
@@ -52,117 +57,42 @@
                         SIDEBAR
     ================================================= -->
 
-    <aside
-        class="sidebar"
-        aria-label="Menu do aluno"
-    >
-
-        <div class="sidebar-logo">
-
-            <img
-                src="../img/logo.png"
-                alt="PrimeWay School"
-            >
-
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="aluno_portal.html">
-
-                <i class="fa-solid fa-house"></i>
-
-                <span>Meu painel</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#disciplinas">
-
-                <i class="fa-solid fa-book-open"></i>
-
-                <span>Disciplinas</span>
-
-            </a>
-
-
-            <a
-                href="aluno_atividades.html"
-                class="active"
-                aria-current="page"
-            >
-
-                <i class="fa-solid fa-list-check"></i>
-
-                <span>Atividades</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#notas">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-                <span>Notas</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#frequencia">
-
-                <i class="fa-solid fa-user-check"></i>
-
-                <span>Frequência</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#agenda">
-
-                <i class="fa-solid fa-calendar-days"></i>
-
-                <span>Agenda</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#avisos">
-
-                <i class="fa-solid fa-bell"></i>
-
-                <span>Comunicados</span>
-
-            </a>
-
-
-            <a href="aluno_portal.html#dados">
-
-                <i class="fa-solid fa-address-card"></i>
-
-                <span>Meus dados</span>
-
-            </a>
-
-        </nav>
-
-
-        <div class="sidebar-bottom">
-
-            <button
-                type="button"
-                id="logoutButton"
-            >
-
-                <i class="fa-solid fa-right-from-bracket"></i>
-
-                <span>Sair</span>
-
-            </button>
-
-        </div>
-
-    </aside>
+    <aside class="sidebar" aria-label="Menu do aluno">
+            <div class="sidebar-logo"><img src="../img/logo.png" alt="PrimeWay School"></div>
+            <nav class="sidebar-menu" aria-label="Navegação do aluno">
+                <a href="aluno_portal.html">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                    <span>Meu painel</span>
+                </a>
+                <a href="aluno_atividades.html" class="active" aria-current="page">
+                    <i class="fa-solid fa-list-check" aria-hidden="true"></i>
+                    <span>Atividades</span>
+                </a>
+                <a href="aluno_notas.html">
+                    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+                    <span>Notas</span>
+                </a>
+                <a href="aluno_frequencia.html">
+                    <i class="fa-solid fa-user-check" aria-hidden="true"></i>
+                    <span>Frequência</span>
+                </a>
+                <a href="aluno_notificacoes.html">
+                    <i class="fa-solid fa-bell" aria-hidden="true"></i>
+                    <span>Notificações</span><span class="nav-badge" data-nav-badge="notifications" hidden>0</span>
+                </a>
+                <a href="aluno_chat.html">
+                    <i class="fa-solid fa-comments" aria-hidden="true"></i>
+                    <span>Chat</span><span class="nav-badge" data-nav-badge="chat" hidden>0</span>
+                </a>
+                <a href="aluno_dados.html">
+                    <i class="fa-solid fa-address-card" aria-hidden="true"></i>
+                    <span>Meus dados</span>
+                </a>
+            </nav>
+            <div class="sidebar-bottom">
+                <button type="button" id="logoutButton"><i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Sair</span></button>
+            </div>
+        </aside>
 
 
     <!-- ================================================
@@ -929,7 +859,8 @@
     </div>
 
 </div>
-<script src="../js/core.js?v=20260915-3"></script>
+<script src="../js/core.js?v=20260915-4"></script>
+<script src="../js/aluno_common.js?v=20260921-1"></script>
 <script src="../js/aluno_atividades.js?v=20260915-3"></script>
 </body>
 
