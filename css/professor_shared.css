@@ -1,0 +1,340 @@
+/*====================================================
+        ÁREA DO PROFESSOR - COMPONENTES COMPARTILHADOS
+        PRIMEWAY SCHOOL
+====================================================*/
+
+.professor-module-page {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    padding: 32px;
+    background: var(--principal);
+}
+
+.professor-module-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.professor-module-header h1 {
+    margin: 4px 0 6px;
+    color: var(--secundaria);
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.professor-module-header p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.professor-header-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.professor-context-pill {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 13px;
+    border: 1px solid var(--borda-clara);
+    border-radius: 10px;
+    background: var(--branco);
+    color: var(--secundaria);
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+    box-shadow: var(--sombra-p);
+}
+
+.professor-context-pill i {
+    color: var(--primaria);
+}
+
+.professor-module-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.professor-module-panel {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(30, 58, 138, .06);
+    border-radius: 15px;
+    background: var(--branco);
+    box-shadow: var(--sombra-p);
+}
+
+.professor-module-panel + .professor-module-panel {
+    margin-top: 18px;
+}
+
+.professor-module-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 19px 21px;
+    border-bottom: 1px solid var(--borda-clara);
+}
+
+.professor-module-heading h2 {
+    margin: 0 0 4px;
+    color: var(--secundaria);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.professor-module-heading p {
+    margin: 0;
+    color: var(--texto-claro);
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.professor-module-link {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--secundaria);
+    font: 700 9px Arial, sans-serif;
+    text-decoration: none;
+}
+
+.professor-module-link:hover {
+    color: var(--primaria);
+}
+
+.professor-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.professor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--borda-clara);
+    background: #FCFCFC;
+}
+
+.professor-toolbar input,
+.professor-toolbar select {
+    height: 38px;
+    min-width: 150px;
+    padding: 0 11px;
+    border: 1px solid var(--borda);
+    border-radius: 9px;
+    background: var(--branco);
+    color: #4B5563;
+    font: 9px Arial, sans-serif;
+}
+
+.professor-toolbar input {
+    flex: 1;
+    min-width: 200px;
+}
+
+.professor-empty {
+    padding: 38px 20px !important;
+    color: var(--texto-claro) !important;
+    font: 10px Arial, sans-serif !important;
+    text-align: center !important;
+}
+
+.professor-empty i {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--cinza-300);
+    font-size: 24px;
+}
+
+.professor-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 23px;
+    width: max-content;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #EEF4FF;
+    color: var(--secundaria);
+    font: 700 8px Arial, sans-serif;
+}
+
+.professor-status.success {
+    background: var(--sucesso-fundo);
+    color: var(--sucesso);
+}
+
+.professor-status.warning {
+    background: var(--alerta-fundo);
+    color: var(--alerta);
+}
+
+.professor-status.danger {
+    background: var(--erro-fundo);
+    color: var(--erro);
+}
+
+.professor-status.neutral {
+    background: var(--cinza-100);
+    color: var(--texto-secundario);
+}
+
+.sidebar-menu .nav-badge {
+    margin-left: auto;
+    min-width: 19px;
+    height: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--primaria);
+    color: var(--secundaria);
+    font: 800 8px Arial, sans-serif;
+}
+
+.sidebar-menu .nav-badge[hidden] {
+    display: none;
+}
+
+.professor-dialog {
+    width: min(720px, calc(100vw - 30px));
+    max-height: calc(100vh - 30px);
+    padding: 0;
+    border: none;
+    border-radius: 16px;
+    background: var(--branco);
+    box-shadow: var(--sombra-g);
+}
+
+.professor-dialog::backdrop {
+    background: rgba(20, 27, 45, .50);
+    backdrop-filter: blur(3px);
+}
+
+.professor-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid var(--borda-clara);
+}
+
+.professor-dialog-header h2 {
+    margin: 3px 0 4px;
+    color: var(--secundaria);
+    font-size: 18px;
+}
+
+.professor-dialog-header p {
+    margin: 0;
+    color: var(--texto-claro);
+    font: 9px/1.5 Arial, sans-serif;
+}
+
+.professor-dialog-close {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 9px;
+    background: var(--cinza-100);
+    color: var(--texto-secundario);
+    cursor: pointer;
+}
+
+.professor-dialog-body {
+    padding: 20px 22px;
+}
+
+.professor-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.professor-form-grid .full {
+    grid-column: 1 / -1;
+}
+
+.professor-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 17px 22px;
+    border-top: 1px solid var(--borda-clara);
+}
+
+@media (max-width: 1050px) {
+    .professor-module-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .professor-grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .professor-module-page {
+        padding: 23px 17px 38px;
+    }
+
+    .professor-module-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .professor-header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .professor-module-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .professor-module-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .professor-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .professor-toolbar input,
+    .professor-toolbar select {
+        width: 100%;
+    }
+
+    .professor-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .professor-form-grid .full {
+        grid-column: auto;
+    }
+}

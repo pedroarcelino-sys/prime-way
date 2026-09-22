@@ -1,141 +1,382 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Área do Professor | PrimeWay School</title>
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/professor.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-</head>
-<body>
-    <div class="app-layout">
-        <aside class="sidebar professor-sidebar" aria-label="Menu do professor">
-            <div class="sidebar-logo">
-                <img src="../img/logo.png" alt="PrimeWay School">
-            </div>
-            <nav class="sidebar-menu" aria-label="Navegação do professor">
-                <a href="#inicio" class="active" aria-current="page">
-                    <i class="fa-solid fa-house" aria-hidden="true"></i><span>Meu painel</span>
-                </a>
-                <a href="#minhasTurmas">
-                    <i class="fa-solid fa-users" aria-hidden="true"></i><span>Minhas turmas</span>
-                </a>
-                <a href="#meusAlunos">
-                    <i class="fa-solid fa-user-graduate" aria-hidden="true"></i><span>Meus alunos</span>
-                </a>
-                <a href="professor_atividades.html">
-    <i class="fa-solid fa-list-check" aria-hidden="true"></i>
-    <span>Atividades</span>
-</a>
-                <a href="#meusDados">
-                    <i class="fa-solid fa-address-card" aria-hidden="true"></i><span>Meus dados</span>
-                </a>
-                <a href="#meuVinculo">
-                    <i class="fa-solid fa-file-contract" aria-hidden="true"></i><span>Meu vínculo</span>
-                </a>
-                <a href="calendario.html">
-                    <i class="fa-solid fa-calendar-days" aria-hidden="true"></i><span>Calendário</span>
-                </a>
-                <a href="notificacoes.html">
-                    <i class="fa-solid fa-bell" aria-hidden="true"></i><span>Notificações</span>
-                </a>
-            </nav>
-            <div class="sidebar-bottom">
-                <button type="button" id="logoutButton">
-                    <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span>Sair</span>
-                </button>
-            </div>
-        </aside>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-        <main class="professor-page" id="inicio">
+    <title>Área do Professor | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_shared.css?v=20260922-1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor.css?v=20260922-2"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        ></aside>
+
+
+        <main class="professor-page">
+
             <header class="professor-header">
+
                 <div class="professor-header-text">
-                    <span class="professor-welcome">Área exclusiva do professor</span>
-                    <h1 id="professorGreeting">Olá!</h1>
-                    <p>Aqui você acompanha somente suas turmas, seus alunos e seus dados profissionais.</p>
+
+                    <span class="professor-welcome">
+                        Área exclusiva do professor
+                    </span>
+
+                    <h1 id="professorGreeting">
+                        Olá!
+                    </h1>
+
+                    <p>
+                        Acompanhe suas turmas, atividades, notas,
+                        frequência e comunicações.
+                    </p>
+
                 </div>
+
                 <div class="professor-date">
-                    <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-                    <span id="currentDate">—</span>
+
+                    <i
+                        class="fa-regular fa-calendar"
+                        aria-hidden="true"
+                    ></i>
+
+                    <span id="currentDate">
+                        —
+                    </span>
+
                 </div>
+
             </header>
 
-            <section class="professor-cards" aria-label="Resumo do professor">
-                <article class="professor-card">
-                    <div class="professor-card-icon"><i class="fa-solid fa-users" aria-hidden="true"></i></div>
-                    <div class="professor-card-content"><span>Minhas turmas</span><strong id="professorClassesCount">0</strong></div>
-                </article>
-                <article class="professor-card">
-                    <div class="professor-card-icon"><i class="fa-solid fa-user-graduate" aria-hidden="true"></i></div>
-                    <div class="professor-card-content"><span>Meus alunos</span><strong id="professorStudentsCount">0</strong></div>
-                </article>
-                <article class="professor-card">
-                    <div class="professor-card-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
-                    <div class="professor-card-content"><span>Disciplinas</span><strong id="professorSubjectsCount">0</strong></div>
-                </article>
-                <article class="professor-card">
-                    <div class="professor-card-icon"><i class="fa-solid fa-list-check" aria-hidden="true"></i></div>
-                    <div class="professor-card-content"><span>Atividades em andamento</span><strong id="professorActivitiesCount">0</strong></div>
-                </article>
-            </section>
 
-            <section class="professor-data-grid">
-                <article class="professor-panel" id="meusDados">
-                    <div class="professor-panel-header">
-                        <div><h2>Meus dados</h2><p>Informações pessoais vinculadas à sua conta.</p></div>
+            <section
+                class="professor-cards"
+                aria-label="Resumo do professor"
+            >
+
+                <article class="professor-card">
+
+                    <div class="professor-card-icon">
+                        <i
+                            class="fa-solid fa-users"
+                            aria-hidden="true"
+                        ></i>
                     </div>
-                    <dl class="profile-list">
-                        <div><dt>Nome</dt><dd id="profileName">—</dd></div>
-                        <div><dt>E-mail</dt><dd id="profileEmail">—</dd></div>
-                        <div><dt>Telefone</dt><dd id="profilePhone">—</dd></div>
-                        <div><dt>Documento</dt><dd id="profileDocument">—</dd></div>
-                        <div><dt>Data de nascimento</dt><dd id="profileBirthDate">—</dd></div>
-                    </dl>
-                </article>
 
-                <article class="professor-panel" id="meuVinculo">
-                    <div class="professor-panel-header">
-                        <div><h2>Meu vínculo profissional</h2><p>Dados funcionais registrados pela administração.</p></div>
+                    <div class="professor-card-content">
+                        <span>Minhas turmas</span>
+                        <strong id="professorClassesCount">0</strong>
                     </div>
-                    <dl class="profile-list">
-                        <div><dt>Registro funcional</dt><dd id="profileRegistration">—</dd></div>
-                        <div><dt>Situação</dt><dd id="profileStatus">—</dd></div>
-                        <div><dt>Admissão</dt><dd id="profileAdmissionDate">—</dd></div>
-                        <div><dt>Contrato</dt><dd id="profileContract">Não informado no sistema</dd></div>
-                    </dl>
+
                 </article>
+
+
+                <article class="professor-card">
+
+                    <div class="professor-card-icon">
+                        <i
+                            class="fa-solid fa-user-graduate"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+
+                    <div class="professor-card-content">
+                        <span>Meus alunos</span>
+                        <strong id="professorStudentsCount">0</strong>
+                    </div>
+
+                </article>
+
+
+                <article class="professor-card">
+
+                    <div class="professor-card-icon">
+                        <i
+                            class="fa-solid fa-book-open"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+
+                    <div class="professor-card-content">
+                        <span>Disciplinas</span>
+                        <strong id="professorSubjectsCount">0</strong>
+                    </div>
+
+                </article>
+
+
+                <article class="professor-card">
+
+                    <div class="professor-card-icon">
+                        <i
+                            class="fa-solid fa-list-check"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+
+                    <div class="professor-card-content">
+                        <span>Atividades em andamento</span>
+                        <strong id="professorActivitiesCount">0</strong>
+                    </div>
+
+                </article>
+
             </section>
 
-            <section class="professor-panel" id="minhasTurmas">
-                <div class="professor-panel-header">
-                    <div><h2>Minhas turmas</h2><p>Turmas nas quais você é regente ou leciona uma disciplina.</p></div>
-                </div>
-                <div class="professor-table-wrap">
-                    <table>
-                        <thead><tr><th>Turma</th><th>Série</th><th>Turno</th><th>Sala</th><th>Disciplinas</th><th>Alunos</th></tr></thead>
-                        <tbody id="professorClassesBody"><tr><td colspan="6" class="professor-empty">Carregando…</td></tr></tbody>
-                    </table>
-                </div>
+
+            <section class="professor-quick-grid">
+
+                <a
+                    href="professor_turmas.html"
+                    class="professor-quick-card"
+                >
+                    <i
+                        class="fa-solid fa-users"
+                        aria-hidden="true"
+                    ></i>
+
+                    <div>
+                        <strong>Minhas turmas</strong>
+                        <span>
+                            Visualize turmas, disciplinas e alunos vinculados.
+                        </span>
+                    </div>
+
+                    <i
+                        class="fa-solid fa-arrow-right"
+                        aria-hidden="true"
+                    ></i>
+                </a>
+
+
+                <a
+                    href="professor_atividades.html"
+                    class="professor-quick-card"
+                >
+                    <i
+                        class="fa-solid fa-list-check"
+                        aria-hidden="true"
+                    ></i>
+
+                    <div>
+                        <strong>Atividades</strong>
+                        <span>
+                            Publique, acompanhe entregas e corrija atividades.
+                        </span>
+                    </div>
+
+                    <i
+                        class="fa-solid fa-arrow-right"
+                        aria-hidden="true"
+                    ></i>
+                </a>
+
+
+                <a
+                    href="professor_notas.html"
+                    class="professor-quick-card"
+                >
+                    <i
+                        class="fa-solid fa-clipboard-check"
+                        aria-hidden="true"
+                    ></i>
+
+                    <div>
+                        <strong>Notas</strong>
+                        <span>
+                            Crie avaliações e lance resultados dos alunos.
+                        </span>
+                    </div>
+
+                    <i
+                        class="fa-solid fa-arrow-right"
+                        aria-hidden="true"
+                    ></i>
+                </a>
+
+
+                <a
+                    href="professor_frequencia.html"
+                    class="professor-quick-card"
+                >
+                    <i
+                        class="fa-solid fa-user-check"
+                        aria-hidden="true"
+                    ></i>
+
+                    <div>
+                        <strong>Frequência</strong>
+                        <span>
+                            Registre presença, falta, atraso ou justificativa.
+                        </span>
+                    </div>
+
+                    <i
+                        class="fa-solid fa-arrow-right"
+                        aria-hidden="true"
+                    ></i>
+                </a>
+
             </section>
 
-            <section class="professor-panel" id="meusAlunos">
-                <div class="professor-panel-header">
-                    <div><h2>Meus alunos</h2><p>Alunos com matrícula ativa nas suas turmas.</p></div>
-                </div>
-                <div class="professor-table-wrap">
-                    <table>
-                        <thead><tr><th>Aluno</th><th>Matrícula</th><th>Turma</th></tr></thead>
-                        <tbody id="professorStudentsBody"><tr><td colspan="3" class="professor-empty">Carregando…</td></tr></tbody>
-                    </table>
-                </div>
-            </section>
+
+            <div class="professor-dashboard-grid">
+
+                <section class="professor-panel">
+
+                    <div class="professor-panel-header">
+
+                        <div>
+                            <h2>Minhas turmas</h2>
+                            <p>
+                                Resumo das turmas nas quais você leciona.
+                            </p>
+                        </div>
+
+                        <a
+                            href="professor_turmas.html"
+                            class="professor-dashboard-link"
+                        >
+                            Ver todas
+                            <i
+                                class="fa-solid fa-arrow-right"
+                                aria-hidden="true"
+                            ></i>
+                        </a>
+
+                    </div>
+
+                    <div
+                        class="professor-dashboard-list"
+                        id="professorClassesPreview"
+                    >
+                        <p class="professor-empty">
+                            Carregando…
+                        </p>
+                    </div>
+
+                </section>
+
+
+                <section class="professor-panel">
+
+                    <div class="professor-panel-header">
+
+                        <div>
+                            <h2>Atalhos de comunicação</h2>
+                            <p>
+                                Acesse notificações e conversas institucionais.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="professor-communication-links">
+
+                        <a href="professor_notificacoes.html">
+                            <i
+                                class="fa-solid fa-bell"
+                                aria-hidden="true"
+                            ></i>
+
+                            <div>
+                                <strong>Notificações</strong>
+                                <span>
+                                    Publique avisos para suas turmas e consulte recebidos.
+                                </span>
+                            </div>
+                        </a>
+
+
+                        <a href="professor_chat.html">
+                            <i
+                                class="fa-solid fa-comments"
+                                aria-hidden="true"
+                            ></i>
+
+                            <div>
+                                <strong>Chat</strong>
+                                <span>
+                                    Converse com alunos, responsáveis e secretaria.
+                                </span>
+                            </div>
+                        </a>
+
+
+                        <a href="calendario.html">
+                            <i
+                                class="fa-solid fa-calendar-days"
+                                aria-hidden="true"
+                            ></i>
+
+                            <div>
+                                <strong>Calendário</strong>
+                                <span>
+                                    Consulte e organize compromissos acadêmicos.
+                                </span>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
         </main>
+
     </div>
-    <script src="../js/core.js"></script>
-    <script src="../js/professor.js"></script>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_common.js?v=20260922-1"></script>
+    <script src="../js/professor.js?v=20260922-2"></script>
+
 </body>
+
 </html>

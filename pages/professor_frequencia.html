@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Frequência | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_shared.css?v=20260922-1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_frequencia.css?v=20260922-1"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        ></aside>
+
+
+        <main class="professor-module-page">
+
+            <header class="professor-module-header">
+
+                <div>
+                    <span class="section-label">
+                        Área do professor
+                    </span>
+
+                    <h1>Frequência</h1>
+
+                    <p>
+                        Cadastre aulas e registre a presença
+                        dos alunos das suas turmas.
+                    </p>
+                </div>
+
+                <div class="professor-header-actions">
+
+                    <div class="professor-context-pill">
+                        <i
+                            class="fa-solid fa-calendar-check"
+                            aria-hidden="true"
+                        ></i>
+                        <span id="schoolYearValue">
+                            Ano letivo —
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="newLessonButton"
+                    >
+                        <i
+                            class="fa-solid fa-plus"
+                            aria-hidden="true"
+                        ></i>
+                        Nova aula
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <section
+                class="professor-module-summary"
+                aria-label="Resumo da frequência"
+            >
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-chalkboard"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Aulas cadastradas</span>
+                        <strong id="lessonCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-circle-check"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Realizadas</span>
+                        <strong id="realizedCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon warning">
+                        <i
+                            class="fa-solid fa-clock"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Planejadas</span>
+                        <strong id="plannedCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-user-check"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Chamadas completas</span>
+                        <strong id="completedAttendanceCount">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+
+            <section class="professor-module-panel">
+
+                <div class="professor-module-heading">
+
+                    <div>
+                        <h2>Aulas</h2>
+                        <p>
+                            Filtre as aulas e abra a chamada para registrar frequência.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="professor-toolbar">
+
+                    <input
+                        type="search"
+                        id="lessonSearch"
+                        placeholder="Buscar conteúdo, turma ou disciplina..."
+                        autocomplete="off"
+                        aria-label="Buscar aula"
+                    >
+
+                    <select
+                        id="classSubjectFilter"
+                        aria-label="Filtrar turma e disciplina"
+                    >
+                        <option value="">
+                            Todas as turmas e disciplinas
+                        </option>
+                    </select>
+
+                    <select
+                        id="periodFilter"
+                        aria-label="Filtrar período"
+                    >
+                        <option value="">
+                            Todos os períodos
+                        </option>
+                    </select>
+
+                    <select
+                        id="statusFilter"
+                        aria-label="Filtrar status"
+                    >
+                        <option value="">
+                            Todos os status
+                        </option>
+                        <option value="Planejada">
+                            Planejada
+                        </option>
+                        <option value="Realizada">
+                            Realizada
+                        </option>
+                        <option value="Cancelada">
+                            Cancelada
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="teacher-lessons-wrap">
+
+                    <table class="teacher-lessons-table">
+
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Turma / disciplina</th>
+                                <th>Período</th>
+                                <th>Conteúdo</th>
+                                <th>Status</th>
+                                <th>Chamada</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="lessonsBody">
+
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="professor-empty"
+                                >
+                                    Carregando aulas…
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <dialog
+        class="professor-dialog"
+        id="lessonDialog"
+        aria-labelledby="lessonDialogTitle"
+    >
+
+        <form
+            method="dialog"
+            id="lessonForm"
+        >
+
+            <div class="professor-dialog-header">
+
+                <div>
+                    <span class="section-label">
+                        Aula
+                    </span>
+
+                    <h2 id="lessonDialogTitle">
+                        Nova aula
+                    </h2>
+
+                    <p>
+                        Cadastre a aula antes de realizar a chamada.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="professor-dialog-close"
+                    id="closeLessonDialog"
+                    aria-label="Fechar"
+                >
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+            <div class="professor-dialog-body">
+
+                <input
+                    type="hidden"
+                    id="lessonId"
+                >
+
+                <div class="professor-form-grid">
+
+                    <div class="form-group full">
+                        <label for="lessonClassSubject">
+                            Turma e disciplina
+                        </label>
+
+                        <select
+                            id="lessonClassSubject"
+                            required
+                        >
+                            <option value="">
+                                Selecione
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonPeriod">
+                            Período
+                        </label>
+
+                        <select
+                            id="lessonPeriod"
+                            required
+                        >
+                            <option value="">
+                                Selecione
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonDate">
+                            Data
+                        </label>
+
+                        <input
+                            type="date"
+                            id="lessonDate"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonStartTime">
+                            Horário inicial
+                        </label>
+
+                        <input
+                            type="time"
+                            id="lessonStartTime"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonEndTime">
+                            Horário final
+                        </label>
+
+                        <input
+                            type="time"
+                            id="lessonEndTime"
+                        >
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="lessonContent">
+                            Conteúdo da aula
+                        </label>
+
+                        <textarea
+                            id="lessonContent"
+                            rows="4"
+                            maxlength="5000"
+                            placeholder="Ex: Frações equivalentes e simplificação."
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="lessonNotes">
+                            Observações
+                        </label>
+
+                        <textarea
+                            id="lessonNotes"
+                            rows="3"
+                            maxlength="5000"
+                            placeholder="Opcional"
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="lessonStatus">
+                            Status
+                        </label>
+
+                        <select
+                            id="lessonStatus"
+                            required
+                        >
+                            <option value="Planejada">
+                                Planejada
+                            </option>
+                            <option value="Realizada">
+                                Realizada
+                            </option>
+                            <option value="Cancelada">
+                                Cancelada
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="professor-dialog-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelLessonButton"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveLessonButton"
+                >
+                    <i
+                        class="fa-solid fa-floppy-disk"
+                        aria-hidden="true"
+                    ></i>
+                    Salvar aula
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <dialog
+        class="professor-dialog attendance-dialog"
+        id="attendanceDialog"
+        aria-labelledby="attendanceDialogTitle"
+    >
+
+        <form
+            method="dialog"
+            id="attendanceForm"
+        >
+
+            <div class="professor-dialog-header">
+
+                <div>
+                    <span class="section-label">
+                        Chamada
+                    </span>
+
+                    <h2 id="attendanceDialogTitle">
+                        Registrar frequência
+                    </h2>
+
+                    <p id="attendanceDialogContext">
+                        Selecione uma aula.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="professor-dialog-close"
+                    id="closeAttendanceDialog"
+                    aria-label="Fechar"
+                >
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+            <div class="attendance-actions-bar">
+
+                <span id="attendanceStudentsCount">
+                    0 alunos
+                </span>
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="markAllPresentButton"
+                >
+                    <i
+                        class="fa-solid fa-check-double"
+                        aria-hidden="true"
+                    ></i>
+                    Marcar todos presentes
+                </button>
+
+            </div>
+
+            <div class="attendance-table-wrap">
+
+                <table class="attendance-table">
+
+                    <thead>
+                        <tr>
+                            <th>Nº</th>
+                            <th>Aluno</th>
+                            <th>Situação</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="attendanceBody">
+
+                        <tr>
+                            <td
+                                colspan="4"
+                                class="professor-empty"
+                            >
+                                Nenhum aluno carregado.
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="professor-dialog-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelAttendanceButton"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="saveAttendanceButton"
+                >
+                    <i
+                        class="fa-solid fa-user-check"
+                        aria-hidden="true"
+                    ></i>
+                    Salvar frequência
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_common.js?v=20260922-1"></script>
+    <script src="../js/professor_frequencia.js?v=20260922-1"></script>
+
+</body>
+
+</html>

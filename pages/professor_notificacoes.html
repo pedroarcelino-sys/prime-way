@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Notificações | PrimeWay School</title>
+
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/professor_shared.css?v=20260922-1">
+    <link rel="stylesheet" href="../css/professor_notificacoes.css?v=20260922-1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        ></aside>
+
+
+        <main class="professor-module-page">
+
+            <header class="professor-module-header">
+
+                <div>
+                    <span class="section-label">
+                        Área do professor
+                    </span>
+
+                    <h1>Notificações</h1>
+
+                    <p>
+                        Consulte avisos recebidos e publique comunicados
+                        para alunos e responsáveis das suas turmas.
+                    </p>
+                </div>
+
+                <div class="professor-header-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        id="markAllReadButton"
+                    >
+                        <i
+                            class="fa-solid fa-check-double"
+                            aria-hidden="true"
+                        ></i>
+                        Marcar recebidas como lidas
+                    </button>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="newNoticeButton"
+                    >
+                        <i
+                            class="fa-solid fa-plus"
+                            aria-hidden="true"
+                        ></i>
+                        Novo comunicado
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <section
+                class="professor-module-summary"
+                aria-label="Resumo das notificações"
+            >
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <span>Recebidas</span>
+                        <strong id="receivedCount">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon warning">
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <span>Não lidas</span>
+                        <strong id="unreadCount">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <span>Publicadas</span>
+                        <strong id="sentCount">0</strong>
+                    </div>
+                </article>
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i class="fa-solid fa-users" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <span>Turmas disponíveis</span>
+                        <strong id="classesCount">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+
+            <section class="professor-module-panel">
+
+                <div class="teacher-notification-tabs">
+
+                    <button
+                        type="button"
+                        class="teacher-notification-tab active"
+                        data-notification-tab="inbox"
+                    >
+                        <i
+                            class="fa-solid fa-inbox"
+                            aria-hidden="true"
+                        ></i>
+                        Recebidas
+                    </button>
+
+                    <button
+                        type="button"
+                        class="teacher-notification-tab"
+                        data-notification-tab="sent"
+                    >
+                        <i
+                            class="fa-solid fa-paper-plane"
+                            aria-hidden="true"
+                        ></i>
+                        Meus comunicados
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="teacher-notification-view"
+                    id="inboxView"
+                >
+
+                    <div class="professor-toolbar">
+
+                        <input
+                            type="search"
+                            id="inboxSearch"
+                            placeholder="Buscar notificação recebida..."
+                            autocomplete="off"
+                        >
+
+                        <select id="inboxReadFilter">
+                            <option value="">
+                                Todas
+                            </option>
+                            <option value="unread">
+                                Não lidas
+                            </option>
+                            <option value="read">
+                                Lidas
+                            </option>
+                        </select>
+
+                    </div>
+
+                    <div
+                        class="teacher-notification-list"
+                        id="inboxList"
+                    >
+                        <div class="professor-empty">
+                            Carregando notificações…
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="teacher-notification-view"
+                    id="sentView"
+                    hidden
+                >
+
+                    <div class="professor-toolbar">
+
+                        <input
+                            type="search"
+                            id="sentSearch"
+                            placeholder="Buscar comunicado publicado..."
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                    <div
+                        class="teacher-notification-list"
+                        id="sentList"
+                    >
+                        <div class="professor-empty">
+                            Carregando comunicados…
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <dialog
+        class="professor-dialog"
+        id="noticeDialog"
+        aria-labelledby="noticeDialogTitle"
+    >
+
+        <form
+            method="dialog"
+            id="noticeForm"
+        >
+
+            <div class="professor-dialog-header">
+
+                <div>
+                    <span class="section-label">
+                        Comunicação
+                    </span>
+
+                    <h2 id="noticeDialogTitle">
+                        Novo comunicado
+                    </h2>
+
+                    <p>
+                        O comunicado será enviado somente aos destinatários
+                        vinculados à turma selecionada.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="professor-dialog-close"
+                    id="closeNoticeDialog"
+                    aria-label="Fechar"
+                >
+                    <i
+                        class="fa-solid fa-xmark"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+            <div class="professor-dialog-body">
+
+                <div class="professor-form-grid">
+
+                    <div class="form-group full">
+                        <label for="noticeClass">
+                            Turma
+                        </label>
+
+                        <select
+                            id="noticeClass"
+                            required
+                        >
+                            <option value="">
+                                Selecione
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noticeAudience">
+                            Destinatários
+                        </label>
+
+                        <select
+                            id="noticeAudience"
+                            required
+                        >
+                            <option value="students">
+                                Alunos
+                            </option>
+                            <option value="guardians">
+                                Responsáveis
+                            </option>
+                            <option value="students_guardians">
+                                Alunos e responsáveis
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noticeType">
+                            Tipo
+                        </label>
+
+                        <select
+                            id="noticeType"
+                            required
+                        >
+                            <option value="Comunicado">
+                                Comunicado
+                            </option>
+                            <option value="Atividade">
+                                Atividade
+                            </option>
+                            <option value="Avaliação">
+                                Avaliação
+                            </option>
+                            <option value="Reunião">
+                                Reunião
+                            </option>
+                            <option value="Aviso">
+                                Aviso
+                            </option>
+                            <option value="Urgente">
+                                Urgente
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="noticeTitle">
+                            Título
+                        </label>
+
+                        <input
+                            type="text"
+                            id="noticeTitle"
+                            maxlength="190"
+                            placeholder="Ex: Reunião de responsáveis"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="noticeMessage">
+                            Mensagem
+                        </label>
+
+                        <textarea
+                            id="noticeMessage"
+                            rows="7"
+                            maxlength="10000"
+                            placeholder="Escreva o comunicado..."
+                            required
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="professor-dialog-actions">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    id="cancelNoticeButton"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    id="publishNoticeButton"
+                >
+                    <i
+                        class="fa-solid fa-paper-plane"
+                        aria-hidden="true"
+                    ></i>
+                    Publicar comunicado
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_common.js?v=20260922-1"></script>
+    <script src="../js/professor_notificacoes.js?v=20260922-1"></script>
+
+</body>
+
+</html>

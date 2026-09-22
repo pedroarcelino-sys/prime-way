@@ -1,0 +1,130 @@
+/*====================================================
+                    TURMAS DO PROFESSOR
+====================================================*/
+
+.teacher-classes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding: 20px;
+}
+
+.teacher-class-card {
+    min-width: 0;
+    padding: 17px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--cinza-50);
+    cursor: pointer;
+    transition:
+        border-color var(--transicao),
+        transform var(--transicao),
+        background var(--transicao);
+}
+
+.teacher-class-card:hover,
+.teacher-class-card.active {
+    border-color: rgba(211, 175, 55, .45);
+    background: #FFFEF7;
+    transform: translateY(-2px);
+}
+
+.teacher-class-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.teacher-class-card h3 {
+    margin: 0 0 6px;
+    color: var(--secundaria);
+    font-size: 14px;
+}
+
+.teacher-class-card p {
+    margin: 0;
+    color: var(--texto-secundario);
+    font: 9px/1.5 Arial, sans-serif;
+}
+
+.teacher-class-card-subjects {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 13px;
+}
+
+.teacher-class-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 11px;
+    border-top: 1px solid var(--borda-clara);
+}
+
+.teacher-class-card-footer span {
+    color: var(--texto-claro);
+    font: 8px Arial, sans-serif;
+}
+
+.teacher-students-table-wrap {
+    overflow-x: auto;
+}
+
+.teacher-students-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.teacher-students-table th,
+.teacher-students-table td {
+    padding: 13px 16px;
+    border-bottom: 1px solid #F1F1F1;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.teacher-students-table th {
+    background: #FAFAFA;
+    color: var(--texto-claro);
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.teacher-students-table td {
+    color: #4B5563;
+    font-size: 9px;
+}
+
+.teacher-student-name {
+    color: var(--secundaria) !important;
+    font-weight: 700;
+}
+
+.teacher-contact {
+    display: grid;
+    gap: 3px;
+}
+
+.teacher-contact span {
+    color: var(--texto-claro);
+    font-size: 8px;
+}
+
+@media (max-width: 1050px) {
+    .teacher-classes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .teacher-classes-grid {
+        grid-template-columns: 1fr;
+    }
+}

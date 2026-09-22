@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Meus dados | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_shared.css?v=20260922-1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_dados.css?v=20260922-1"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        ></aside>
+
+
+        <main class="professor-module-page">
+
+            <header class="professor-module-header">
+
+                <div>
+                    <span class="section-label">
+                        Área do professor
+                    </span>
+
+                    <h1>Meus dados</h1>
+
+                    <p>
+                        Consulte seus dados pessoais,
+                        funcionais e vínculos acadêmicos.
+                    </p>
+                </div>
+
+                <div class="professor-header-actions">
+
+                    <div class="professor-context-pill">
+                        <i
+                            class="fa-solid fa-shield-halved"
+                            aria-hidden="true"
+                        ></i>
+                        <span>Consulta somente</span>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <div class="professor-grid-2">
+
+                <section class="professor-module-panel">
+
+                    <div class="professor-module-heading">
+                        <div>
+                            <h2>Dados pessoais</h2>
+                            <p>
+                                Informações vinculadas à sua conta.
+                            </p>
+                        </div>
+                    </div>
+
+                    <dl class="professor-data-list">
+
+                        <div>
+                            <dt>Nome</dt>
+                            <dd id="teacherName">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>E-mail</dt>
+                            <dd id="teacherEmail">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Telefone</dt>
+                            <dd id="teacherPhone">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Documento</dt>
+                            <dd id="teacherDocument">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Data de nascimento</dt>
+                            <dd id="teacherBirthDate">—</dd>
+                        </div>
+
+                    </dl>
+
+                </section>
+
+
+                <section class="professor-module-panel">
+
+                    <div class="professor-module-heading">
+                        <div>
+                            <h2>Vínculo profissional</h2>
+                            <p>
+                                Informações funcionais registradas pela escola.
+                            </p>
+                        </div>
+                    </div>
+
+                    <dl class="professor-data-list">
+
+                        <div>
+                            <dt>Registro funcional</dt>
+                            <dd id="teacherRegistration">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Situação</dt>
+                            <dd id="teacherStatus">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Admissão</dt>
+                            <dd id="teacherAdmissionDate">—</dd>
+                        </div>
+
+                        <div>
+                            <dt>Ano letivo ativo</dt>
+                            <dd id="teacherSchoolYear">—</dd>
+                        </div>
+
+                    </dl>
+
+                </section>
+
+            </div>
+
+
+            <section class="professor-module-panel teacher-assignments-panel">
+
+                <div class="professor-module-heading">
+
+                    <div>
+                        <h2>Meus vínculos acadêmicos</h2>
+                        <p>
+                            Turmas e disciplinas em que você está vinculado.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div
+                    class="teacher-assignments-grid"
+                    id="assignmentsGrid"
+                >
+
+                    <div class="professor-empty">
+                        <i
+                            class="fa-solid fa-spinner fa-spin"
+                            aria-hidden="true"
+                        ></i>
+                        Carregando vínculos…
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="teacher-data-help">
+
+                <i
+                    class="fa-solid fa-circle-info"
+                    aria-hidden="true"
+                ></i>
+
+                <div>
+                    <strong>Precisa alterar algum dado?</strong>
+
+                    <p>
+                        Dados pessoais e funcionais não são alterados
+                        diretamente pelo professor. Solicite a atualização
+                        à secretaria ou administração da escola.
+                    </p>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_common.js?v=20260922-1"></script>
+    <script src="../js/professor_dados.js?v=20260922-1"></script>
+
+</body>
+
+</html>

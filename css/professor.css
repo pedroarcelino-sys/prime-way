@@ -1,2213 +1,321 @@
 /*====================================================
-            ÁREA DO PROFESSOR
-            PRIMEWAY SCHOOL
-====================================================*/
-
-/*
-    O layout geral, a sidebar e sua responsividade
-    são controlados por components.css.
-
-    Este arquivo contém apenas os estilos
-    específicos da área do Professor.
-*/
-
-
-/*====================================================
-                    PÁGINA
+                PAINEL DO PROFESSOR
 ====================================================*/
 
 .professor-page {
     width: 100%;
     min-width: 0;
     min-height: 100vh;
-
-    padding:
-        30px
-        32px
-        45px;
-
+    padding: 30px 32px 45px;
     background: var(--principal);
 }
-
-
-/*====================================================
-                    CABEÇALHO
-====================================================*/
 
 .professor-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     gap: 25px;
-
     margin-bottom: 26px;
 }
 
-
 .professor-welcome {
     display: block;
-
     margin-bottom: 5px;
-
     color: var(--primaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-
+    font: 700 10px Arial, sans-serif;
     letter-spacing: .06em;
-
     text-transform: uppercase;
 }
 
-
 .professor-header h1 {
     margin: 0 0 6px;
-
     color: var(--secundaria);
-
     font-size: 27px;
     font-weight: 600;
 }
 
-
 .professor-header p {
     margin: 0;
-
     color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 11px;
-
-    line-height: 1.6;
+    font: 11px/1.6 Arial, sans-serif;
 }
-
-
-/*====================================================
-                    DATA
-====================================================*/
 
 .professor-date {
     flex-shrink: 0;
-
     display: flex;
     align-items: center;
-
     gap: 9px;
-
     min-height: 40px;
-
     padding: 0 14px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
+    border: 1px solid rgba(30, 58, 138, .05);
     border-radius: 10px;
-
     background: var(--branco);
-
     color: var(--secundaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-
-    white-space: nowrap;
-
+    font: 10px Arial, sans-serif;
     box-shadow: var(--sombra-p);
 }
-
 
 .professor-date i {
     color: var(--primaria);
-
-    font-size: 13px;
 }
-
-
-/*====================================================
-                CARDS DE RESUMO
-====================================================*/
 
 .professor-cards {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            minmax(
-                0,
-                1fr
-            )
-        );
-
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 16px;
 }
 
-
-/*====================================================
-                CARD DE RESUMO
-====================================================*/
-
 .professor-card {
     min-width: 0;
-
     display: flex;
     align-items: center;
-
     gap: 14px;
-
     padding: 18px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
+    border: 1px solid rgba(30, 58, 138, .05);
     border-radius: 14px;
-
     background: var(--branco);
-
     box-shadow: var(--sombra-p);
-
-    transition:
-        transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
 }
-
-
-.professor-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .28
-        );
-
-    transform: translateY(-3px);
-
-    box-shadow: var(--sombra-m);
-}
-
-
-/*====================================================
-                ÍCONE DO CARD
-====================================================*/
 
 .professor-card-icon {
     width: 48px;
     height: 48px;
-
     flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+    display: grid;
+    place-items: center;
     border-radius: 12px;
-
     background: #FBF3D8;
-
     color: var(--primaria);
-
     font-size: 17px;
 }
-
-
-/*====================================================
-                CONTEÚDO DO CARD
-====================================================*/
 
 .professor-card-content {
     min-width: 0;
 }
 
-
 .professor-card-content span {
     display: block;
-
     margin-bottom: 4px;
-
     color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
+    font: 9px Arial, sans-serif;
 }
-
 
 .professor-card-content strong {
-    display: block;
-
-    overflow: hidden;
-
     color: var(--secundaria);
-
-    font-size: 21px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-/*====================================================
-                    SEÇÕES
-====================================================*/
-
-.professor-section {
-    margin-top: 26px;
-}
-
-
-.professor-section-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-
-    gap: 18px;
-
-    margin-bottom: 16px;
-}
-
-
-.professor-section-header h2 {
-    margin: 0 0 4px;
-
-    color: var(--secundaria);
-
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 600;
 }
 
-
-.professor-section-header p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-
-    line-height: 1.5;
-}
-
-
-/*====================================================
-                    VER TODAS
-====================================================*/
-
-.professor-view-all {
-    flex-shrink: 0;
-
-    display: inline-flex;
-    align-items: center;
-
-    gap: 7px;
-
-    padding: 0;
-
-    border: none;
-
-    background: transparent;
-
-    color: var(--secundaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition: color var(--transicao);
-}
-
-
-.professor-view-all i {
-    color: var(--primaria);
-
-    transition: transform var(--transicao);
-}
-
-
-.professor-view-all:hover {
-    color: var(--primaria);
-}
-
-
-.professor-view-all:hover i {
-    transform: translateX(3px);
-}
-
-
-/*====================================================
-                    TURMAS
-====================================================*/
-
-.professor-classes {
+.professor-quick-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            minmax(
-                0,
-                1fr
-            )
-        );
-
-    gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 
-
-/*====================================================
-                CARD DA TURMA
-====================================================*/
-
-.class-card {
+.professor-quick-card {
     min-width: 0;
-
-    padding: 18px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 14px;
-
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid rgba(30, 58, 138, .05);
+    border-radius: 13px;
     background: var(--branco);
-
+    color: inherit;
+    text-decoration: none;
     box-shadow: var(--sombra-p);
-
     transition:
         transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
+        border-color var(--transicao);
 }
 
-
-.class-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .28
-        );
-
-    transform: translateY(-3px);
-
-    box-shadow: var(--sombra-m);
+.professor-quick-card:hover {
+    border-color: rgba(211, 175, 55, .35);
+    transform: translateY(-2px);
 }
 
-
-/*====================================================
-                TOPO DA TURMA
-====================================================*/
-
-.class-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 10px;
-
-    margin-bottom: 16px;
-}
-
-
-.class-icon {
+.professor-quick-card > i:first-child {
     width: 42px;
     height: 42px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+    display: grid;
+    place-items: center;
     border-radius: 10px;
-
-    background: #FBF3D8;
-
-    color: var(--primaria);
-
-    font-size: 15px;
-}
-
-
-/*====================================================
-                STATUS DA TURMA
-====================================================*/
-
-.class-status {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 5px 9px;
-
-    border-radius: 20px;
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 600;
-}
-
-
-.class-status.active {
     background: #EEF4FF;
-
     color: var(--secundaria);
 }
 
-
-/*====================================================
-            INFORMAÇÕES DA TURMA
-====================================================*/
-
-.class-card-info {
-    min-width: 0;
-}
-
-
-.class-card-info h3 {
-    margin: 0 0 4px;
-
-    overflow: hidden;
-
-    color: var(--secundaria);
-
-    font-size: 15px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-.class-card-info p {
-    margin: 0;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-}
-
-
-/*====================================================
-                DADOS DA TURMA
-====================================================*/
-
-.class-card-data {
-    display: flex;
-    flex-direction: column;
-
-    gap: 8px;
-
-    margin: 16px 0;
-
-    padding: 13px 0;
-
-    border-top:
-        1px solid
-        var(--borda-clara);
-
-    border-bottom:
-        1px solid
-        var(--borda-clara);
-}
-
-
-.class-card-data div {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-}
-
-
-.class-card-data i {
-    width: 16px;
-
-    flex-shrink: 0;
-
-    color: var(--primaria);
-
-    font-size: 10px;
-
-    text-align: center;
-}
-
-
-.class-card-data span {
-    overflow: hidden;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-/*====================================================
-                BOTÃO DA TURMA
-====================================================*/
-
-.class-card-button {
-    width: 100%;
-    min-height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 7px;
-
-    padding: 0 12px;
-
-    border:
-        1px solid
-        var(--secundaria);
-
-    border-radius: 9px;
-
-    background: transparent;
-
-    color: var(--secundaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background var(--transicao),
-        color var(--transicao);
-}
-
-
-.class-card-button i {
-    transition: transform var(--transicao);
-}
-
-
-.class-card-button:hover {
-    background: var(--secundaria);
-
-    color: var(--branco);
-}
-
-
-.class-card-button:hover i {
-    transform: translateX(3px);
-}
-
-
-/*====================================================
-                ATIVIDADES RECENTES
-====================================================*/
-
-.professor-activities {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-
-/*====================================================
-                CARD DA ATIVIDADE
-====================================================*/
-
-.activity-card {
-    min-width: 0;
-
-    display: grid;
-
-    grid-template-columns:
-        46px
-        minmax(
-            160px,
-            1.5fr
-        )
-        minmax(
-            170px,
-            1fr
-        )
-        auto
-        auto;
-
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 15px 17px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 12px;
-
-    background: var(--branco);
-
-    box-shadow: var(--sombra-p);
-
-    transition:
-        transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
-}
-
-
-.activity-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .25
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow: var(--sombra-m);
-}
-
-
-/*====================================================
-                ÍCONE DA ATIVIDADE
-====================================================*/
-
-.activity-icon {
-    width: 46px;
-    height: 46px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: #FBF3D8;
-
-    color: var(--primaria);
-
-    font-size: 16px;
-}
-
-
-/*====================================================
-            INFORMAÇÕES DA ATIVIDADE
-====================================================*/
-
-.activity-info {
-    min-width: 0;
-}
-
-
-.activity-info h3 {
-    margin: 0 0 4px;
-
-    overflow: hidden;
-
-    color: var(--secundaria);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-.activity-info p {
-    margin: 0;
-
-    overflow: hidden;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-/*====================================================
-                DADOS DA ATIVIDADE
-====================================================*/
-
-.activity-data {
-    min-width: 0;
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 6px;
-}
-
-
-.activity-data span {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    gap: 6px;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-}
-
-
-.activity-data i {
-    width: 13px;
-
-    flex-shrink: 0;
-
-    color: var(--primaria);
-
-    font-size: 9px;
-
-    text-align: center;
-}
-
-
-/*====================================================
-                STATUS DA ATIVIDADE
-====================================================*/
-
-.activity-status {
-    min-width: 72px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 5px 9px;
-
-    border-radius: 20px;
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 600;
-
-    text-align: center;
-
-    white-space: nowrap;
-}
-
-
-.activity-status.published {
-    background: #EEF4FF;
-
-    color: var(--secundaria);
-}
-
-
-.activity-status.pending {
-    background: #FFF7E0;
-
-    color: #9A7410;
-}
-
-
-.activity-status.completed {
-    background: var(--cinza-100);
-
-    color: #4B5563;
-}
-
-
-/*====================================================
-            BOTÃO DA ATIVIDADE
-====================================================*/
-
-.activity-button {
-    min-width: 95px;
-    min-height: 36px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-
-    padding: 0 10px;
-
-    border:
-        1px solid
-        var(--secundaria);
-
-    border-radius: 8px;
-
-    background: transparent;
-
-    color: var(--secundaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 600;
-
-    cursor: pointer;
-
-    transition:
-        background var(--transicao),
-        color var(--transicao);
-}
-
-
-.activity-button i {
-    transition: transform var(--transicao);
-}
-
-
-.activity-button:hover {
-    background: var(--secundaria);
-
-    color: var(--branco);
-}
-
-
-.activity-button:hover i {
-    transform: translateX(3px);
-}
-
-
-/*====================================================
-                PRÓXIMAS ATIVIDADES
-====================================================*/
-
-.professor-upcoming-layout {
-    display: grid;
-
-    grid-template-columns:
-        minmax(
-            0,
-            1.4fr
-        )
-        minmax(
-            280px,
-            1fr
-        );
-
-    gap: 18px;
-}
-
-
-/*====================================================
-            LISTA DE PRÓXIMAS ATIVIDADES
-====================================================*/
-
-.upcoming-activities {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-
-.upcoming-card {
-    min-width: 0;
-
-    display: grid;
-
-    grid-template-columns:
-        52px
-        minmax(
-            0,
-            1fr
-        )
-        18px;
-
-    align-items: center;
-
-    gap: 13px;
-
-    padding: 14px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 12px;
-
-    background: var(--branco);
-
-    box-shadow: var(--sombra-p);
-
-    transition:
-        transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
-}
-
-
-.upcoming-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .25
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow: var(--sombra-m);
-}
-
-
-/*====================================================
-                    DATA
-====================================================*/
-
-.upcoming-date {
-    width: 52px;
-    height: 52px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: #FBF3D8;
-}
-
-
-.upcoming-date strong {
-    color: var(--secundaria);
-
-    font-size: 17px;
-    font-weight: 600;
-
-    line-height: 1;
-}
-
-
-.upcoming-date span {
-    margin-top: 4px;
-
-    color: var(--primaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 700;
-}
-
-
-/*====================================================
-            INFORMAÇÕES PRÓXIMA ATIVIDADE
-====================================================*/
-
-.upcoming-info {
-    min-width: 0;
-}
-
-
-.upcoming-info h3 {
-    margin: 0 0 4px;
-
-    overflow: hidden;
-
-    color: var(--secundaria);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-.upcoming-info p {
-    margin: 0 0 6px;
-
-    overflow: hidden;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-
-.upcoming-info span {
-    display: flex;
-    align-items: center;
-
-    gap: 5px;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-}
-
-
-.upcoming-info i {
-    color: var(--primaria);
-}
-
-
-/*====================================================
-                    SETA
-====================================================*/
-
-.upcoming-arrow {
-    color: var(--secundaria);
-
-    font-size: 10px;
-
-    transition:
-        color var(--transicao),
-        transform var(--transicao);
-}
-
-
-.upcoming-card:hover .upcoming-arrow {
-    color: var(--primaria);
-
-    transform: translateX(3px);
-}
-
-
-/*====================================================
-            MINI CALENDÁRIO
-====================================================*/
-
-.professor-calendar {
-    min-width: 0;
-
-    padding: 18px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 14px;
-
-    background: var(--branco);
-
-    box-shadow: var(--sombra-p);
-}
-
-
-/*====================================================
-            CABEÇALHO DO CALENDÁRIO
-====================================================*/
-
-.calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    margin-bottom: 16px;
-}
-
-
-.calendar-header h3 {
-    margin: 0;
-
-    color: var(--secundaria);
-
-    font-size: 13px;
-    font-weight: 600;
-}
-
-
-.calendar-nav {
-    width: 29px;
-    height: 29px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: none;
-    border-radius: 7px;
-
-    background: #F7F7F2;
-
-    color: var(--secundaria);
-
-    font-size: 10px;
-
-    cursor: pointer;
-
-    transition:
-        background var(--transicao),
-        color var(--transicao);
-}
-
-
-.calendar-nav:hover {
-    background: var(--secundaria);
-
-    color: var(--branco);
-}
-
-
-/*====================================================
-                DIAS DA SEMANA
-====================================================*/
-
-.calendar-weekdays {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            7,
-            1fr
-        );
-
-    gap: 4px;
-
-    margin-bottom: 7px;
-}
-
-
-.calendar-weekdays span {
+.professor-quick-card > i:last-child {
     color: var(--texto-claro);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 600;
-
-    text-align: center;
-}
-
-
-/*====================================================
-                DIAS DO CALENDÁRIO
-====================================================*/
-
-.calendar-days {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            7,
-            1fr
-        );
-
-    gap: 4px;
-}
-
-
-.calendar-days span {
-    min-height: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 7px;
-
-    color: #4B5563;
-
-    font-family: Arial, sans-serif;
     font-size: 9px;
-
-    cursor: pointer;
-
-    transition:
-        background var(--transicao),
-        color var(--transicao);
 }
 
-
-.calendar-days span:not(.calendar-empty):hover {
-    background: #F7F7F2;
-}
-
-
-.calendar-empty {
-    cursor: default !important;
-}
-
-
-/*====================================================
-            DIAS COM ATIVIDADE
-====================================================*/
-
-.calendar-highlight {
-    background:
-        var(--primaria)
-        !important;
-
-    color:
-        var(--branco)
-        !important;
-
-    font-weight: 700;
-}
-
-
-.calendar-highlight:hover {
-    background:
-        var(--primaria)
-        !important;
-}
-
-
-/*====================================================
-                AVISOS DA ESCOLA
-====================================================*/
-
-.professor-notices {
-    display: flex;
-    flex-direction: column;
-
-    gap: 10px;
-}
-
-
-/*====================================================
-                CARD DO AVISO
-====================================================*/
-
-.notice-card {
-    min-width: 0;
-
-    display: grid;
-
-    grid-template-columns:
-        46px
-        minmax(
-            0,
-            1fr
-        )
-        32px;
-
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 15px 17px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 12px;
-
-    background: var(--branco);
-
-    box-shadow: var(--sombra-p);
-
-    transition:
-        transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
-}
-
-
-.notice-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .25
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow: var(--sombra-m);
-}
-
-
-/*====================================================
-                ÍCONE DO AVISO
-====================================================*/
-
-.notice-icon {
-    width: 46px;
-    height: 46px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 11px;
-
-    background: #F7F7F2;
-
-    color: var(--secundaria);
-
-    font-size: 15px;
-}
-
-
-.notice-icon.important {
-    background: #FBF3D8;
-
-    color: var(--primaria);
-}
-
-
-/*====================================================
-                CONTEÚDO DO AVISO
-====================================================*/
-
-.notice-content {
-    min-width: 0;
-}
-
-
-.notice-title {
-    min-width: 0;
-
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
+.professor-quick-card strong {
+    display: block;
     margin-bottom: 5px;
-}
-
-
-.notice-title h3 {
-    margin: 0;
-
-    overflow: hidden;
-
     color: var(--secundaria);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    font: 700 10px Arial, sans-serif;
 }
 
-
-/*====================================================
-                    BADGE
-====================================================*/
-
-.notice-badge {
-    flex-shrink: 0;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 4px 7px;
-
-    border-radius: 20px;
-
-    background: #EEF4FF;
-
-    color: var(--secundaria);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-    font-weight: 600;
-}
-
-
-.notice-badge.important {
-    background: #FFF7E0;
-
-    color: #9A7410;
-}
-
-
-/*====================================================
-                    DESCRIÇÃO
-====================================================*/
-
-.notice-content p {
-    max-width: 850px;
-
-    margin: 0 0 6px;
-
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-
-    line-height: 1.55;
-}
-
-
-/*====================================================
-                    DATA
-====================================================*/
-
-.notice-date {
-    display: flex;
-    align-items: center;
-
-    gap: 5px;
-
+.professor-quick-card span {
+    display: block;
     color: var(--texto-claro);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
+    font: 8px/1.45 Arial, sans-serif;
 }
 
-
-.notice-date i {
-    color: var(--primaria);
-}
-
-
-/*====================================================
-                BOTÃO DO AVISO
-====================================================*/
-
-.notice-button {
-    width: 32px;
-    height: 32px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: none;
-    border-radius: 8px;
-
-    background: #F7F7F2;
-
-    color: var(--secundaria);
-
-    cursor: pointer;
-
-    transition:
-        background var(--transicao),
-        color var(--transicao);
-}
-
-
-.notice-button:hover {
-    background: var(--secundaria);
-
-    color: var(--branco);
-}
-
-
-/*====================================================
-            RESUMO DE INDICADORES
-====================================================*/
-
-.professor-indicators {
+.professor-dashboard-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            minmax(
-                0,
-                1fr
-            )
-        );
-
-    gap: 14px;
-}
-
-
-/*====================================================
-                CARD DO INDICADOR
-====================================================*/
-
-.professor-indicators .indicator-card {
-    min-width: 0;
-
-    padding: 16px;
-
-    border:
-        1px solid
-        rgba(
-            30,
-            58,
-            138,
-            .05
-        );
-
-    border-radius: 12px;
-
-    background: var(--branco);
-
-    box-shadow: var(--sombra-p);
-
-    transition:
-        transform var(--transicao),
-        border-color var(--transicao),
-        box-shadow var(--transicao);
-}
-
-
-.professor-indicators .indicator-card:hover {
-    border-color:
-        rgba(
-            211,
-            175,
-            55,
-            .25
-        );
-
-    transform: translateY(-2px);
-
-    box-shadow: var(--sombra-m);
-}
-
-
-/*====================================================
-            TOPO DO INDICADOR
-====================================================*/
-
-.indicator-top {
-    display: flex;
-    align-items: center;
-
-    gap: 9px;
-
-    margin-bottom: 14px;
-}
-
-
-.professor-indicators .indicator-icon {
-    width: 38px;
-    height: 38px;
-
-    flex-shrink: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 9px;
-
-    background: #FBF3D8;
-
-    color: var(--primaria);
-
-    font-size: 13px;
-}
-
-
-.professor-indicators .indicator-icon.attention {
-    background: #FFF7E0;
-
-    color: #9A7410;
-}
-
-
-.indicator-label {
-    color: var(--texto-secundario);
-
-    font-family: Arial, sans-serif;
-    font-size: 9px;
-    font-weight: 600;
-}
-
-
-/*====================================================
-                VALOR DO INDICADOR
-====================================================*/
-
-.indicator-value {
-    margin-bottom: 12px;
-
-    color: var(--secundaria);
-
-    font-size: 24px;
-    font-weight: 600;
-
-    line-height: 1;
-}
-
-
-/*====================================================
-                RODAPÉ DO INDICADOR
-====================================================*/
-
-.indicator-footer {
-    min-height: 17px;
-
-    display: flex;
-    align-items: center;
-}
-
-
-.indicator-footer span {
-    color: var(--texto-claro);
-
-    font-family: Arial, sans-serif;
-    font-size: 8px;
-
-    line-height: 1.4;
-}
-
-
-.indicator-positive {
-    color:
-        var(--texto-secundario)
-        !important;
-}
-
-
-.indicator-positive i {
-    margin-right: 4px;
-
-    color: var(--primaria);
-}
-
-
-.indicator-attention {
-    color:
-        #9A7410
-        !important;
-}
-
-
-.indicator-attention i {
-    margin-right: 4px;
-}
-
-
-/*====================================================
-                DESKTOP MENOR
-====================================================*/
-
-@media (max-width: 1200px) {
-
-    .professor-page {
-        padding:
-            28px
-            26px
-            40px;
-    }
-
-
-    .professor-cards,
-    .professor-classes {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(
-                    0,
-                    1fr
-                )
-            );
-    }
-
-
-    .professor-indicators {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(
-                    0,
-                    1fr
-                )
-            );
-    }
-
-
-    .activity-card {
-        grid-template-columns:
-            46px
-            minmax(
-                0,
-                1fr
-            )
-            auto;
-    }
-
-
-    .activity-data {
-        grid-column: 2;
-
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-
-
-    .activity-status {
-        grid-column: 3;
-        grid-row: 1;
-    }
-
-
-    .activity-button {
-        grid-column: 3;
-        grid-row: 2;
-    }
-
-}
-
-
-/*====================================================
-                    TABLET
-====================================================*/
-
-@media (max-width: 1000px) {
-
-    .professor-page {
-        padding:
-            25px
-            22px
-            38px;
-    }
-
-
-    .professor-upcoming-layout {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-
-/*====================================================
-                    MOBILE
-====================================================*/
-
-@media (max-width: 750px) {
-
-    .professor-page {
-        padding:
-            20px
-            18px
-            35px;
-    }
-
-
-    .professor-header {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 15px;
-
-        margin-bottom: 22px;
-    }
-
-
-    .professor-header h1 {
-        font-size: 23px;
-    }
-
-
-    .professor-date {
-        width: 100%;
-
-        justify-content: center;
-    }
-
-
-    .professor-cards,
-    .professor-classes {
-        grid-template-columns: 1fr;
-    }
-
-
-    .professor-section {
-        margin-top: 22px;
-    }
-
-
-    .professor-section-header {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 10px;
-    }
-
-
-    .activity-card {
-        grid-template-columns:
-            42px
-            minmax(
-                0,
-                1fr
-            );
-
-        gap: 11px;
-
-        padding: 14px;
-    }
-
-
-    .activity-icon {
-        width: 42px;
-        height: 42px;
-
-        font-size: 14px;
-    }
-
-
-    .activity-data {
-        grid-column:
-            1 /
-            -1;
-
-        padding-top: 10px;
-
-        border-top:
-            1px solid
-            var(--borda-clara);
-    }
-
-
-    .activity-status {
-        grid-column:
-            1 /
-            -1;
-
-        grid-row: auto;
-
-        justify-self: start;
-    }
-
-
-    .activity-button {
-        grid-column:
-            1 /
-            -1;
-
-        grid-row: auto;
-
-        width: 100%;
-    }
-
-
-    .upcoming-card {
-        grid-template-columns:
-            48px
-            minmax(
-                0,
-                1fr
-            )
-            15px;
-
-        gap: 10px;
-
-        padding: 13px;
-    }
-
-
-    .upcoming-date {
-        width: 48px;
-        height: 48px;
-    }
-
-
-    .professor-calendar {
-        padding: 16px;
-    }
-
-
-    .notice-card {
-        grid-template-columns:
-            42px
-            minmax(
-                0,
-                1fr
-            )
-            30px;
-
-        gap: 11px;
-
-        padding: 14px;
-    }
-
-
-    .notice-icon {
-        width: 42px;
-        height: 42px;
-
-        font-size: 14px;
-    }
-
-
-    .professor-indicators {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-
-/*====================================================
-                CELULAR PEQUENO
-====================================================*/
-
-@media (max-width: 500px) {
-
-    .professor-page {
-        padding:
-            18px
-            12px
-            30px;
-    }
-
-
-    .professor-header h1 {
-        font-size: 21px;
-    }
-
-
-    .professor-card,
-    .class-card {
-        padding: 15px;
-    }
-
-
-    .professor-card-icon {
-        width: 44px;
-        height: 44px;
-
-        font-size: 15px;
-    }
-
-
-    .professor-card-content strong {
-        font-size: 19px;
-    }
-
-
-    .professor-section-header h2 {
-        font-size: 17px;
-    }
-
-
-    .class-card-info h3 {
-        font-size: 14px;
-    }
-
-
-    .notice-title {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 4px;
-    }
-
-
-    .notice-title h3 {
-        width: 100%;
-
-        white-space: normal;
-    }
-
-
-    .notice-content p {
-        font-size: 8px;
-    }
-
-
-    .professor-indicators .indicator-card {
-        padding: 14px;
-    }
-
-
-    .indicator-value {
-        font-size: 22px;
-    }
-
-}
-
-
-/*====================================================
-                TELAS MUITO PEQUENAS
-====================================================*/
-
-@media (max-width: 360px) {
-
-    .professor-page {
-        padding:
-            15px
-            9px
-            25px;
-    }
-
-
-    .activity-card,
-    .notice-card,
-    .upcoming-card {
-        padding: 11px;
-    }
-
-
-    .calendar-days span {
-        min-height: 27px;
-
-        font-size: 8px;
-    }
-
-}
-
-
-/* Portal individual conectado ao banco de dados */
-
-.professor-data-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
     gap: 18px;
     margin-top: 20px;
 }
 
 .professor-panel {
-    margin-top: 20px;
     overflow: hidden;
-    border: 1px solid rgba(30, 58, 138, .06);
+    border: 1px solid rgba(30, 58, 138, .05);
     border-radius: 14px;
     background: var(--branco);
     box-shadow: var(--sombra-p);
 }
 
-.professor-data-grid .professor-panel { margin-top: 0; }
-
 .professor-panel-header {
-    padding: 20px 22px;
-    border-bottom: 1px solid var(--borda);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--borda-clara);
 }
 
 .professor-panel-header h2 {
-    margin: 0 0 5px;
+    margin: 0 0 4px;
     color: var(--secundaria);
-    font-size: 18px;
+    font-size: 15px;
 }
 
 .professor-panel-header p {
     margin: 0;
-    color: var(--texto-secundario);
-    font-family: Arial, sans-serif;
-    font-size: 12px;
+    color: var(--texto-claro);
+    font: 9px/1.5 Arial, sans-serif;
 }
 
-.profile-list {
+.professor-dashboard-link {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--secundaria);
+    font: 700 8px Arial, sans-serif;
+    text-decoration: none;
+}
+
+.professor-dashboard-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
-    margin: 0;
-    padding: 6px 22px 18px;
 }
 
-.profile-list div { min-width: 0; padding: 14px 12px 10px 0; }
+.professor-class-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #F1F1F1;
+}
 
-.profile-list dt {
-    margin-bottom: 5px;
-    color: var(--texto-secundario);
-    font-family: Arial, sans-serif;
+.professor-class-preview:last-child {
+    border-bottom: none;
+}
+
+.professor-class-preview strong {
+    color: var(--secundaria);
     font-size: 11px;
 }
 
-.profile-list dd {
+.professor-class-preview span,
+.professor-class-preview p {
     margin: 0;
-    overflow-wrap: anywhere;
-    color: var(--texto);
-    font-family: Arial, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-.professor-table-wrap { overflow-x: auto; }
-
-.professor-table-wrap table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-}
-
-.professor-table-wrap th,
-.professor-table-wrap td {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--borda);
-    text-align: left;
-}
-
-.professor-table-wrap th {
     color: var(--texto-secundario);
-    background: var(--cinza-50);
-    font-size: 11px;
-    letter-spacing: .04em;
-    text-transform: uppercase;
+    font: 9px Arial, sans-serif;
 }
 
-.professor-table-wrap td { color: var(--texto); font-size: 13px; }
-.professor-table-wrap tbody tr:last-child td { border-bottom: 0; }
-
-.professor-empty {
-    padding: 36px 20px !important;
-    color: var(--texto-secundario) !important;
-    text-align: center !important;
+.professor-class-preview p {
+    grid-column: 1 / -1;
 }
 
-@media (max-width: 850px) {
-    .professor-data-grid { grid-template-columns: 1fr; }
+.professor-communication-links {
+    display: grid;
 }
 
-@media (max-width: 620px) {
-    .profile-list { grid-template-columns: 1fr; }
+.professor-communication-links a {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: center;
+    gap: 11px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #F1F1F1;
+    color: inherit;
+    text-decoration: none;
+}
+
+.professor-communication-links a:last-child {
+    border-bottom: none;
+}
+
+.professor-communication-links a:hover {
+    background: #FFFEF7;
+}
+
+.professor-communication-links > a > i {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 9px;
+    background: #FBF3D8;
+    color: var(--primaria);
+}
+
+.professor-communication-links strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--secundaria);
+    font: 700 10px Arial, sans-serif;
+}
+
+.professor-communication-links span {
+    color: var(--texto-claro);
+    font: 8px/1.45 Arial, sans-serif;
+}
+
+@media (max-width: 1150px) {
+    .professor-cards,
+    .professor-quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .professor-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .professor-page {
+        padding: 23px 17px 38px;
+    }
+
+    .professor-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .professor-date {
+        width: 100%;
+    }
+
+    .professor-cards,
+    .professor-quick-grid {
+        grid-template-columns: 1fr;
+    }
 }

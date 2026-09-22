@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Minhas turmas | PrimeWay School</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/components.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_shared.css?v=20260922-1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../css/professor_turmas.css?v=20260922-1"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside
+            class="sidebar professor-sidebar"
+            aria-label="Menu do professor"
+        ></aside>
+
+
+        <main class="professor-module-page">
+
+            <header class="professor-module-header">
+
+                <div>
+                    <span class="section-label">
+                        Área do professor
+                    </span>
+
+                    <h1>Minhas turmas</h1>
+
+                    <p>
+                        Consulte as turmas, disciplinas e alunos
+                        vinculados ao seu trabalho docente.
+                    </p>
+                </div>
+
+                <div class="professor-header-actions">
+
+                    <div class="professor-context-pill">
+                        <i
+                            class="fa-solid fa-calendar-check"
+                            aria-hidden="true"
+                        ></i>
+                        <span id="schoolYearValue">
+                            Ano letivo —
+                        </span>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <section
+                class="professor-module-summary"
+                aria-label="Resumo das turmas"
+            >
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-users"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Turmas</span>
+                        <strong id="classesCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-user-graduate"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Alunos</span>
+                        <strong id="studentsCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-book-open"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Disciplinas</span>
+                        <strong id="subjectsCount">0</strong>
+                    </div>
+                </article>
+
+
+                <article class="summary-card">
+                    <div class="summary-icon">
+                        <i
+                            class="fa-solid fa-chalkboard-user"
+                            aria-hidden="true"
+                        ></i>
+                    </div>
+                    <div>
+                        <span>Turmas como regente</span>
+                        <strong id="homeroomCount">0</strong>
+                    </div>
+                </article>
+
+            </section>
+
+
+            <section class="professor-module-panel">
+
+                <div class="professor-module-heading">
+
+                    <div>
+                        <h2>Turmas vinculadas</h2>
+                        <p>
+                            Selecione uma turma para filtrar os alunos abaixo.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div
+                    class="teacher-classes-grid"
+                    id="classesGrid"
+                >
+
+                    <div class="professor-empty">
+                        <i
+                            class="fa-solid fa-spinner fa-spin"
+                            aria-hidden="true"
+                        ></i>
+                        Carregando turmas…
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section class="professor-module-panel">
+
+                <div class="professor-module-heading">
+
+                    <div>
+                        <h2>Meus alunos</h2>
+                        <p>
+                            Alunos com matrícula ativa nas turmas em que você atua.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="professor-toolbar">
+
+                    <input
+                        type="search"
+                        id="studentSearch"
+                        placeholder="Buscar aluno ou matrícula..."
+                        autocomplete="off"
+                        aria-label="Buscar aluno"
+                    >
+
+                    <select
+                        id="studentClassFilter"
+                        aria-label="Filtrar por turma"
+                    >
+                        <option value="">
+                            Todas as turmas
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="teacher-students-table-wrap">
+
+                    <table class="teacher-students-table">
+
+                        <thead>
+                            <tr>
+                                <th>Nº</th>
+                                <th>Aluno</th>
+                                <th>Matrícula</th>
+                                <th>Turma</th>
+                                <th>Contato</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="studentsBody">
+
+                            <tr>
+                                <td
+                                    colspan="5"
+                                    class="professor-empty"
+                                >
+                                    Carregando alunos…
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="../js/core.js?v=20260915-4"></script>
+    <script src="../js/professor_common.js?v=20260922-1"></script>
+    <script src="../js/professor_turmas.js?v=20260922-1"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+/*====================================================
+                    DADOS DO PROFESSOR
+====================================================*/
+
+.professor-data-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    padding: 9px 20px 20px;
+}
+
+.professor-data-list div {
+    min-width: 0;
+    padding: 13px 14px 9px 0;
+}
+
+.professor-data-list dt {
+    margin-bottom: 5px;
+    color: var(--texto-claro);
+    font: 9px Arial, sans-serif;
+}
+
+.professor-data-list dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: var(--texto);
+    font: 700 11px Arial, sans-serif;
+}
+
+.teacher-assignments-panel {
+    margin-top: 18px;
+}
+
+.teacher-assignments-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 13px;
+    padding: 20px;
+}
+
+.teacher-assignment-card {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: var(--cinza-50);
+}
+
+.teacher-assignment-card .code {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--primaria);
+    font: 700 8px Arial, sans-serif;
+    text-transform: uppercase;
+}
+
+.teacher-assignment-card h3 {
+    margin: 0 0 6px;
+    color: var(--secundaria);
+    font-size: 13px;
+}
+
+.teacher-assignment-card p {
+    margin: 4px 0 0;
+    color: var(--texto-secundario);
+    font: 9px/1.5 Arial, sans-serif;
+}
+
+.teacher-data-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 16px 18px;
+    border: 1px solid rgba(37, 99, 235, .12);
+    border-radius: 12px;
+    background: var(--informacao-fundo);
+}
+
+.teacher-data-help > i {
+    margin-top: 2px;
+    color: var(--informacao);
+}
+
+.teacher-data-help strong {
+    color: var(--secundaria);
+    font: 10px Arial, sans-serif;
+}
+
+.teacher-data-help p {
+    margin: 5px 0 0;
+    color: var(--texto-secundario);
+    font: 9px/1.5 Arial, sans-serif;
+}
+
+@media (max-width: 950px) {
+    .teacher-assignments-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .professor-data-list,
+    .teacher-assignments-grid {
+        grid-template-columns: 1fr;
+    }
+}

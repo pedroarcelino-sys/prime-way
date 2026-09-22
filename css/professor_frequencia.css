@@ -1,0 +1,142 @@
+/*====================================================
+                FREQUÊNCIA DO PROFESSOR
+====================================================*/
+
+.teacher-lessons-wrap,
+.attendance-table-wrap {
+    overflow-x: auto;
+}
+
+.teacher-lessons-table,
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+}
+
+.teacher-lessons-table th,
+.teacher-lessons-table td,
+.attendance-table th,
+.attendance-table td {
+    padding: 13px 15px;
+    border-bottom: 1px solid #F1F1F1;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.teacher-lessons-table th,
+.attendance-table th {
+    background: #FAFAFA;
+    color: var(--texto-claro);
+    font-size: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.teacher-lessons-table td,
+.attendance-table td {
+    color: #4B5563;
+    font-size: 9px;
+}
+
+.lesson-title {
+    display: grid;
+    gap: 3px;
+}
+
+.lesson-title strong {
+    color: var(--secundaria);
+    font-size: 10px;
+}
+
+.lesson-title span {
+    color: var(--texto-claro);
+    font-size: 8px;
+}
+
+.lesson-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.lesson-action-button {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 10px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--branco);
+    color: var(--secundaria);
+    font: 700 8px Arial, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.lesson-action-button:hover {
+    border-color: var(--primaria);
+    background: #FFFEF7;
+}
+
+.attendance-dialog {
+    width: min(980px, calc(100vw - 30px));
+}
+
+.attendance-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--borda-clara);
+    background: #FAFAFA;
+}
+
+.attendance-actions-bar > span {
+    color: var(--texto-secundario);
+    font: 9px Arial, sans-serif;
+}
+
+.attendance-table-wrap {
+    max-height: 470px;
+    overflow-y: auto;
+}
+
+.attendance-status-select {
+    min-width: 130px;
+    height: 35px;
+    padding: 0 9px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--branco);
+    color: #374151;
+    font: 9px Arial, sans-serif;
+}
+
+.attendance-observation {
+    width: 100%;
+    min-width: 180px;
+    height: 35px;
+    padding: 0 9px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: var(--branco);
+    color: #374151;
+    font: 9px Arial, sans-serif;
+}
+
+.attendance-student-name {
+    color: var(--secundaria) !important;
+    font-weight: 700;
+}
+
+@media (max-width: 700px) {
+    .attendance-actions-bar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

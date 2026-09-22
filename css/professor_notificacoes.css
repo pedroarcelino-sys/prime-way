@@ -1,0 +1,146 @@
+/*====================================================
+                NOTIFICAÇÕES DO PROFESSOR
+====================================================*/
+
+.teacher-notification-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--borda-clara);
+    background: #FAFAFA;
+}
+
+.teacher-notification-tab {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 13px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--texto-secundario);
+    font: 700 9px Arial, sans-serif;
+    cursor: pointer;
+}
+
+.teacher-notification-tab.active {
+    background: var(--branco);
+    color: var(--secundaria);
+    box-shadow: var(--sombra-p);
+}
+
+.teacher-notification-list {
+    display: grid;
+}
+
+.teacher-notification-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 13px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #F1F1F1;
+    background: var(--branco);
+}
+
+.teacher-notification-item:last-child {
+    border-bottom: none;
+}
+
+.teacher-notification-item.clickable {
+    cursor: pointer;
+}
+
+.teacher-notification-item.clickable:hover {
+    background: #FCFCFC;
+}
+
+.teacher-notification-item.unread {
+    background: #F8FAFF;
+}
+
+.teacher-notification-item.unread::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--primaria);
+}
+
+.teacher-notification-icon {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: #EEF4FF;
+    color: var(--secundaria);
+}
+
+.teacher-notification-content {
+    min-width: 0;
+}
+
+.teacher-notification-content h3 {
+    margin: 0 0 5px;
+    color: var(--secundaria);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.teacher-notification-content p {
+    margin: 0 0 7px;
+    color: var(--texto-secundario);
+    font: 10px/1.55 Arial, sans-serif;
+}
+
+.teacher-notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.teacher-notification-meta span:not(.professor-status) {
+    color: var(--texto-claro);
+    font: 8px Arial, sans-serif;
+}
+
+.teacher-notification-side {
+    min-width: 110px;
+    text-align: right;
+}
+
+.teacher-notification-side time,
+.teacher-notification-side span {
+    display: block;
+    color: var(--texto-claro);
+    font: 8px Arial, sans-serif;
+}
+
+.teacher-notification-side strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--secundaria);
+    font: 700 9px Arial, sans-serif;
+}
+
+@media (max-width: 700px) {
+    .teacher-notification-item {
+        grid-template-columns: 38px minmax(0, 1fr);
+    }
+
+    .teacher-notification-side {
+        grid-column: 2;
+        min-width: 0;
+        text-align: left;
+    }
+
+    .teacher-notification-tabs {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
