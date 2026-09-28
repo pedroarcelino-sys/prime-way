@@ -51,7 +51,8 @@ const PERFIS_COM_AREA =
         "admin",
         "professor",
         "responsavel",
-        "aluno"
+        "aluno",
+        "secretaria"
     ]);
 
 

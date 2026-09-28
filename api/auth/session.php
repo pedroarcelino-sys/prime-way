@@ -118,7 +118,8 @@ if (
             'admin',
             'professor',
             'responsavel',
-            'aluno'
+            'aluno',
+                'secretaria'
         ],
         true
     )
