@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'nome' => 'Portaria principal',
+    'latitude' => -00.000000000000000,
+    'longitude' => -00.000000000000000,
+    'raio_metros' => 300,
+];
