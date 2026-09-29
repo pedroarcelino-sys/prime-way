@@ -1,737 +1,329 @@
 (function () {
-    "use strict";
+"use strict";
 
-    const SESSION_URL =
-        "../api/auth/session.php";
+const SESSION_URL="../api/auth/session.php";
+const LOGOUT_URL="../api/auth/logout.php";
+const NAVIGATION_URL="../api/secretaria/navegacao.php";
+const LOGIN_PAGE="login.html";
 
-    const LOGOUT_URL =
-        "../api/auth/logout.php";
+const ROLE_PAGES={
+    admin:"dashboard.html",
+    professor:"professor.html",
+    aluno:"aluno_portal.html",
+    responsavel:"responsavel.html"
+};
 
-    const NAVIGATION_URL =
-        "../api/secretaria/navegacao.php";
+let cachedSession=null;
 
-    const LOGIN_PAGE =
-        "login.html";
+async function readJson(response){
+    try{return await response.json();}catch{return null;}
+}
 
-    const ROLE_PAGES = {
-        admin:
-            "dashboard.html",
+function clearCompatibilitySession(){
+    ["primewayLogado","primewayUsuario","primewayPerfil"]
+        .forEach(key=>sessionStorage.removeItem(key));
+}
 
-        professor:
-            "professor.html",
+async function getSession(force=false){
+    if(cachedSession&&!force)return cachedSession;
 
-        aluno:
-            "aluno_portal.html",
+    const response=await fetch(SESSION_URL,{
+        credentials:"same-origin",
+        cache:"no-store",
+        headers:{Accept:"application/json"}
+    });
 
-        responsavel:
-            "responsavel.html"
+    const data=await readJson(response);
+
+    if(!response.ok||!data?.authenticated||!data?.usuario){
+        cachedSession=null;
+        return null;
+    }
+
+    cachedSession=data;
+    return data;
+}
+
+async function ensureSecretary(){
+    try{
+        const session=await getSession(true);
+
+        if(!session){
+            clearCompatibilitySession();
+            location.replace(LOGIN_PAGE);
+            return null;
+        }
+
+        const role=String(session.usuario.perfil||"");
+
+        if(role!=="secretaria"){
+            location.replace(ROLE_PAGES[role]||LOGIN_PAGE);
+            return null;
+        }
+
+        return session;
+    }catch(error){
+        console.error("Erro ao validar sessão da Secretaria:",error);
+        clearCompatibilitySession();
+        location.replace(LOGIN_PAGE);
+        return null;
+    }
+}
+
+async function request(url,options={}){
+    const config={
+        method:options.method||"GET",
+        credentials:"same-origin",
+        cache:options.cache||"no-store",
+        headers:{
+            Accept:"application/json",
+            ...(options.headers||{})
+        }
     };
 
-    let cachedSession =
-        null;
-
-    async function readJson(
-        response
-    ) {
-        try {
-            return await response.json();
-        } catch {
-            return null;
-        }
+    if(options.body!==undefined){
+        config.body=options.body;
     }
 
-    function clearCompatibilitySession() {
-        [
-            "primewayLogado",
-            "primewayUsuario",
-            "primewayPerfil"
-        ].forEach(
-            key =>
-                sessionStorage.removeItem(
-                    key
-                )
-        );
+    const method=String(config.method).toUpperCase();
+
+    if(!["GET","HEAD"].includes(method)){
+        const session=await getSession();
+
+        config.headers["X-CSRF-Token"]=
+            session?.csrfToken||"";
     }
 
-    async function getSession(
-        force = false
-    ) {
+    const response=await fetch(url,config);
+    const data=await readJson(response);
 
-        if (
-            cachedSession
-            &&
-            !force
-        ) {
-            return cachedSession;
-        }
-
-        const response =
-            await fetch(
-                SESSION_URL,
-                {
-                    credentials:
-                        "same-origin",
-
-                    cache:
-                        "no-store",
-
-                    headers: {
-                        Accept:
-                            "application/json"
-                    }
-                }
-            );
-
-        const data =
-            await readJson(
-                response
-            );
-
-        if (
-            !response.ok
-            ||
-            !data?.authenticated
-            ||
-            !data?.usuario
-        ) {
-            cachedSession =
-                null;
-
-            return null;
-        }
-
-        cachedSession =
-            data;
-
-        return data;
+    if(response.status===401){
+        clearCompatibilitySession();
+        cachedSession=null;
+        location.replace(LOGIN_PAGE);
     }
 
-    async function ensureSecretary() {
+    return{response,data};
+}
 
-        try {
+async function requestJson(url,payload,method="POST"){
+    return request(url,{
+        method,
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(payload)
+    });
+}
 
-            const session =
-                await getSession(
-                    true
-                );
+async function logout(){
+    const button=document.querySelector("#logoutButton");
 
-            if (!session) {
-                clearCompatibilitySession();
+    if(button){
+        button.disabled=true;
+    }
 
-                location.replace(
-                    LOGIN_PAGE
-                );
+    try{
+        const session=await getSession(true);
 
-                return null;
+        const response=await fetch(LOGOUT_URL,{
+            method:"POST",
+            credentials:"same-origin",
+            headers:{
+                Accept:"application/json",
+                "X-CSRF-Token":session?.csrfToken||""
             }
-
-            const role =
-                String(
-                    session
-                        .usuario
-                        .perfil
-                    || ""
-                );
-
-            if (
-                role !==
-                "secretaria"
-            ) {
-                location.replace(
-                    ROLE_PAGES[
-                        role
-                    ]
-                    ||
-                    LOGIN_PAGE
-                );
-
-                return null;
-            }
-
-            return session;
-
-        } catch (error) {
-
-            console.error(
-                "Erro ao validar sessão da Secretaria:",
-                error
-            );
-
-            clearCompatibilitySession();
-
-            location.replace(
-                LOGIN_PAGE
-            );
-
-            return null;
-        }
-    }
-
-    async function request(
-        url,
-        options = {}
-    ) {
-
-        const config = {
-            method:
-                options.method
-                || "GET",
-
-            credentials:
-                "same-origin",
-
-            cache:
-                options.cache
-                || "no-store",
-
-            headers: {
-                Accept:
-                    "application/json",
-
-                ...(
-                    options.headers
-                    || {}
-                )
-            }
-        };
-
-        if (
-            options.body
-            !== undefined
-        ) {
-            config.body =
-                options.body;
-        }
-
-        const method =
-            String(
-                config.method
-            ).toUpperCase();
-
-        if (
-            ![
-                "GET",
-                "HEAD"
-            ].includes(
-                method
-            )
-        ) {
-
-            const session =
-                await getSession();
-
-            config.headers[
-                "X-CSRF-Token"
-            ] =
-                session
-                    ?.csrfToken
-                || "";
-        }
-
-        const response =
-            await fetch(
-                url,
-                config
-            );
-
-        const data =
-            await readJson(
-                response
-            );
-
-        if (
-            response.status
-            === 401
-        ) {
-            clearCompatibilitySession();
-
-            cachedSession =
-                null;
-
-            location.replace(
-                LOGIN_PAGE
-            );
-        }
-
-        return {
-            response,
-            data
-        };
-    }
-
-    async function requestJson(
-        url,
-        payload,
-        method = "POST"
-    ) {
-
-        return request(
-            url,
-            {
-                method,
-
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-
-                body:
-                    JSON.stringify(
-                        payload
-                    )
-            }
-        );
-    }
-
-    async function logout() {
-
-        const button =
-            document.querySelector(
-                "#logoutButton"
-            );
-
-        if (button) {
-            button.disabled =
-                true;
-        }
-
-        try {
-
-            const session =
-                await getSession(
-                    true
-                );
-
-            const response =
-                await fetch(
-                    LOGOUT_URL,
-                    {
-                        method:
-                            "POST",
-
-                        credentials:
-                            "same-origin",
-
-                        headers: {
-                            Accept:
-                                "application/json",
-
-                            "X-CSRF-Token":
-                                session
-                                    ?.csrfToken
-                                || ""
-                        }
-                    }
-                );
-
-            const data =
-                await readJson(
-                    response
-                );
-
-            if (
-                !response.ok
-                ||
-                !data?.success
-            ) {
-                throw new Error(
-                    data?.message
-                    ||
-                    "Não foi possível encerrar a sessão."
-                );
-            }
-
-            clearCompatibilitySession();
-
-            cachedSession =
-                null;
-
-            location.replace(
-                LOGIN_PAGE
-            );
-
-        } catch (error) {
-
-            window
-                .PrimeWayFeedback
-                ?.error(
-                    error?.message
-                    ||
-                    "Não foi possível encerrar a sessão."
-                );
-
-            if (button) {
-                button.disabled =
-                    false;
-            }
-        }
-    }
-
-    function bindLogout() {
-
-        const button =
-            document.querySelector(
-                "#logoutButton"
-            );
-
-        if (
-            !button
-            ||
-            button
-                .dataset
-                .primewayBound
-            === "1"
-        ) {
-            return;
-        }
-
-        button
-            .dataset
-            .primewayBound =
-            "1";
-
-        button.addEventListener(
-            "click",
-            logout
-        );
-    }
-
-    function formatDate(
-        value,
-        withTime = false
-    ) {
-
-        if (!value) {
-            return "—";
-        }
-
-        const normalized =
-            String(
-                value
-            ).includes(
-                "T"
-            )
-                ? String(
-                    value
-                )
-                : String(
-                    value
-                ).replace(
-                    " ",
-                    "T"
-                );
-
-        const parsed =
-            new Date(
-                normalized.length
-                === 10
-                    ? `${normalized}T12:00:00`
-                    : normalized
-            );
-
-        if (
-            Number.isNaN(
-                parsed.getTime()
-            )
-        ) {
-            return String(
-                value
-            );
-        }
-
-        return new Intl.DateTimeFormat(
-            "pt-BR",
-            withTime
-                ? {
-                    dateStyle:
-                        "short",
-
-                    timeStyle:
-                        "short"
-                }
-                : {
-                    dateStyle:
-                        "short"
-                }
-        ).format(
-            parsed
-        );
-    }
-
-    function activeKey() {
-
-        const file =
-            location
-                .pathname
-                .split("/")
-                .pop()
-            || "";
-
-        const map = {
-            "secretaria.html":
-                "painel",
-
-            "secretaria_saida_segura.html":
-                "saida",
-
-            "secretaria_alunos.html":
-                "alunos",
-
-            "secretaria_responsaveis.html":
-                "responsaveis",
-
-            "secretaria_turmas.html":
-                "turmas"
-        };
-
-        return map[file]
-            || "";
-    }
-
-    function injectSidebar() {
-
-        const sidebar =
-            document.querySelector(
-                "aside.sidebar"
-            );
-
-        if (!sidebar) {
-            return;
-        }
-
-        const active =
-            activeKey();
-
-        const items = [
-            [
-                "painel",
-                "secretaria.html",
-                "fa-house",
-                "Meu painel",
-                ""
-            ],
-
-            [
-                "saida",
-                "secretaria_saida_segura.html",
-                "fa-person-walking-arrow-right",
-                "Saída segura",
-                "pickup"
-            ],
-
-            [
-                "alunos",
-                "secretaria_alunos.html",
-                "fa-user-graduate",
-                "Alunos",
-                ""
-            ],
-
-            [
-                "responsaveis",
-                "secretaria_responsaveis.html",
-                "fa-people-roof",
-                "Responsáveis",
-                ""
-            ],
-
-            [
-                "turmas",
-                "secretaria_turmas.html",
-                "fa-users-rectangle",
-                "Turmas",
-                ""
-            ]
-        ];
-
-        const navigation =
-            items
-                .map(
-                    (
-                        [
-                            key,
-                            href,
-                            icon,
-                            label,
-                            badge
-                        ]
-                    ) => {
-
-                        const activeAttr =
-                            key === active
-                                ? ' class="active" aria-current="page"'
-                                : "";
-
-                        const badgeHtml =
-                            badge
-                                ? `<span class="nav-badge" data-nav-badge="${badge}" hidden>0</span>`
-                                : "";
-
-                        return `
-                            <a href="${href}"${activeAttr}>
-                                <i
-                                    class="fa-solid ${icon}"
-                                    aria-hidden="true"
-                                ></i>
-
-                                <span>
-                                    ${label}
-                                </span>
-
-                                ${badgeHtml}
-                            </a>
-                        `;
-                    }
-                )
-                .join("");
-
-        sidebar.innerHTML = `
-            <div class="sidebar-logo">
-                <img
-                    src="../img/logo.png"
-                    alt="PrimeWay School"
-                >
-            </div>
-
-            <nav
-                class="sidebar-menu"
-                aria-label="Navegação da Secretaria"
-            >
-                ${navigation}
-            </nav>
-
-            <div class="sidebar-bottom">
-                <button
-                    type="button"
-                    id="logoutButton"
-                >
-                    <i
-                        class="fa-solid fa-right-from-bracket"
-                        aria-hidden="true"
-                    ></i>
-
-                    <span>
-                        Sair
-                    </span>
-                </button>
-            </div>
-        `;
-    }
-
-    function setBadge(
-        name,
-        value
-    ) {
-
-        const element =
-            document.querySelector(
-                `[data-nav-badge="${name}"]`
-            );
-
-        if (!element) {
-            return;
-        }
-
-        const number =
-            Number(
-                value
-                || 0
-            );
-
-        if (
-            !Number.isFinite(
-                number
-            )
-            ||
-            number <= 0
-        ) {
-            element.hidden =
-                true;
-
-            element.textContent =
-                "0";
-
-            return;
-        }
-
-        element.hidden =
-            false;
-
-        element.textContent =
-            number > 99
-                ? "99+"
-                : String(
-                    number
-                );
-    }
-
-    async function refreshNavigationBadges() {
-
-        try {
-
-            const response =
-                await fetch(
-                    NAVIGATION_URL,
-                    {
-                        credentials:
-                            "same-origin",
-
-                        cache:
-                            "no-store",
-
-                        headers: {
-                            Accept:
-                                "application/json"
-                        }
-                    }
-                );
-
-            const data =
-                await readJson(
-                    response
-                );
-
-            if (
-                !response.ok
-                ||
-                !data?.success
-            ) {
-                return;
-            }
-
-            setBadge(
-                "pickup",
-                data.activePickup
-            );
-
-        } catch (error) {
-
-            console.debug(
-                "Indicadores da Secretaria indisponíveis:",
-                error
-            );
-        }
-    }
-
-    window.PrimeWaySecretaria =
-        Object.freeze({
-            readJson,
-            getSession,
-            ensureSecretary,
-            request,
-            requestJson,
-            logout,
-            bindLogout,
-            formatDate,
-            injectSidebar,
-            refreshNavigationBadges
         });
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        () => {
-            injectSidebar();
-            refreshNavigationBadges();
+        const data=await readJson(response);
+
+        if(!response.ok||!data?.success){
+            throw new Error(
+                data?.message||
+                "Não foi possível encerrar a sessão."
+            );
         }
+
+        clearCompatibilitySession();
+        cachedSession=null;
+        location.replace(LOGIN_PAGE);
+
+    }catch(error){
+        window.PrimeWayFeedback?.error(
+            error?.message||
+            "Não foi possível encerrar a sessão."
+        );
+
+        if(button){
+            button.disabled=false;
+        }
+    }
+}
+
+function bindLogout(){
+    const button=document.querySelector("#logoutButton");
+
+    if(!button||button.dataset.primewayBound==="1"){
+        return;
+    }
+
+    button.dataset.primewayBound="1";
+    button.addEventListener("click",logout);
+}
+
+function formatDate(value,withTime=false){
+    if(!value)return"—";
+
+    const normalized=String(value).includes("T")
+        ?String(value)
+        :String(value).replace(" ","T");
+
+    const parsed=new Date(
+        normalized.length===10
+            ?`${normalized}T12:00:00`
+            :normalized
     );
+
+    if(Number.isNaN(parsed.getTime())){
+        return String(value);
+    }
+
+    return new Intl.DateTimeFormat(
+        "pt-BR",
+        withTime
+            ?{dateStyle:"short",timeStyle:"short"}
+            :{dateStyle:"short"}
+    ).format(parsed);
+}
+
+function activeKey(){
+    const file=location.pathname.split("/").pop()||"";
+
+    const map={
+        "secretaria.html":"painel",
+        "secretaria_saida_segura.html":"saida",
+        "secretaria_alunos.html":"alunos",
+        "secretaria_responsaveis.html":"responsaveis",
+        "secretaria_turmas.html":"turmas",
+        "secretaria_notificacoes.html":"notificacoes"
+    };
+
+    return map[file]||"";
+}
+
+function injectSidebar(){
+    const sidebar=document.querySelector("aside.sidebar");
+    if(!sidebar)return;
+
+    const active=activeKey();
+
+    const items=[
+        ["painel","secretaria.html","fa-house","Meu painel",""],
+        ["saida","secretaria_saida_segura.html","fa-person-walking-arrow-right","Saída segura","pickup"],
+        ["alunos","secretaria_alunos.html","fa-user-graduate","Alunos",""],
+        ["responsaveis","secretaria_responsaveis.html","fa-people-roof","Responsáveis",""],
+        ["turmas","secretaria_turmas.html","fa-users-rectangle","Turmas",""],
+        ["notificacoes","secretaria_notificacoes.html","fa-bell","Notificações","notifications"]
+    ];
+
+    const navigation=items.map(
+        ([key,href,icon,label,badge])=>{
+            const activeAttr=key===active
+                ?' class="active" aria-current="page"'
+                :"";
+
+            const badgeHtml=badge
+                ?`<span class="nav-badge" data-nav-badge="${badge}" hidden>0</span>`
+                :"";
+
+            return`
+                <a href="${href}"${activeAttr}>
+                    <i class="fa-solid ${icon}" aria-hidden="true"></i>
+                    <span>${label}</span>
+                    ${badgeHtml}
+                </a>
+            `;
+        }
+    ).join("");
+
+    sidebar.innerHTML=`
+        <div class="sidebar-logo">
+            <img src="../img/logo.png" alt="PrimeWay School">
+        </div>
+
+        <nav class="sidebar-menu" aria-label="Navegação da Secretaria">
+            ${navigation}
+        </nav>
+
+        <div class="sidebar-bottom">
+            <button type="button" id="logoutButton">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                <span>Sair</span>
+            </button>
+        </div>
+    `;
+}
+
+function setBadge(name,value){
+    const element=document.querySelector(
+        `[data-nav-badge="${name}"]`
+    );
+
+    if(!element)return;
+
+    const number=Number(value||0);
+
+    if(!Number.isFinite(number)||number<=0){
+        element.hidden=true;
+        element.textContent="0";
+        return;
+    }
+
+    element.hidden=false;
+    element.textContent=number>99?"99+":String(number);
+}
+
+async function refreshNavigationBadges(){
+    try{
+        const response=await fetch(NAVIGATION_URL,{
+            credentials:"same-origin",
+            cache:"no-store",
+            headers:{Accept:"application/json"}
+        });
+
+        const data=await readJson(response);
+
+        if(!response.ok||!data?.success){
+            return;
+        }
+
+        setBadge("pickup",data.activePickup);
+        setBadge("notifications",data.unreadNotifications);
+
+    }catch(error){
+        console.debug(
+            "Indicadores da Secretaria indisponíveis:",
+            error
+        );
+    }
+}
+
+window.PrimeWaySecretaria=Object.freeze({
+    readJson,
+    getSession,
+    ensureSecretary,
+    request,
+    requestJson,
+    logout,
+    bindLogout,
+    formatDate,
+    injectSidebar,
+    refreshNavigationBadges
+});
+
+document.addEventListener("DOMContentLoaded",()=>{
+    injectSidebar();
+    refreshNavigationBadges();
+});
+
 })();
