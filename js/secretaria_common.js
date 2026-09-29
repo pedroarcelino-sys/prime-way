@@ -192,7 +192,8 @@ function activeKey(){
         "secretaria_responsaveis.html":"responsaveis",
         "secretaria_professores.html":"professores",
         "secretaria_turmas.html":"turmas",
-        "secretaria_notificacoes.html":"notificacoes"
+        "secretaria_notificacoes.html":"notificacoes",
+        "secretaria_chat.html":"chat"
     };
 
     return map[file]||"";
@@ -211,7 +212,8 @@ function injectSidebar(){
         ["responsaveis","secretaria_responsaveis.html","fa-people-roof","Responsáveis",""],
         ["professores","secretaria_professores.html","fa-chalkboard-user","Professores",""],
         ["turmas","secretaria_turmas.html","fa-users-rectangle","Turmas",""],
-        ["notificacoes","secretaria_notificacoes.html","fa-bell","Notificações","notifications"]
+        ["notificacoes","secretaria_notificacoes.html","fa-bell","Notificações","notifications"],
+        ["chat","secretaria_chat.html","fa-comments","Chat","chat"]
     ];
 
     const navigation=items.map(
@@ -285,6 +287,7 @@ async function refreshNavigationBadges(){
 
         setBadge("pickup",data.activePickup);
         setBadge("notifications",data.unreadNotifications);
+        setBadge("chat",data.unreadChat);
 
     }catch(error){
         console.debug(
