@@ -89,9 +89,7 @@ async function request(url,options={}){
 
     if(!["GET","HEAD"].includes(method)){
         const session=await getSession();
-
-        config.headers["X-CSRF-Token"]=
-            session?.csrfToken||"";
+        config.headers["X-CSRF-Token"]=session?.csrfToken||"";
     }
 
     const response=await fetch(url,config);
@@ -109,19 +107,14 @@ async function request(url,options={}){
 async function requestJson(url,payload,method="POST"){
     return request(url,{
         method,
-        headers:{
-            "Content-Type":"application/json"
-        },
+        headers:{"Content-Type":"application/json"},
         body:JSON.stringify(payload)
     });
 }
 
 async function logout(){
     const button=document.querySelector("#logoutButton");
-
-    if(button){
-        button.disabled=true;
-    }
+    if(button)button.disabled=true;
 
     try{
         const session=await getSession(true);
@@ -147,25 +140,20 @@ async function logout(){
         clearCompatibilitySession();
         cachedSession=null;
         location.replace(LOGIN_PAGE);
-
     }catch(error){
         window.PrimeWayFeedback?.error(
             error?.message||
             "Não foi possível encerrar a sessão."
         );
 
-        if(button){
-            button.disabled=false;
-        }
+        if(button)button.disabled=false;
     }
 }
 
 function bindLogout(){
     const button=document.querySelector("#logoutButton");
 
-    if(!button||button.dataset.primewayBound==="1"){
-        return;
-    }
+    if(!button||button.dataset.primewayBound==="1")return;
 
     button.dataset.primewayBound="1";
     button.addEventListener("click",logout);
@@ -184,9 +172,7 @@ function formatDate(value,withTime=false){
             :normalized
     );
 
-    if(Number.isNaN(parsed.getTime())){
-        return String(value);
-    }
+    if(Number.isNaN(parsed.getTime()))return String(value);
 
     return new Intl.DateTimeFormat(
         "pt-BR",
@@ -204,6 +190,7 @@ function activeKey(){
         "secretaria_saida_segura.html":"saida",
         "secretaria_alunos.html":"alunos",
         "secretaria_responsaveis.html":"responsaveis",
+        "secretaria_professores.html":"professores",
         "secretaria_turmas.html":"turmas",
         "secretaria_notificacoes.html":"notificacoes"
     };
@@ -222,6 +209,7 @@ function injectSidebar(){
         ["saida","secretaria_saida_segura.html","fa-person-walking-arrow-right","Saída segura","pickup"],
         ["alunos","secretaria_alunos.html","fa-user-graduate","Alunos",""],
         ["responsaveis","secretaria_responsaveis.html","fa-people-roof","Responsáveis",""],
+        ["professores","secretaria_professores.html","fa-chalkboard-user","Professores",""],
         ["turmas","secretaria_turmas.html","fa-users-rectangle","Turmas",""],
         ["notificacoes","secretaria_notificacoes.html","fa-bell","Notificações","notifications"]
     ];
@@ -293,9 +281,7 @@ async function refreshNavigationBadges(){
 
         const data=await readJson(response);
 
-        if(!response.ok||!data?.success){
-            return;
-        }
+        if(!response.ok||!data?.success)return;
 
         setBadge("pickup",data.activePickup);
         setBadge("notifications",data.unreadNotifications);
