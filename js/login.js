@@ -37,6 +37,9 @@ const PAGINA_RESPONSAVEL =
 const PAGINA_ALUNO =
     "aluno_portal.html";
 
+const PAGINA_SECRETARIA =
+    "secretaria.html";
+
 
 const PAGINAS_INICIAIS_VALIDAS =
     new Set([
@@ -184,6 +187,15 @@ function obterPaginaInicial(
 
     }
 
+
+    if (
+        perfil ===
+        "secretaria"
+    ) {
+
+        return PAGINA_SECRETARIA;
+
+    }
 
     return obterPaginaInicialAdmin();
 
