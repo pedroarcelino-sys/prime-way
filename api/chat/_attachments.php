@@ -49,7 +49,12 @@ function primewayChatAllowedExtensions(): array
         'xls',
         'xlsx',
         'ppt',
-        'pptx'
+        'pptx',
+        'webm',
+        'ogg',
+        'mp3',
+        'm4a',
+        'wav'
     ];
 }
 
@@ -66,7 +71,17 @@ function primewayChatAllowedMimeTypes(): array
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'application/vnd.ms-powerpoint',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/zip'
+        'application/zip',
+        'audio/webm',
+        'video/webm',
+        'audio/ogg',
+        'application/ogg',
+        'audio/mpeg',
+        'audio/mp4',
+        'audio/x-m4a',
+        'audio/wav',
+        'audio/x-wav',
+        'audio/vnd.wave'
     ];
 }
 
@@ -118,6 +133,17 @@ function primewayChatValidateUpload(array $file): array
         throw new RuntimeException('Arquivos ZIP não são permitidos no chat.');
     }
 
+    $audioExtensions = ['webm', 'ogg', 'mp3', 'm4a', 'wav'];
+    $isAudio = in_array($extension, $audioExtensions, true)
+        && (
+            str_starts_with($mimeType, 'audio/')
+            || in_array($mimeType, ['video/webm', 'application/ogg'], true)
+        );
+
+    if (in_array($extension, $audioExtensions, true) && !$isAudio) {
+        throw new RuntimeException('O arquivo selecionado não é um áudio válido.');
+    }
+
     $safeOriginalName = preg_replace('/[^\pL\pN._()\- ]+/u', '_', $originalName);
     $safeOriginalName = trim((string) $safeOriginalName);
 
@@ -130,7 +156,8 @@ function primewayChatValidateUpload(array $file): array
         'originalName' => mb_substr($safeOriginalName, 0, 255),
         'extension' => $extension,
         'mimeType' => $mimeType,
-        'size' => $size
+        'size' => $size,
+        'kind' => $isAudio ? 'audio' : primewayChatAttachmentKind($mimeType)
     ];
 }
 
@@ -142,6 +169,13 @@ function primewayChatAttachmentKind(string $mimeType): string
 
     if ($mimeType === 'application/pdf') {
         return 'pdf';
+    }
+
+    if (
+        str_starts_with($mimeType, 'audio/')
+        || in_array($mimeType, ['video/webm', 'application/ogg'], true)
+    ) {
+        return 'audio';
     }
 
     return 'document';
