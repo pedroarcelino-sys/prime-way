@@ -93,7 +93,9 @@ try {
     }
 
     $download = isset($_GET['download']) && (string) $_GET['download'] === '1';
-    $inlineAllowed = str_starts_with($mimeType, 'image/') || $mimeType === 'application/pdf' || $mimeType === 'text/plain';
+    $inlineAllowed = str_starts_with($mimeType, 'image/')
+        || str_starts_with($mimeType, 'audio/')
+        || in_array($mimeType, ['video/webm', 'application/ogg', 'application/pdf', 'text/plain'], true);
     $disposition = (!$download && $inlineAllowed) ? 'inline' : 'attachment';
 
     $filename = (string) $attachment['nome_original'];
@@ -104,6 +106,7 @@ try {
     header('Content-Length: ' . (string) filesize($candidate));
     header('X-Content-Type-Options: nosniff');
     header('Cache-Control: private, no-store, max-age=0');
+    header('Accept-Ranges: bytes');
     header(
         "Content-Disposition: {$disposition}; filename=\"{$fallbackName}\"; filename*=UTF-8''" . rawurlencode($filename)
     );
