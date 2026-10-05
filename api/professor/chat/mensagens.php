@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../_bootstrap.php';
+require_once __DIR__ . '/../../chat/_message_attachments.php';
 require_once __DIR__ . '/_chat.php';
 
 primewayExigirMetodo('GET');
@@ -105,40 +106,55 @@ try {
             $stmt->fetchAll()
         );
 
+    $attachmentsByMessage =
+        primewayChatAttachmentsByMessage(
+            $pdo,
+            array_map(
+                static fn (array $row): int => (int) $row['id'],
+                $rows
+            )
+        );
+
     $messages =
         array_map(
-            static fn (
-                array $row
-            ): array => [
-                'id' =>
-                    (int) $row['id'],
+            static function (array $row) use ($usuario, $attachmentsByMessage): array {
+                $messageId = (int) $row['id'];
 
-                'senderUserId' =>
-                    (int) $row['remetente_usuario_id'],
+                return [
+                    'id' =>
+                        $messageId,
 
-                'senderName' =>
-                    (string) $row['remetente_nome'],
+                    'senderUserId' =>
+                        (int) $row['remetente_usuario_id'],
 
-                'content' =>
-                    (string) (
-                        $row['conteudo']
-                        ?? ''
-                    ),
+                    'senderName' =>
+                        (string) $row['remetente_nome'],
 
-                'type' =>
-                    (string) $row['tipo'],
+                    'content' =>
+                        (string) (
+                            $row['conteudo']
+                            ?? ''
+                        ),
 
-                'sentAt' =>
-                    (string) $row['enviada_em'],
+                    'type' =>
+                        (string) $row['tipo'],
 
-                'editedAt' =>
-                    $row['editada_em'],
+                    'attachments' =>
+                        $attachmentsByMessage[$messageId]
+                        ?? [],
 
-                'own' =>
-                    (int) $row['remetente_usuario_id']
-                    ===
-                    (int) $usuario['id']
-            ],
+                    'sentAt' =>
+                        (string) $row['enviada_em'],
+
+                    'editedAt' =>
+                        $row['editada_em'],
+
+                    'own' =>
+                        (int) $row['remetente_usuario_id']
+                        ===
+                        (int) $usuario['id']
+                ];
+            },
             $rows
         );
 
