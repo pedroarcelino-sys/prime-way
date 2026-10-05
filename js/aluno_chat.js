@@ -1,10 +1,381 @@
-document.addEventListener("DOMContentLoaded",async function(){await window.PrimeWayStorage?.ready;const INDEX="../api/aluno/chat/index.php",START="../api/aluno/chat/iniciar.php",MESSAGES="../api/aluno/chat/mensagens.php",SEND="../api/aluno/chat/enviar.php",READ="../api/aluno/chat/marcar_lida.php";let conv=[],contacts=[],active=null,timer=null;const q=s=>document.querySelector(s),newBtn=q("#newConversationButton"),search=q("#conversationSearch"),list=q("#conversationList"),title=q("#conversationTitle"),role=q("#conversationRole"),msgs=q("#messageList"),form=q("#messageForm"),input=q("#messageInput"),send=q("#sendMessageButton"),dialog=q("#contactDialog"),close=q("#closeContactDialog"),contactList=q("#contactList");const initials=n=>String(n||"?").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();const norm=v=>String(v??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();const roleLabel=r=>r==="professor"?"Professor(a)":r==="secretaria"?"Secretaria":r||"Contato";
-function renderConv(){const query=norm(search.value),items=conv.filter(x=>!query||norm(`${x.title} ${x.role} ${x.lastMessage||""}`).includes(query));list.replaceChildren();if(!items.length){list.innerHTML='<div class="student-empty">Nenhuma conversa encontrada.</div>';return}for(const x of items){const b=document.createElement("button");b.type="button";b.className=`conversation-item${Number(x.id)===Number(active)?" active":""}`;const a=document.createElement("span");a.className="conversation-avatar";a.textContent=initials(x.title);const i=document.createElement("span");i.className="conversation-info";const s=document.createElement("strong");s.textContent=x.title;const p=document.createElement("span");p.textContent=x.lastMessage||roleLabel(x.role);i.append(s,p);b.append(a,i);if(Number(x.unread||0)>0){const u=document.createElement("span");u.className="conversation-unread";u.textContent=Number(x.unread)>99?"99+":String(x.unread);b.append(u)}b.addEventListener("click",()=>select(x.id));list.append(b)}}
-function renderContacts(){contactList.replaceChildren();if(!contacts.length){contactList.innerHTML='<div class="student-empty">Nenhum contato disponível.</div>';return}for(const x of contacts){const b=document.createElement("button");b.type="button";b.className="contact-item";const a=document.createElement("span");a.className="contact-avatar";a.textContent=initials(x.name);const i=document.createElement("span");i.className="contact-info";const n=document.createElement("strong");n.textContent=x.name;const r=document.createElement("span");r.textContent=x.description||roleLabel(x.role);i.append(n,r);const c=document.createElement("i");c.className="fa-solid fa-chevron-right";b.append(a,i,c);b.addEventListener("click",async()=>{b.disabled=true;try{const{response,data}=await window.PrimeWayAluno.requestJson(START,{contactUserId:x.userId});if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível iniciar a conversa.");dialog.close();await loadIndex();await select(data.conversationId)}catch(e){window.PrimeWayFeedback?.error(e?.message||"Não foi possível iniciar a conversa.")}finally{b.disabled=false}});contactList.append(b)}}
-function renderMessages(data){msgs.replaceChildren();if(!Array.isArray(data.messages)||!data.messages.length){msgs.innerHTML='<div class="student-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>';return}for(const x of data.messages){const a=document.createElement("article");a.className=`chat-message ${x.own?"own":"other"}`;const s=document.createElement("strong");s.textContent=x.own?"Você":x.senderName;const p=document.createElement("p");p.textContent=x.content;const t=document.createElement("time");t.textContent=window.PrimeWayAluno.formatDate(x.sentAt,true);a.append(s,p,t);msgs.append(a)}msgs.scrollTop=msgs.scrollHeight}
-async function markRead(id){const{response}=await window.PrimeWayAluno.requestJson(READ,{conversationId:id});if(response.ok){const x=conv.find(c=>Number(c.id)===Number(id));if(x)x.unread=0;renderConv();await window.PrimeWayAluno.refreshNavigationBadges()}}
-async function loadMessages(id,quiet=false){try{const{response,data}=await window.PrimeWayAluno.request(`${MESSAGES}?conversationId=${encodeURIComponent(id)}`);if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível carregar as mensagens.");if(Number(active)!==Number(id))return;title.textContent=data.conversation.title;role.textContent=roleLabel(data.conversation.role);renderMessages(data);await markRead(id)}catch(e){if(!quiet)window.PrimeWayFeedback?.error(e?.message||"Não foi possível carregar as mensagens.")}}
-async function select(id){active=Number(id);input.disabled=false;send.disabled=false;renderConv();await loadMessages(active);input.focus()}
-async function loadIndex(quiet=false){try{const{response,data}=await window.PrimeWayAluno.request(INDEX);if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível carregar o chat.");conv=Array.isArray(data.conversations)?data.conversations:[];contacts=Array.isArray(data.contacts)?data.contacts:[];renderConv();renderContacts();if(active&&!conv.some(x=>Number(x.id)===Number(active))){active=null;input.disabled=true;send.disabled=true}await window.PrimeWayAluno.refreshNavigationBadges()}catch(e){if(!quiet){console.error(e);window.PrimeWayFeedback?.error(e?.message||"Não foi possível carregar o chat.")}}}
-async function sendMessage(e){e.preventDefault();if(!active)return;const content=input.value.trim();if(!content)return;send.disabled=true;try{const{response,data}=await window.PrimeWayAluno.requestJson(SEND,{conversationId:active,content});if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível enviar a mensagem.");input.value="";await loadMessages(active);await loadIndex(true)}catch(err){window.PrimeWayFeedback?.error(err?.message||"Não foi possível enviar a mensagem.")}finally{send.disabled=false;input.focus()}}
-const session=await window.PrimeWayAluno.ensureStudent();if(!session)return;window.PrimeWayAluno.bindLogout();newBtn.addEventListener("click",()=>{renderContacts();dialog.showModal()});close.addEventListener("click",()=>dialog.close());search.addEventListener("input",renderConv);form.addEventListener("submit",sendMessage);input.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();form.requestSubmit()}});await loadIndex();timer=setInterval(async()=>{await loadIndex(true);if(active)await loadMessages(active,true)},15000);window.addEventListener("beforeunload",()=>timer&&clearInterval(timer))});
+document.addEventListener("DOMContentLoaded",async function(){
+await window.PrimeWayStorage?.ready;
+
+async function loadAttachmentModule(){
+    if(window.PrimeWayChatAttachments)return window.PrimeWayChatAttachments;
+
+    await new Promise((resolve,reject)=>{
+        const existing=document.querySelector('script[data-primeway-chat-attachments="1"]');
+        if(existing){
+            existing.addEventListener("load",resolve,{once:true});
+            existing.addEventListener("error",reject,{once:true});
+            return;
+        }
+
+        const script=document.createElement("script");
+        script.src="../js/chat_attachments_shared.js?v=20261005-1";
+        script.dataset.primewayChatAttachments="1";
+        script.addEventListener("load",resolve,{once:true});
+        script.addEventListener("error",reject,{once:true});
+        document.head.append(script);
+    });
+
+    if(!window.PrimeWayChatAttachments){
+        throw new Error("Não foi possível preparar os anexos do chat.");
+    }
+
+    return window.PrimeWayChatAttachments;
+}
+
+const session=await window.PrimeWayAluno.ensureStudent();
+if(!session)return;
+window.PrimeWayAluno.bindLogout();
+
+let Attachments;
+try{
+    Attachments=await loadAttachmentModule();
+}catch(error){
+    console.error(error);
+    window.PrimeWayFeedback?.error("Não foi possível carregar o recurso de anexos.");
+    return;
+}
+
+const INDEX="../api/aluno/chat/index.php";
+const START="../api/aluno/chat/iniciar.php";
+const MESSAGES="../api/aluno/chat/mensagens.php";
+const SEND="../api/aluno/chat/enviar.php";
+const READ="../api/aluno/chat/marcar_lida.php";
+const UPLOAD="../api/chat/upload.php";
+
+let conv=[];
+let contacts=[];
+let active=null;
+let timer=null;
+
+const q=selector=>document.querySelector(selector);
+const newBtn=q("#newConversationButton");
+const search=q("#conversationSearch");
+const list=q("#conversationList");
+const title=q("#conversationTitle");
+const role=q("#conversationRole");
+const msgs=q("#messageList");
+const form=q("#messageForm");
+const input=q("#messageInput");
+const send=q("#sendMessageButton");
+const dialog=q("#contactDialog");
+const close=q("#closeContactDialog");
+const contactList=q("#contactList");
+
+const attachmentUi=Attachments.createComposer({
+    form,
+    input,
+    csrfToken:session?.csrfToken||"",
+    uploadUrl:UPLOAD,
+    onError:message=>window.PrimeWayFeedback?.error(message)
+});
+attachmentUi.setEnabled(false);
+
+const initials=name=>String(name||"?")
+    .trim()
+    .split(/\s+/)
+    .slice(0,2)
+    .map(part=>part[0]||"")
+    .join("")
+    .toUpperCase();
+
+const norm=value=>String(value??"")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase()
+    .trim();
+
+const roleLabel=value=>value==="professor"
+    ?"Professor(a)"
+    :value==="secretaria"
+        ?"Secretaria"
+        :value||"Contato";
+
+function renderConv(){
+    const query=norm(search.value);
+    const items=conv.filter(item=>
+        !query||norm(`${item.title} ${item.role} ${item.lastMessage||""}`).includes(query)
+    );
+
+    list.replaceChildren();
+
+    if(!items.length){
+        list.innerHTML='<div class="student-empty">Nenhuma conversa encontrada.</div>';
+        return;
+    }
+
+    for(const item of items){
+        const button=document.createElement("button");
+        button.type="button";
+        button.className=`conversation-item${Number(item.id)===Number(active)?" active":""}`;
+
+        const avatar=document.createElement("span");
+        avatar.className="conversation-avatar";
+        avatar.textContent=initials(item.title);
+
+        const info=document.createElement("span");
+        info.className="conversation-info";
+
+        const name=document.createElement("strong");
+        name.textContent=item.title;
+
+        const preview=document.createElement("span");
+        preview.textContent=item.lastMessage||roleLabel(item.role);
+        info.append(name,preview);
+        button.append(avatar,info);
+
+        if(Number(item.unread||0)>0){
+            const unread=document.createElement("span");
+            unread.className="conversation-unread";
+            unread.textContent=Number(item.unread)>99?"99+":String(item.unread);
+            button.append(unread);
+        }
+
+        button.addEventListener("click",()=>select(item.id));
+        list.append(button);
+    }
+}
+
+function renderContacts(){
+    contactList.replaceChildren();
+
+    if(!contacts.length){
+        contactList.innerHTML='<div class="student-empty">Nenhum contato disponível.</div>';
+        return;
+    }
+
+    for(const item of contacts){
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="contact-item";
+
+        const avatar=document.createElement("span");
+        avatar.className="contact-avatar";
+        avatar.textContent=initials(item.name);
+
+        const info=document.createElement("span");
+        info.className="contact-info";
+
+        const name=document.createElement("strong");
+        name.textContent=item.name;
+
+        const description=document.createElement("span");
+        description.textContent=item.description||roleLabel(item.role);
+        info.append(name,description);
+
+        const icon=document.createElement("i");
+        icon.className="fa-solid fa-chevron-right";
+        icon.setAttribute("aria-hidden","true");
+
+        button.append(avatar,info,icon);
+        button.addEventListener("click",async()=>{
+            button.disabled=true;
+            try{
+                const{response,data}=await window.PrimeWayAluno.requestJson(
+                    START,
+                    {contactUserId:item.userId}
+                );
+
+                if(!response.ok||!data?.success){
+                    throw new Error(data?.message||"Não foi possível iniciar a conversa.");
+                }
+
+                dialog.close();
+                await loadIndex();
+                await select(data.conversationId);
+            }catch(error){
+                window.PrimeWayFeedback?.error(
+                    error?.message||"Não foi possível iniciar a conversa."
+                );
+            }finally{
+                button.disabled=false;
+            }
+        });
+
+        contactList.append(button);
+    }
+}
+
+function renderMessages(data){
+    msgs.replaceChildren();
+
+    if(!Array.isArray(data.messages)||!data.messages.length){
+        msgs.innerHTML='<div class="student-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>';
+        return;
+    }
+
+    for(const item of data.messages){
+        const article=document.createElement("article");
+        article.className=`chat-message ${item.own?"own":"other"}`;
+
+        const sender=document.createElement("strong");
+        sender.textContent=item.own?"Você":item.senderName;
+        article.append(sender);
+
+        if(String(item.content||"").trim()!==""){
+            const content=document.createElement("p");
+            content.textContent=item.content;
+            article.append(content);
+        }
+
+        Attachments.renderMessageAttachments(
+            article,
+            Array.isArray(item.attachments)?item.attachments:[]
+        );
+
+        const time=document.createElement("time");
+        time.textContent=window.PrimeWayAluno.formatDate(item.sentAt,true);
+        article.append(time);
+        msgs.append(article);
+    }
+
+    msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function markRead(id){
+    const{response}=await window.PrimeWayAluno.requestJson(READ,{conversationId:id});
+    if(response.ok){
+        const item=conv.find(conversation=>Number(conversation.id)===Number(id));
+        if(item)item.unread=0;
+        renderConv();
+        await window.PrimeWayAluno.refreshNavigationBadges();
+    }
+}
+
+async function loadMessages(id,quiet=false){
+    try{
+        const{response,data}=await window.PrimeWayAluno.request(
+            `${MESSAGES}?conversationId=${encodeURIComponent(id)}`
+        );
+
+        if(!response.ok||!data?.success){
+            throw new Error(data?.message||"Não foi possível carregar as mensagens.");
+        }
+
+        if(Number(active)!==Number(id))return;
+
+        title.textContent=data.conversation.title;
+        role.textContent=roleLabel(data.conversation.role);
+        renderMessages(data);
+        await markRead(id);
+    }catch(error){
+        if(!quiet){
+            window.PrimeWayFeedback?.error(
+                error?.message||"Não foi possível carregar as mensagens."
+            );
+        }
+    }
+}
+
+async function select(id){
+    active=Number(id);
+    input.disabled=false;
+    send.disabled=false;
+    attachmentUi.setEnabled(true);
+    renderConv();
+    await loadMessages(active);
+    input.focus();
+}
+
+async function loadIndex(quiet=false){
+    try{
+        const{response,data}=await window.PrimeWayAluno.request(INDEX);
+        if(!response.ok||!data?.success){
+            throw new Error(data?.message||"Não foi possível carregar o chat.");
+        }
+
+        conv=Array.isArray(data.conversations)?data.conversations:[];
+        contacts=Array.isArray(data.contacts)?data.contacts:[];
+        renderConv();
+        renderContacts();
+
+        if(active&&!conv.some(item=>Number(item.id)===Number(active))){
+            active=null;
+            input.disabled=true;
+            send.disabled=true;
+            attachmentUi.setEnabled(false);
+        }
+
+        await window.PrimeWayAluno.refreshNavigationBadges();
+    }catch(error){
+        if(!quiet){
+            console.error(error);
+            window.PrimeWayFeedback?.error(
+                error?.message||"Não foi possível carregar o chat."
+            );
+        }
+    }
+}
+
+async function sendMessage(event){
+    event.preventDefault();
+    if(!active)return;
+
+    const content=input.value.trim();
+    if(!content&&!attachmentUi.hasFile())return;
+
+    send.disabled=true;
+
+    try{
+        let response;
+        let data;
+
+        if(attachmentUi.hasFile()){
+            ({response,data}=await attachmentUi.upload({
+                conversationId:active,
+                content
+            }));
+        }else{
+            ({response,data}=await window.PrimeWayAluno.requestJson(
+                SEND,
+                {conversationId:active,content}
+            ));
+        }
+
+        if(!response.ok||!data?.success){
+            throw new Error(data?.message||"Não foi possível enviar a mensagem.");
+        }
+
+        input.value="";
+        attachmentUi.clear();
+        await loadMessages(active);
+        await loadIndex(true);
+    }catch(error){
+        window.PrimeWayFeedback?.error(
+            error?.message||"Não foi possível enviar a mensagem."
+        );
+    }finally{
+        send.disabled=false;
+        input.focus();
+    }
+}
+
+newBtn.addEventListener("click",()=>{
+    renderContacts();
+    dialog.showModal();
+});
+close.addEventListener("click",()=>dialog.close());
+search.addEventListener("input",renderConv);
+form.addEventListener("submit",sendMessage);
+input.addEventListener("keydown",event=>{
+    if(event.key==="Enter"&&!event.shiftKey){
+        event.preventDefault();
+        form.requestSubmit();
+    }
+});
+
+await loadIndex();
+
+timer=setInterval(async()=>{
+    await loadIndex(true);
+    if(active)await loadMessages(active,true);
+},15000);
+
+window.addEventListener("beforeunload",()=>{
+    if(timer)clearInterval(timer);
+});
+});
