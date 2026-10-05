@@ -6,12 +6,14 @@ let openMenu=null;
 let confirmDialog=null;
 let confirmResolver=null;
 let globalEventsBound=false;
+let audioContext=null;
+const processedAudios=new WeakMap();
 
 function ensureStyles(){
     if(document.querySelector('link[data-primeway-chat-message-experience="1"]'))return;
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="../css/chat_message_experience.css?v=20261005-2";
+    link.href="../css/chat_message_experience.css?v=20261005-3";
     link.dataset.primewayChatMessageExperience="1";
     document.head.append(link);
 }
@@ -80,11 +82,84 @@ function confirmDelete(){
     return new Promise(resolve=>{confirmResolver=resolve;});
 }
 
+function getAudioContext(){
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return null;
+
+    if(!audioContext){
+        try{
+            audioContext=new AudioContextClass();
+        }catch{
+            audioContext=null;
+        }
+    }
+
+    return audioContext;
+}
+
+function prepareVoiceAudio(audio){
+    if(!audio)return null;
+    if(processedAudios.has(audio))return processedAudios.get(audio);
+
+    const context=getAudioContext();
+    if(!context)return null;
+
+    try{
+        const source=context.createMediaElementSource(audio);
+
+        const highpass=context.createBiquadFilter();
+        highpass.type="highpass";
+        highpass.frequency.value=80;
+        highpass.Q.value=.7;
+
+        const presence=context.createBiquadFilter();
+        presence.type="peaking";
+        presence.frequency.value=2600;
+        presence.Q.value=.8;
+        presence.gain.value=2.2;
+
+        const compressor=context.createDynamicsCompressor();
+        compressor.threshold.value=-24;
+        compressor.knee.value=18;
+        compressor.ratio.value=3;
+        compressor.attack.value=.004;
+        compressor.release.value=.24;
+
+        const gain=context.createGain();
+        gain.gain.value=1.08;
+
+        source.connect(highpass);
+        highpass.connect(presence);
+        presence.connect(compressor);
+        compressor.connect(gain);
+        gain.connect(context.destination);
+
+        const chain={context,source,highpass,presence,compressor,gain};
+        processedAudios.set(audio,chain);
+        return chain;
+    }catch{
+        return null;
+    }
+}
+
+async function resumeVoiceAudio(audio){
+    const chain=prepareVoiceAudio(audio);
+    if(!chain?.context)return;
+
+    if(chain.context.state==="suspended"){
+        try{
+            await chain.context.resume();
+        }catch{
+            // O áudio continua podendo tocar pelo elemento HTML sem o processamento.
+        }
+    }
+}
+
 function enhanceAudio(root){
     if(!root)return;
 
     const cards=root.querySelectorAll(".pw-chat-audio-card:not([data-pw-audio-enhanced])");
-    const heights=[34,58,42,76,48,67,36,88,54,72,44,61,39,82,50,70,46,91,55,74,38,63,47,84,52,69,41,77,49,60,35,66];
+    const heights=[34,58,42,76,48,67,36,88,54,72,44,61,39,82,50,70,46,91,55,74,38,63,47,84,52,69,41,77,49,60,35,66,45,73,40,64];
 
     for(const card of cards){
         const audio=card.querySelector("audio");
@@ -110,7 +185,7 @@ function enhanceAudio(root){
         waveform.setAttribute("aria-label","Avançar ou voltar no áudio");
 
         const bars=[];
-        for(let index=0;index<32;index+=1){
+        for(let index=0;index<heights.length;index+=1){
             const bar=document.createElement("span");
             bar.style.height=`${heights[index]}%`;
             bars.push(bar);
@@ -119,14 +194,17 @@ function enhanceAudio(root){
 
         const meta=document.createElement("div");
         meta.className="pw-chat-voice-meta";
+
         const duration=document.createElement("span");
         duration.textContent="0:00";
+
         const speed=document.createElement("button");
         speed.type="button";
         speed.className="pw-chat-voice-speed";
         speed.textContent="1x";
         speed.title="Velocidade de reprodução";
         speed.setAttribute("aria-label","Alterar velocidade de reprodução");
+
         meta.append(duration,speed);
         body.append(waveform,meta);
         card.replaceChildren(playButton,body,audio);
@@ -136,32 +214,66 @@ function enhanceAudio(root){
             const current=Number.isFinite(audio.currentTime)?audio.currentTime:0;
             const ratio=total>0?Math.min(1,Math.max(0,current/total)):0;
             const played=Math.round(ratio*bars.length);
+
             bars.forEach((bar,index)=>bar.classList.toggle("is-played",index<played));
             duration.textContent=audio.paused?formatDuration(total):formatDuration(current);
         }
 
         function setPlayIcon(){
             const playing=!audio.paused&&!audio.ended;
+            if(card.classList.contains("is-loading")){
+                playButton.innerHTML='<i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i>';
+                playButton.setAttribute("aria-label","Carregando áudio");
+                return;
+            }
+
             playButton.innerHTML=playing
                 ?'<i class="fa-solid fa-pause" aria-hidden="true"></i>'
                 :'<i class="fa-solid fa-play" aria-hidden="true"></i>';
             playButton.setAttribute("aria-label",playing?"Pausar áudio":"Reproduzir áudio");
         }
 
-        playButton.addEventListener("click",async()=>{
-            if(audio.paused||audio.ended){
-                if(activeAudio&&activeAudio!==audio)activeAudio.pause();
-                activeAudio=audio;
-                try{await audio.play();}catch{return;}
-            }else{
-                audio.pause();
-            }
+        function setLoading(value){
+            card.classList.toggle("is-loading",Boolean(value));
             setPlayIcon();
+        }
+
+        playButton.addEventListener("click",async()=>{
+            if(!audio.paused&&!audio.ended){
+                audio.pause();
+                return;
+            }
+
+            if(activeAudio&&activeAudio!==audio){
+                activeAudio.pause();
+            }
+
+            activeAudio=audio;
+            audio.preload="auto";
+            setLoading(true);
+
+            try{
+                await resumeVoiceAudio(audio);
+
+                if(audio.ended||Number.isFinite(audio.duration)&&audio.currentTime>=audio.duration){
+                    audio.currentTime=0;
+                }
+
+                const promise=audio.play();
+                if(promise&&typeof promise.then==="function"){
+                    await promise;
+                }
+            }catch(error){
+                setLoading(false);
+                if(activeAudio===audio)activeAudio=null;
+                window.PrimeWayFeedback?.error("Não foi possível reproduzir este áudio. Tente novamente.");
+            }
         });
 
         waveform.addEventListener("click",event=>{
             const total=Number.isFinite(audio.duration)?audio.duration:0;
             if(total<=0)return;
+
             const rect=waveform.getBoundingClientRect();
             const ratio=Math.min(1,Math.max(0,(event.clientX-rect.left)/Math.max(1,rect.width)));
             audio.currentTime=ratio*total;
@@ -169,18 +281,49 @@ function enhanceAudio(root){
         });
 
         speed.addEventListener("click",()=>{
-            const next=audio.playbackRate===1?1.5:audio.playbackRate===1.5?2:1;
+            const current=Number(audio.playbackRate||1);
+            const next=current===1?1.5:current===1.5?2:1;
             audio.playbackRate=next;
             speed.textContent=`${next}x`;
         });
 
+        audio.addEventListener("loadstart",()=>{
+            if(activeAudio===audio&&audio.paused)setLoading(true);
+        });
         audio.addEventListener("loadedmetadata",updateProgress);
         audio.addEventListener("durationchange",updateProgress);
         audio.addEventListener("timeupdate",updateProgress);
-        audio.addEventListener("play",setPlayIcon);
-        audio.addEventListener("pause",()=>{setPlayIcon();updateProgress();});
+        audio.addEventListener("canplay",()=>{
+            if(activeAudio===audio&&!audio.paused)setLoading(false);
+            updateProgress();
+        });
+        audio.addEventListener("playing",()=>{
+            setLoading(false);
+            setPlayIcon();
+        });
+        audio.addEventListener("waiting",()=>{
+            if(activeAudio===audio&&!audio.paused)setLoading(true);
+        });
+        audio.addEventListener("stalled",()=>{
+            if(activeAudio===audio&&!audio.paused)setLoading(true);
+        });
+        audio.addEventListener("play",()=>{
+            setLoading(false);
+            setPlayIcon();
+        });
+        audio.addEventListener("pause",()=>{
+            setLoading(false);
+            setPlayIcon();
+            updateProgress();
+        });
+        audio.addEventListener("error",()=>{
+            setLoading(false);
+            setPlayIcon();
+            if(activeAudio===audio)activeAudio=null;
+        });
         audio.addEventListener("ended",()=>{
             audio.currentTime=0;
+            setLoading(false);
             setPlayIcon();
             updateProgress();
             if(activeAudio===audio)activeAudio=null;
@@ -258,6 +401,25 @@ function messagePreview(message){
     return"Mensagem";
 }
 
+function focusMessageInsideList(list,target,banner){
+    if(!list||!target)return;
+
+    const listRect=list.getBoundingClientRect();
+    const targetRect=target.getBoundingClientRect();
+    const bannerOffset=banner?.offsetHeight?banner.offsetHeight+12:12;
+    const destination=list.scrollTop+(targetRect.top-listRect.top)-bannerOffset;
+
+    list.scrollTo({
+        top:Math.max(0,destination),
+        behavior:"smooth"
+    });
+
+    target.classList.remove("pw-chat-message-focus");
+    void target.offsetWidth;
+    target.classList.add("pw-chat-message-focus");
+    window.setTimeout(()=>target.classList.remove("pw-chat-message-focus"),1400);
+}
+
 function registerPinnedMessage(container,message){
     const list=container?.parentElement;
     if(!list||!message?.pinned)return;
@@ -272,14 +434,17 @@ function registerPinnedMessage(container,message){
             <span class="pw-chat-pinned-banner-text"><strong>Mensagem fixada</strong><span></span></span>
             <i class="fa-solid fa-chevron-right pw-chat-pinned-banner-arrow" aria-hidden="true"></i>`;
         banner.dataset.count="0";
-        banner.addEventListener("click",()=>{
+        banner.addEventListener("click",event=>{
+            event.preventDefault();
+            event.stopPropagation();
+
             const id=banner.dataset.messageId;
             if(!id)return;
+
             const target=list.querySelector(`[data-message-id="${CSS.escape(id)}"]`);
             if(!target)return;
-            target.scrollIntoView({behavior:"smooth",block:"center"});
-            target.classList.add("pw-chat-message-focus");
-            window.setTimeout(()=>target.classList.remove("pw-chat-message-focus"),1100);
+
+            focusMessageInsideList(list,target,banner);
         });
         list.prepend(banner);
     }
@@ -287,6 +452,7 @@ function registerPinnedMessage(container,message){
     const count=Number(banner.dataset.count||0)+1;
     banner.dataset.count=String(count);
     banner.dataset.messageId=String(message.id||"");
+
     const title=banner.querySelector("strong");
     const preview=banner.querySelector(".pw-chat-pinned-banner-text > span");
     if(title)title.textContent=count>1?`${count} mensagens fixadas`:"Mensagem fixada";
@@ -320,12 +486,14 @@ function decorateMessage(container,message,{
 
     const wrapper=document.createElement("div");
     wrapper.className="pw-chat-message-options";
+
     const toggle=document.createElement("button");
     toggle.type="button";
     toggle.className="pw-chat-message-options-button";
     toggle.title="Opções da mensagem";
     toggle.setAttribute("aria-label","Opções da mensagem");
     toggle.innerHTML='<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
+
     const panel=document.createElement("div");
     panel.className="pw-chat-message-menu";
     panel.hidden=true;
@@ -335,6 +503,7 @@ function decorateMessage(container,message,{
         if(typeof onError==="function")onError(text);
         else window.PrimeWayFeedback?.error(text);
     };
+
     const reportSuccess=text=>{
         if(typeof onSuccess==="function")onSuccess(text);
         else window.PrimeWayFeedback?.success(text);
@@ -346,14 +515,19 @@ function decorateMessage(container,message,{
             label:"Copiar mensagem",
             onClick:async()=>{
                 closeMenu();
-                try{await copyText(message.content);reportSuccess("Mensagem copiada.");}
-                catch(error){reportError(error);}
+                try{
+                    await copyText(message.content);
+                    reportSuccess("Mensagem copiada.");
+                }catch(error){
+                    reportError(error);
+                }
             }
         });
     }
 
     const attachments=Array.isArray(message.attachments)?message.attachments:[];
     const downloadable=attachments.find(item=>item?.downloadUrl||item?.url);
+
     if(downloadable){
         addMenuItem(panel,{
             icon:"fa-solid fa-download",
@@ -368,10 +542,17 @@ function decorateMessage(container,message,{
         onClick:async()=>{
             closeMenu();
             try{
-                const data=await requestAction({actionUrl,csrfToken,messageId:message.id,action:message.pinned?"unpin":"pin"});
+                const data=await requestAction({
+                    actionUrl,
+                    csrfToken,
+                    messageId:message.id,
+                    action:message.pinned?"unpin":"pin"
+                });
                 reportSuccess(data.message||"Ação concluída.");
                 if(typeof onChanged==="function")await onChanged(data);
-            }catch(error){reportError(error);}
+            }catch(error){
+                reportError(error);
+            }
         }
     });
 
@@ -384,17 +565,26 @@ function decorateMessage(container,message,{
                 closeMenu();
                 const confirmed=await confirmDelete();
                 if(!confirmed)return;
+
                 try{
-                    const data=await requestAction({actionUrl,csrfToken,messageId:message.id,action:"delete"});
+                    const data=await requestAction({
+                        actionUrl,
+                        csrfToken,
+                        messageId:message.id,
+                        action:"delete"
+                    });
                     reportSuccess(data.message||"Mensagem excluída.");
                     if(typeof onChanged==="function")await onChanged(data);
-                }catch(error){reportError(error);}
+                }catch(error){
+                    reportError(error);
+                }
             }
         });
     }
 
     toggle.addEventListener("click",event=>{
         event.stopPropagation();
+
         if(openMenu&&openMenu!==panel)openMenu.hidden=true;
         const shouldOpen=panel.hidden;
         panel.hidden=!shouldOpen;
@@ -406,6 +596,10 @@ function decorateMessage(container,message,{
 }
 
 ensureStyles();
-window.PrimeWayChatMessageExperience=Object.freeze({decorateMessage,enhanceAudio,formatDuration});
+window.PrimeWayChatMessageExperience=Object.freeze({
+    decorateMessage,
+    enhanceAudio,
+    formatDuration
+});
 
 })();
