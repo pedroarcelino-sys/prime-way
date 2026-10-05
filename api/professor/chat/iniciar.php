@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../_bootstrap.php';
+require_once __DIR__ . '/../../_chat_access.php';
 require_once __DIR__ . '/../_contexto.php';
 require_once __DIR__ . '/_chat.php';
 
@@ -54,6 +55,14 @@ try {
     $pdo =
         primewayPdo();
 
+    $usuarioId =
+        (int) $usuario['id'];
+
+    primewayChatExigirDisponivel(
+        $pdo,
+        $usuarioId
+    );
+
     $contexto =
         primewayProfessorContexto(
             $pdo,
@@ -84,9 +93,6 @@ try {
             403
         );
     }
-
-    $usuarioId =
-        (int) $usuario['id'];
 
     $pdo->beginTransaction();
 
