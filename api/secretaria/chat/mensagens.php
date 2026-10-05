@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../_bootstrap.php';
+require_once __DIR__ . '/../../chat/_attachments.php';
 require_once __DIR__ . '/_chat.php';
 
 primewayExigirMetodo('GET');
@@ -95,40 +96,86 @@ try {
             $stmt->fetchAll()
         );
 
+    $attachmentsByMessage = [];
+    $messageIds = array_map(
+        static fn (array $row): int => (int) $row['id'],
+        $rows
+    );
+
+    if ($messageIds) {
+        $placeholders = implode(',', array_fill(0, count($messageIds), '?'));
+        $stmtAttachments = $pdo->prepare(
+            "
+                SELECT
+                    id,
+                    mensagem_id,
+                    nome_original,
+                    mime_type,
+                    tamanho_bytes
+                FROM mensagem_anexos
+                WHERE mensagem_id IN ($placeholders)
+                ORDER BY id ASC
+            "
+        );
+
+        $stmtAttachments->execute($messageIds);
+
+        foreach ($stmtAttachments->fetchAll() as $attachment) {
+            $messageId = (int) $attachment['mensagem_id'];
+            $mimeType = (string) ($attachment['mime_type'] ?? 'application/octet-stream');
+            $attachmentId = (int) $attachment['id'];
+
+            $attachmentsByMessage[$messageId][] = [
+                'id' => $attachmentId,
+                'name' => (string) $attachment['nome_original'],
+                'mimeType' => $mimeType,
+                'size' => (int) ($attachment['tamanho_bytes'] ?? 0),
+                'kind' => primewayChatAttachmentKind($mimeType),
+                'url' => '../api/chat/arquivo.php?attachmentId=' . $attachmentId,
+                'downloadUrl' => '../api/chat/arquivo.php?attachmentId=' . $attachmentId . '&download=1'
+            ];
+        }
+    }
+
     $messages =
         array_map(
-            static fn (
-                array $row
-            ): array => [
-                'id' =>
-                    (int) $row['id'],
+            static function (array $row) use ($usuario, $attachmentsByMessage): array {
+                $messageId = (int) $row['id'];
 
-                'senderUserId' =>
-                    (int) $row['remetente_usuario_id'],
+                return [
+                    'id' =>
+                        $messageId,
 
-                'senderName' =>
-                    (string) $row['remetente_nome'],
+                    'senderUserId' =>
+                        (int) $row['remetente_usuario_id'],
 
-                'content' =>
-                    (string) (
-                        $row['conteudo']
-                        ?? ''
-                    ),
+                    'senderName' =>
+                        (string) $row['remetente_nome'],
 
-                'type' =>
-                    (string) $row['tipo'],
+                    'content' =>
+                        (string) (
+                            $row['conteudo']
+                            ?? ''
+                        ),
 
-                'sentAt' =>
-                    (string) $row['enviada_em'],
+                    'type' =>
+                        (string) $row['tipo'],
 
-                'editedAt' =>
-                    $row['editada_em'],
+                    'attachments' =>
+                        $attachmentsByMessage[$messageId] ?? [],
 
-                'own' =>
-                    (int) $row['remetente_usuario_id']
-                    ===
-                    (int) $usuario['id']
-            ],
+                    'sentAt' =>
+                        (string) $row['enviada_em'],
+
+                    'editedAt' =>
+                        $row['editada_em'],
+
+                    'own' =>
+                        (int) $row['remetente_usuario_id']
+                        ===
+                        (int) $usuario['id']
+                ];
+            },
             $rows
         );
 
