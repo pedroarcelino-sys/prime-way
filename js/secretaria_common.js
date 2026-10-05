@@ -193,6 +193,7 @@ function activeKey(){
         "secretaria_responsaveis.html":"responsaveis",
         "secretaria_professores.html":"professores",
         "secretaria_turmas.html":"turmas",
+        "secretaria_calendario.html":"calendario",
         "secretaria_notificacoes.html":"notificacoes",
         "secretaria_chat.html":"chat"
     };
@@ -214,6 +215,7 @@ function injectSidebar(){
         ["responsaveis","secretaria_responsaveis.html","fa-people-roof","Responsáveis",""],
         ["professores","secretaria_professores.html","fa-chalkboard-user","Professores",""],
         ["turmas","secretaria_turmas.html","fa-users-rectangle","Turmas",""],
+        ["calendario","secretaria_calendario.html","fa-calendar-days","Calendário",""],
         ["notificacoes","secretaria_notificacoes.html","fa-bell","Notificações","notifications"],
         ["chat","secretaria_chat.html","fa-comments","Chat","chat"]
     ];
