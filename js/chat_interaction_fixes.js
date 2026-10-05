@@ -6,6 +6,15 @@ let pendingMessageId=null;
 let pendingExpiresAt=0;
 let pendingFrame=0;
 
+function ensureCompactLayout(){
+    if(document.querySelector('link[data-primeway-chat-compact="1"]'))return;
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="../css/chat_compact_layout.css?v=20261005-1";
+    link.dataset.primewayChatCompact="1";
+    document.head.append(link);
+}
+
 function feedbackError(message){
     window.PrimeWayFeedback?.error(message);
 }
@@ -281,6 +290,7 @@ observer.observe(document.body,{
     attributeFilter:["hidden","disabled","class"]
 });
 
+ensureCompactLayout();
 syncAllComposers();
 
 })();
