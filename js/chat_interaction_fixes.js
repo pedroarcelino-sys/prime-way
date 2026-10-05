@@ -251,9 +251,13 @@ const observer=new MutationObserver(mutations=>{
             composerChanged=true;
         }
 
+        // Para restaurar a mensagem fixada, só conta reconstrução real da lista.
+        // Alterações de classe/hidden do menu não podem consumir o foco pendente.
         if(
-            pendingMessageId&&(
-                target?.closest?.("[class*='message-list'], [class*='message-list']")||
+            pendingMessageId&&
+            mutation.type==="childList"&&(
+                target?.matches?.("[class*='message-list']")||
+                target?.closest?.("[class*='message-list']")||
                 Array.from(mutation.addedNodes||[]).some(node=>
                     node instanceof Element&&(
                         node.matches?.("[data-message-id]")||
