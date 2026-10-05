@@ -12,6 +12,7 @@ function primewaySecretariaChatContatoPermitido(
             SELECT
                 u.id,
                 u.perfil,
+                u.email,
                 COALESCE(
                     pe.nome,
                     u.nome,
@@ -56,6 +57,7 @@ function primewaySecretariaChatContatoPermitido(
             WHERE u.id = :usuario_id
               AND u.ativo = 1
               AND u.perfil IN (
+                    'admin',
                     'professor',
                     'aluno',
                     'responsavel'
@@ -79,6 +81,9 @@ function primewaySecretariaChatContatoPermitido(
 
     $description =
         match ($role) {
+            'admin' =>
+                'Administrador',
+
             'professor' =>
                 (string) (
                     $row['professor_disciplinas']
@@ -106,6 +111,9 @@ function primewaySecretariaChatContatoPermitido(
 
         'name' =>
             (string) $row['nome'],
+
+        'email' =>
+            (string) ($row['email'] ?? ''),
 
         'role' =>
             $role,
