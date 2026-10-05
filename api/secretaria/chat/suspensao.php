@@ -18,11 +18,15 @@ $targetUserId = primewayIdPositivo(
     $dados['userId'] ?? null
 );
 
-$suspended = filter_var(
-    $dados['suspended'] ?? null,
-    FILTER_VALIDATE_BOOLEAN,
-    FILTER_NULL_ON_FAILURE
+$hasSuspended = array_key_exists(
+    'suspended',
+    $dados
 );
+
+$suspended =
+    $hasSuspended && is_bool($dados['suspended'])
+        ? $dados['suspended']
+        : null;
 
 $reason = is_string($dados['reason'] ?? null)
     ? trim((string) $dados['reason'])
