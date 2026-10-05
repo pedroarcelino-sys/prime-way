@@ -1,0 +1,45 @@
+.secretary-chat,
+.student-chat,
+.teacher-chat,
+.guardian-chat {
+    min-height: 0;
+    align-items: stretch;
+}
+
+.secretary-chat-conversation {
+    align-content: start;
+    grid-template-rows: auto auto auto auto;
+}
+
+.student-chat-conversation,
+.teacher-chat-conversation,
+.guardian-chat-conversation {
+    align-content: start;
+    grid-template-rows: auto auto auto;
+}
+
+.secretary-message-list,
+.chat-message-list,
+.teacher-message-list,
+.guardian-message-list {
+    min-height: 150px;
+    height: auto;
+    max-height: 430px;
+}
+
+.secretary-message-form,
+.student-chat-form,
+.teacher-message-form,
+.guardian-message-form {
+    align-self: start;
+}
+
+@media (max-width: 760px) {
+    .secretary-message-list,
+    .chat-message-list,
+    .teacher-message-list,
+    .guardian-message-list {
+        min-height: 140px;
+        max-height: 50vh;
+    }
+}
