@@ -39,22 +39,9 @@ function primewayChatEnsureStorageDirectory(string $relativeDirectory): string
 function primewayChatAllowedExtensions(): array
 {
     return [
-        'pdf',
-        'png',
-        'jpg',
-        'jpeg',
-        'txt',
-        'doc',
-        'docx',
-        'xls',
-        'xlsx',
-        'ppt',
-        'pptx',
-        'webm',
-        'ogg',
-        'mp3',
-        'm4a',
-        'wav'
+        'pdf', 'png', 'jpg', 'jpeg', 'txt',
+        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+        'webm', 'ogg', 'mp3', 'm4a', 'wav'
     ];
 }
 
@@ -78,6 +65,7 @@ function primewayChatAllowedMimeTypes(): array
         'application/ogg',
         'audio/mpeg',
         'audio/mp4',
+        'video/mp4',
         'audio/x-m4a',
         'audio/wav',
         'audio/x-wav',
@@ -96,34 +84,41 @@ function primewayChatValidateUpload(array $file): array
             UPLOAD_ERR_NO_FILE => 'Selecione um arquivo para enviar.',
             default => 'Não foi possível receber o arquivo enviado.'
         };
-
         throw new RuntimeException($message);
     }
 
     $temporaryPath = (string) ($file['tmp_name'] ?? '');
     $originalName = trim((string) ($file['name'] ?? ''));
+    $clientMimeType = strtolower(trim((string) ($file['type'] ?? '')));
     $size = (int) ($file['size'] ?? 0);
 
     if ($temporaryPath === '' || !is_uploaded_file($temporaryPath)) {
         throw new RuntimeException('Arquivo enviado inválido.');
     }
-
     if ($size <= 0) {
         throw new RuntimeException('O arquivo está vazio.');
     }
-
     if ($size > 10 * 1024 * 1024) {
         throw new RuntimeException('O arquivo deve possuir no máximo 10 MB.');
     }
 
     $extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
-
     if (!in_array($extension, primewayChatAllowedExtensions(), true)) {
         throw new RuntimeException('Formato de arquivo não permitido no chat.');
     }
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mimeType = (string) $finfo->file($temporaryPath);
+    $mimeType = strtolower((string) $finfo->file($temporaryPath));
+
+    if ($extension === 'webm' && $mimeType === 'video/webm' && str_starts_with($clientMimeType, 'audio/webm')) {
+        $mimeType = 'audio/webm';
+    }
+    if ($extension === 'ogg' && $mimeType === 'application/ogg' && str_starts_with($clientMimeType, 'audio/ogg')) {
+        $mimeType = 'audio/ogg';
+    }
+    if ($extension === 'm4a' && $mimeType === 'video/mp4' && str_starts_with($clientMimeType, 'audio/')) {
+        $mimeType = 'audio/mp4';
+    }
 
     if (!in_array($mimeType, primewayChatAllowedMimeTypes(), true)) {
         throw new RuntimeException('O tipo real do arquivo não é permitido no chat.');
@@ -146,7 +141,6 @@ function primewayChatValidateUpload(array $file): array
 
     $safeOriginalName = preg_replace('/[^\pL\pN._()\- ]+/u', '_', $originalName);
     $safeOriginalName = trim((string) $safeOriginalName);
-
     if ($safeOriginalName === '') {
         $safeOriginalName = 'arquivo.' . $extension;
     }
@@ -166,17 +160,14 @@ function primewayChatAttachmentKind(string $mimeType): string
     if (str_starts_with($mimeType, 'image/')) {
         return 'image';
     }
-
     if ($mimeType === 'application/pdf') {
         return 'pdf';
     }
-
     if (
         str_starts_with($mimeType, 'audio/')
         || in_array($mimeType, ['video/webm', 'application/ogg'], true)
     ) {
         return 'audio';
     }
-
     return 'document';
 }
