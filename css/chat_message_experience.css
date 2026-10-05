@@ -175,45 +175,52 @@
 }
 
 .pw-chat-message-focus {
-    animation: pw-chat-message-focus 1.05s ease;
+    scroll-margin-top: 64px;
+    animation: pw-chat-message-focus 1.35s ease;
 }
 
 @keyframes pw-chat-message-focus {
-    0%,100% { box-shadow: inherit; }
-    35% { box-shadow: 0 0 0 3px rgba(53,84,173,.23), 0 5px 18px rgba(30,48,94,.12); }
+    0%,100% { box-shadow: inherit; transform: translateZ(0); }
+    30%,55% { box-shadow: 0 0 0 3px rgba(53,84,173,.28), 0 7px 22px rgba(30,48,94,.15); }
 }
 
 /* Player de voz inspirado na disposição do WhatsApp, mantendo identidade PrimeWay. */
 .pw-chat-audio-card[data-pw-audio-enhanced="1"] {
-    width: min(330px, 100%);
-    min-width: min(245px, 100%);
-    padding: 2px 0 0;
+    width: 100%;
+    max-width: 360px;
+    min-width: 0;
+    padding: 3px 0 1px;
     border: 0;
     border-radius: 0;
     display: flex;
     align-items: center;
     gap: 9px;
     background: transparent;
+    overflow: visible;
 }
 
 .pw-chat-audio-native {
-    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 .pw-chat-voice-play {
-    width: 40px !important;
-    min-width: 40px;
-    height: 40px;
+    width: 41px !important;
+    min-width: 41px;
+    height: 41px;
     padding: 0 !important;
     border: 0;
     border-radius: 50%;
     display: grid;
     place-items: center;
-    flex: 0 0 40px;
+    flex: 0 0 41px;
     background: #eef3ff;
     color: #344fa3;
     cursor: pointer;
-    transition: transform .14s ease, background .14s ease;
+    transition: transform .14s ease, background .14s ease, opacity .14s ease;
 }
 
 .pw-chat-voice-play:hover {
@@ -221,34 +228,47 @@
     transform: scale(1.03);
 }
 
+.pw-chat-audio-card.is-loading .pw-chat-voice-play {
+    cursor: wait;
+    opacity: .82;
+}
+
 .pw-chat-voice-body {
     min-width: 0;
+    overflow: hidden;
     flex: 1 1 auto;
 }
 
 .pw-chat-waveform {
     width: 100%;
-    height: 30px;
+    min-width: 0;
+    height: 31px;
     padding: 0;
     border: 0;
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 1.5px;
+    overflow: hidden;
     background: transparent;
     cursor: pointer;
 }
 
 .pw-chat-waveform span {
-    width: 2px;
-    min-width: 2px;
-    max-height: 27px;
+    flex: 1 1 2px;
+    min-width: 1px;
+    max-width: 3px;
+    max-height: 28px;
     border-radius: 999px;
     background: #aeb8ca;
-    transition: background .12s ease;
+    transition: background .12s ease, opacity .12s ease;
 }
 
 .pw-chat-waveform span.is-played {
     background: #3554ad;
+}
+
+.pw-chat-audio-card.is-loading .pw-chat-waveform span {
+    opacity: .62;
 }
 
 .pw-chat-voice-meta {
@@ -264,7 +284,7 @@
 }
 
 .pw-chat-voice-speed {
-    min-width: 27px;
+    min-width: 29px;
     height: 19px;
     padding: 0 5px;
     border: 0;
@@ -358,8 +378,8 @@
     }
 
     .pw-chat-audio-card[data-pw-audio-enhanced="1"] {
-        min-width: 215px;
         width: 100%;
+        max-width: none;
     }
 
     .pw-chat-pinned-banner {
