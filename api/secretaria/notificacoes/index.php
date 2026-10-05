@@ -274,6 +274,11 @@ try {
                   AND n.origem =
                     'Secretaria'
 
+                  AND LOWER(n.tipo) NOT IN (
+                    'saída segura',
+                    'saida segura'
+                  )
+
                 ORDER BY
                     n.criado_em DESC,
                     n.id DESC
