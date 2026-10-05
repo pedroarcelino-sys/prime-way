@@ -6,9 +6,20 @@ function primewayChatStorageRoot(): string
 {
     $configured = getenv('PRIMEWAY_STORAGE_DIR');
 
-    $base = is_string($configured) && trim($configured) !== ''
-        ? rtrim(trim($configured), "\\/")
-        : dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'primeway-storage';
+    if (is_string($configured) && trim($configured) !== '') {
+        $base = rtrim(trim($configured), "\\/");
+    } else {
+        $localAppData = getenv('LOCALAPPDATA');
+        $userProfile = getenv('USERPROFILE');
+
+        if (is_string($localAppData) && trim($localAppData) !== '') {
+            $base = rtrim(trim($localAppData), "\\/") . DIRECTORY_SEPARATOR . 'PrimeWay' . DIRECTORY_SEPARATOR . 'storage';
+        } elseif (is_string($userProfile) && trim($userProfile) !== '') {
+            $base = rtrim(trim($userProfile), "\\/") . DIRECTORY_SEPARATOR . 'PrimeWayStorage';
+        } else {
+            $base = rtrim(sys_get_temp_dir(), "\\/") . DIRECTORY_SEPARATOR . 'primeway-storage';
+        }
+    }
 
     return $base . DIRECTORY_SEPARATOR . 'chat';
 }
