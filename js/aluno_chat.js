@@ -13,7 +13,7 @@ async function loadAttachmentModule(){
         }
 
         const script=document.createElement("script");
-        script.src="../js/chat_attachments_shared.js?v=20261005-1";
+        script.src="../js/chat_attachments_shared.js?v=20261005-2";
         script.dataset.primewayChatAttachments="1";
         script.addEventListener("load",resolve,{once:true});
         script.addEventListener("error",reject,{once:true});
@@ -37,6 +37,12 @@ try{
 }catch(error){
     console.error(error);
     window.PrimeWayFeedback?.error("Não foi possível carregar o recurso de anexos.");
+    return;
+}
+
+const Experience=window.PrimeWayChatMessageExperience;
+if(!Experience){
+    window.PrimeWayFeedback?.error("Não foi possível carregar as opções das mensagens.");
     return;
 }
 
@@ -230,6 +236,18 @@ function renderMessages(data){
         const time=document.createElement("time");
         time.textContent=window.PrimeWayAluno.formatDate(item.sentAt,true);
         article.append(time);
+
+        Experience.decorateMessage(article,item,{
+            csrfToken:session?.csrfToken||"",
+            onChanged:async()=>{
+                if(active){
+                    await loadMessages(active,true);
+                    await loadIndex(true);
+                }
+            },
+            onError:message=>window.PrimeWayFeedback?.error(message)
+        });
+
         msgs.append(article);
     }
 
