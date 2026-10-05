@@ -109,6 +109,80 @@
     transform: rotate(-18deg);
 }
 
+.pw-chat-pinned-banner {
+    position: sticky;
+    top: 0;
+    z-index: 24;
+    width: min(520px, calc(100% - 12px));
+    min-height: 48px;
+    margin: 0 auto 7px;
+    padding: 7px 11px;
+    border: 1px solid rgba(52,79,163,.14);
+    border-left: 3px solid #3554ad;
+    border-radius: 9px;
+    display: grid;
+    grid-template-columns: 30px minmax(0,1fr) 18px;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,.96);
+    color: #3f4e6b;
+    box-shadow: 0 5px 18px rgba(30,48,94,.09);
+    text-align: left;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+}
+
+.pw-chat-pinned-banner-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: #edf2ff;
+    color: #3554ad;
+}
+
+.pw-chat-pinned-banner-icon i {
+    transform: rotate(-18deg);
+}
+
+.pw-chat-pinned-banner-text {
+    min-width: 0;
+}
+
+.pw-chat-pinned-banner-text strong,
+.pw-chat-pinned-banner-text > span {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.pw-chat-pinned-banner-text strong {
+    margin: 0 0 2px !important;
+    color: #304a9b !important;
+    font-size: 9px !important;
+}
+
+.pw-chat-pinned-banner-text > span {
+    color: #7c889e;
+    font-size: 9px;
+}
+
+.pw-chat-pinned-banner-arrow {
+    color: #8a96aa;
+    font-size: 9px;
+}
+
+.pw-chat-message-focus {
+    animation: pw-chat-message-focus 1.05s ease;
+}
+
+@keyframes pw-chat-message-focus {
+    0%,100% { box-shadow: inherit; }
+    35% { box-shadow: 0 0 0 3px rgba(53,84,173,.23), 0 5px 18px rgba(30,48,94,.12); }
+}
+
 /* Player de voz inspirado na disposição do WhatsApp, mantendo identidade PrimeWay. */
 .pw-chat-audio-card[data-pw-audio-enhanced="1"] {
     width: min(330px, 100%);
@@ -285,6 +359,10 @@
 
     .pw-chat-audio-card[data-pw-audio-enhanced="1"] {
         min-width: 215px;
+        width: 100%;
+    }
+
+    .pw-chat-pinned-banner {
         width: 100%;
     }
 }
