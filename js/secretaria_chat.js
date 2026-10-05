@@ -7,6 +7,7 @@ const START_URL="../api/secretaria/chat/iniciar.php";
 const MESSAGES_URL="../api/secretaria/chat/mensagens.php";
 const SEND_URL="../api/secretaria/chat/enviar.php";
 const READ_URL="../api/secretaria/chat/marcar_lida.php";
+const SUSPENSION_URL="../api/secretaria/chat/suspensao.php";
 
 const session=await window.PrimeWaySecretaria.ensureSecretary();
 if(!session)return;
@@ -18,6 +19,9 @@ const conversationSearch=document.querySelector("#conversationSearch");
 
 const conversationTitle=document.querySelector("#conversationTitle");
 const conversationRole=document.querySelector("#conversationRole");
+const toggleChatSuspensionButton=document.querySelector("#toggleChatSuspensionButton");
+const chatSuspensionNotice=document.querySelector("#chatSuspensionNotice");
+const chatSuspensionNoticeText=document.querySelector("#chatSuspensionNoticeText");
 
 const messageList=document.querySelector("#messageList");
 const messageForm=document.querySelector("#messageForm");
@@ -31,9 +35,19 @@ const contactSearch=document.querySelector("#contactSearch");
 const contactRoleFilter=document.querySelector("#contactRoleFilter");
 const contactList=document.querySelector("#contactList");
 
+const suspensionDialog=document.querySelector("#suspensionDialog");
+const suspensionDialogIcon=document.querySelector("#suspensionDialogIcon");
+const suspensionDialogTitle=document.querySelector("#suspensionDialogTitle");
+const suspensionDialogMessage=document.querySelector("#suspensionDialogMessage");
+const suspensionReasonField=document.querySelector("#suspensionReasonField");
+const suspensionReason=document.querySelector("#suspensionReason");
+const cancelSuspensionAction=document.querySelector("#cancelSuspensionAction");
+const confirmSuspensionAction=document.querySelector("#confirmSuspensionAction");
+
 let conversations=[];
 let contacts=[];
 let activeConversationId=null;
+let activeConversation=null;
 let refreshTimer=null;
 
 function normalize(value){
@@ -63,6 +77,49 @@ function roleLabel(role){
     };
 
     return labels[role]||"Contato";
+}
+
+function updateSuspensionControls(){
+    if(!activeConversation?.userId){
+        toggleChatSuspensionButton.hidden=true;
+        chatSuspensionNotice.hidden=true;
+        return;
+    }
+
+    const suspended=Boolean(activeConversation.suspended);
+
+    toggleChatSuspensionButton.hidden=false;
+    toggleChatSuspensionButton.classList.toggle(
+        "is-suspended",
+        suspended
+    );
+
+    const icon=toggleChatSuspensionButton.querySelector("i");
+    const label=toggleChatSuspensionButton.querySelector("span");
+
+    if(icon){
+        icon.className=suspended
+            ?"fa-solid fa-unlock"
+            :"fa-solid fa-ban";
+    }
+
+    if(label){
+        label.textContent=suspended
+            ?"Reativar chat"
+            :"Suspender chat";
+    }
+
+    chatSuspensionNotice.hidden=!suspended;
+
+    if(suspended){
+        const reason=String(
+            activeConversation.suspensionReason||""
+        ).trim();
+
+        chatSuspensionNoticeText.textContent=reason
+            ?`Este usuário está impedido de enviar mensagens. Motivo: ${reason}`
+            :"Este usuário está impedido de iniciar novas conversas ou enviar mensagens.";
+    }
 }
 
 function renderConversations(){
@@ -337,14 +394,15 @@ async function loadMessages(
             return;
         }
 
+        activeConversation=data.conversation||null;
+
         conversationTitle.textContent=
-            data.conversation.title;
+            activeConversation?.title||"Conversa";
 
         conversationRole.textContent=
-            roleLabel(
-                data.conversation.role
-            );
+            `${roleLabel(activeConversation?.role)}${activeConversation?.suspended?" • Chat suspenso":""}`;
 
+        updateSuspensionControls();
         renderMessages(data);
 
         await markConversationRead(
@@ -363,9 +421,12 @@ async function loadMessages(
 
 async function selectConversation(id){
     activeConversationId=Number(id);
+    activeConversation=null;
 
     messageInput.disabled=false;
     sendMessageButton.disabled=false;
+    toggleChatSuspensionButton.hidden=true;
+    chatSuspensionNotice.hidden=true;
 
     renderConversations();
 
@@ -414,8 +475,11 @@ async function loadIndex(quiet=false){
             )
         ){
             activeConversationId=null;
+            activeConversation=null;
             messageInput.disabled=true;
             sendMessageButton.disabled=true;
+            toggleChatSuspensionButton.hidden=true;
+            chatSuspensionNotice.hidden=true;
         }
 
         await window.PrimeWaySecretaria
@@ -485,6 +549,99 @@ async function sendMessage(event){
     }
 }
 
+function openSuspensionDialog(){
+    if(!activeConversation?.userId)return;
+
+    const reactivating=Boolean(activeConversation.suspended);
+
+    suspensionReason.value="";
+    suspensionReasonField.hidden=reactivating;
+
+    suspensionDialogIcon.classList.toggle(
+        "is-reactivate",
+        reactivating
+    );
+
+    suspensionDialogIcon.innerHTML=reactivating
+        ?'<i class="fa-solid fa-unlock" aria-hidden="true"></i>'
+        :'<i class="fa-solid fa-ban" aria-hidden="true"></i>';
+
+    suspensionDialogTitle.textContent=reactivating
+        ?"Reativar chat?"
+        :"Suspender chat?";
+
+    suspensionDialogMessage.textContent=reactivating
+        ?`O acesso de ${activeConversation.title} ao chat será restaurado.`
+        :`O usuário ${activeConversation.title} não poderá iniciar novas conversas nem enviar mensagens enquanto a suspensão estiver ativa.`;
+
+    confirmSuspensionAction.textContent=reactivating
+        ?"Reativar chat"
+        :"Suspender chat";
+
+    confirmSuspensionAction.classList.toggle(
+        "is-reactivate",
+        reactivating
+    );
+
+    suspensionDialog.showModal();
+
+    if(!reactivating){
+        suspensionReason.focus();
+    }
+}
+
+async function confirmSuspension(){
+    if(!activeConversation?.userId)return;
+
+    const shouldSuspend=!Boolean(activeConversation.suspended);
+
+    confirmSuspensionAction.disabled=true;
+    cancelSuspensionAction.disabled=true;
+
+    try{
+        const{response,data}=
+            await window.PrimeWaySecretaria.requestJson(
+                SUSPENSION_URL,
+                {
+                    userId:activeConversation.userId,
+                    suspended:shouldSuspend,
+                    reason:shouldSuspend
+                        ?suspensionReason.value.trim()
+                        :""
+                }
+            );
+
+        if(!response.ok||!data?.success){
+            throw new Error(
+                data?.message||
+                "Não foi possível alterar a suspensão do chat."
+            );
+        }
+
+        suspensionDialog.close();
+
+        window.PrimeWayFeedback?.success(
+            data.message||
+            (shouldSuspend
+                ?"Chat suspenso com sucesso."
+                :"Chat reativado com sucesso.")
+        );
+
+        await loadMessages(activeConversationId);
+        await loadIndex(true);
+
+    }catch(error){
+        window.PrimeWayFeedback?.error(
+            error?.message||
+            "Não foi possível alterar a suspensão do chat."
+        );
+
+    }finally{
+        confirmSuspensionAction.disabled=false;
+        cancelSuspensionAction.disabled=false;
+    }
+}
+
 newConversationButton.addEventListener(
     "click",
     ()=>{
@@ -498,6 +655,30 @@ newConversationButton.addEventListener(
 closeContactDialog.addEventListener(
     "click",
     ()=>contactDialog.close()
+);
+
+toggleChatSuspensionButton.addEventListener(
+    "click",
+    openSuspensionDialog
+);
+
+cancelSuspensionAction.addEventListener(
+    "click",
+    ()=>suspensionDialog.close()
+);
+
+confirmSuspensionAction.addEventListener(
+    "click",
+    confirmSuspension
+);
+
+suspensionDialog.addEventListener(
+    "click",
+    event=>{
+        if(event.target===suspensionDialog){
+            suspensionDialog.close();
+        }
+    }
 );
 
 conversationSearch.addEventListener(
