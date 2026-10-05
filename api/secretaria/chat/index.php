@@ -32,6 +32,7 @@ try {
                 SELECT
                     u.id,
                     u.perfil,
+                    u.email,
                     COALESCE(
                         pe.nome,
                         u.nome,
@@ -85,6 +86,7 @@ try {
                 WHERE u.ativo = 1
                   AND u.id <> :usuario_id
                   AND u.perfil IN (
+                        'admin',
                         'professor',
                         'aluno',
                         'responsavel'
@@ -93,6 +95,7 @@ try {
                 ORDER BY
                     FIELD(
                         u.perfil,
+                        'admin',
                         'professor',
                         'responsavel',
                         'aluno'
@@ -113,6 +116,9 @@ try {
 
         $description =
             match ($role) {
+                'admin' =>
+                    'Administrador',
+
                 'professor' =>
                     (string) (
                         $row['professor_disciplinas']
@@ -141,6 +147,9 @@ try {
 
             'name' =>
                 (string) $row['nome'],
+
+            'email' =>
+                (string) ($row['email'] ?? ''),
 
             'role' =>
                 $role,
