@@ -271,6 +271,9 @@ try {
                 WHERE n.criado_por_usuario_id =
                     :usuario_id
 
+                  AND n.origem =
+                    'Secretaria'
+
                 ORDER BY
                     n.criado_em DESC,
                     n.id DESC
