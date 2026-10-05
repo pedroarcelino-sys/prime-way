@@ -12,7 +12,9 @@ document.addEventListener("DOMContentLoaded",async function(){
     window.PrimeWaySecretaria.bindLogout();
 
     const Attachments=window.PrimeWayChatAttachments;
-    if(!Attachments){
+    const Experience=window.PrimeWayChatMessageExperience;
+
+    if(!Attachments||!Experience){
         window.PrimeWayFeedback?.error("Não foi possível carregar os recursos do Chat.");
         return;
     }
@@ -59,27 +61,11 @@ document.addEventListener("DOMContentLoaded",async function(){
     });
     attachmentUi.setEnabled(false);
 
-    const normalize=value=>String(value??"")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .toLowerCase()
-        .trim();
-
-    const initials=name=>String(name||"?")
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0,2)
-        .map(part=>part.charAt(0).toUpperCase())
-        .join("")||"?";
+    const normalize=value=>String(value??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+    const initials=name=>String(name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(part=>part.charAt(0).toUpperCase()).join("")||"?";
 
     function roleLabel(role){
-        const labels={
-            admin:"Administrador",
-            professor:"Professor(a)",
-            aluno:"Aluno",
-            responsavel:"Responsável",
-            secretaria:"Secretaria"
-        };
+        const labels={admin:"Administrador",professor:"Professor(a)",aluno:"Aluno",responsavel:"Responsável",secretaria:"Secretaria"};
         return labels[role]||"Contato";
     }
 
@@ -93,13 +79,12 @@ document.addEventListener("DOMContentLoaded",async function(){
         const suspended=Boolean(activeConversation.suspended);
         toggleChatSuspensionButton.hidden=false;
         toggleChatSuspensionButton.classList.toggle("is-suspended",suspended);
-
         const icon=toggleChatSuspensionButton.querySelector("i");
         const label=toggleChatSuspensionButton.querySelector("span");
         if(icon)icon.className=suspended?"fa-solid fa-unlock":"fa-solid fa-ban";
         if(label)label.textContent=suspended?"Reativar chat":"Suspender chat";
-
         chatSuspensionNotice.hidden=!suspended;
+
         if(suspended){
             const reason=String(activeConversation.suspensionReason||"").trim();
             chatSuspensionNoticeText.textContent=reason
@@ -110,11 +95,9 @@ document.addEventListener("DOMContentLoaded",async function(){
 
     function renderConversations(){
         const query=normalize(conversationSearch.value);
-        const list=conversations.filter(item=>
-            !query||normalize(`${item.title} ${item.lastMessage||""} ${item.role||""}`).includes(query)
-        );
-
+        const list=conversations.filter(item=>!query||normalize(`${item.title} ${item.lastMessage||""} ${item.role||""}`).includes(query));
         conversationList.replaceChildren();
+
         if(!list.length){
             conversationList.innerHTML='<div class="secretary-chat-empty">Nenhuma conversa encontrada.</div>';
             return;
@@ -124,11 +107,9 @@ document.addEventListener("DOMContentLoaded",async function(){
             const button=document.createElement("button");
             button.type="button";
             button.className=`secretary-conversation-item${Number(item.id)===Number(activeConversationId)?" active":""}`;
-
             const avatar=document.createElement("span");
             avatar.className="secretary-conversation-avatar";
             avatar.textContent=initials(item.title);
-
             const info=document.createElement("span");
             info.className="secretary-conversation-info";
             const name=document.createElement("strong");
@@ -168,21 +149,16 @@ document.addEventListener("DOMContentLoaded",async function(){
             const button=document.createElement("button");
             button.type="button";
             button.className="secretary-contact-item";
-
             const avatar=document.createElement("span");
             avatar.className="secretary-contact-avatar";
             avatar.textContent=initials(item.name);
-
             const info=document.createElement("span");
             info.className="secretary-contact-info";
             const name=document.createElement("strong");
             name.textContent=item.name;
             const description=document.createElement("span");
-            description.textContent=[item.description||roleLabel(item.role),item.email||""]
-                .filter(Boolean)
-                .join(" • ");
+            description.textContent=[item.description||roleLabel(item.role),item.email||""].filter(Boolean).join(" • ");
             info.append(name,description);
-
             const icon=document.createElement("i");
             icon.className="fa-solid fa-chevron-right";
             icon.setAttribute("aria-hidden","true");
@@ -191,13 +167,8 @@ document.addEventListener("DOMContentLoaded",async function(){
             button.addEventListener("click",async()=>{
                 button.disabled=true;
                 try{
-                    const{response,data}=await window.PrimeWaySecretaria.requestJson(
-                        START_URL,
-                        {contactUserId:item.userId}
-                    );
-                    if(!response.ok||!data?.success){
-                        throw new Error(data?.message||"Não foi possível iniciar a conversa.");
-                    }
+                    const{response,data}=await window.PrimeWaySecretaria.requestJson(START_URL,{contactUserId:item.userId});
+                    if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível iniciar a conversa.");
                     contactDialog.close();
                     await loadIndex();
                     await selectConversation(data.conversationId);
@@ -221,7 +192,6 @@ document.addEventListener("DOMContentLoaded",async function(){
         for(const item of data.messages){
             const article=document.createElement("article");
             article.className=`secretary-message ${item.own?"own":"other"}`;
-
             const sender=document.createElement("strong");
             sender.textContent=item.own?"Você":item.senderName;
             article.append(sender);
@@ -232,14 +202,23 @@ document.addEventListener("DOMContentLoaded",async function(){
                 article.append(content);
             }
 
-            Attachments.renderMessageAttachments(
-                article,
-                Array.isArray(item.attachments)?item.attachments:[]
-            );
+            Attachments.renderMessageAttachments(article,Array.isArray(item.attachments)?item.attachments:[]);
 
             const time=document.createElement("time");
             time.textContent=window.PrimeWaySecretaria.formatDate(item.sentAt,true);
             article.append(time);
+
+            Experience.decorateMessage(article,item,{
+                csrfToken:session?.csrfToken||"",
+                onChanged:async()=>{
+                    if(activeConversationId){
+                        await loadMessages(activeConversationId,true);
+                        await loadIndex(true);
+                    }
+                },
+                onError:message=>window.PrimeWayFeedback?.error(message)
+            });
+
             messageList.append(article);
         }
         messageList.scrollTop=messageList.scrollHeight;
@@ -257,12 +236,8 @@ document.addEventListener("DOMContentLoaded",async function(){
 
     async function loadMessages(conversationId,quiet=false){
         try{
-            const{response,data}=await window.PrimeWaySecretaria.request(
-                `${MESSAGES_URL}?conversationId=${encodeURIComponent(conversationId)}`
-            );
-            if(!response.ok||!data?.success){
-                throw new Error(data?.message||"Não foi possível carregar as mensagens.");
-            }
+            const{response,data}=await window.PrimeWaySecretaria.request(`${MESSAGES_URL}?conversationId=${encodeURIComponent(conversationId)}`);
+            if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível carregar as mensagens.");
             if(Number(activeConversationId)!==Number(conversationId))return;
 
             activeConversation=data.conversation||null;
@@ -272,9 +247,7 @@ document.addEventListener("DOMContentLoaded",async function(){
             renderMessages(data);
             await markConversationRead(conversationId);
         }catch(error){
-            if(!quiet){
-                window.PrimeWayFeedback?.error(error?.message||"Não foi possível carregar as mensagens.");
-            }
+            if(!quiet)window.PrimeWayFeedback?.error(error?.message||"Não foi possível carregar as mensagens.");
         }
     }
 
@@ -295,10 +268,7 @@ document.addEventListener("DOMContentLoaded",async function(){
     async function loadIndex(quiet=false){
         try{
             const{response,data}=await window.PrimeWaySecretaria.request(INDEX_URL);
-            if(!response.ok||!data?.success){
-                throw new Error(data?.message||"Não foi possível carregar o chat.");
-            }
-
+            if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível carregar o chat.");
             conversations=Array.isArray(data.conversations)?data.conversations:[];
             contacts=Array.isArray(data.contacts)?data.contacts:[];
             renderConversations();
@@ -326,31 +296,19 @@ document.addEventListener("DOMContentLoaded",async function(){
     async function sendMessage(event){
         event.preventDefault();
         if(!activeConversationId)return;
-
         const content=messageInput.value.trim();
         if(!content&&!attachmentUi.hasFile())return;
-
         sendMessageButton.disabled=true;
+
         try{
             let response;
             let data;
-
             if(attachmentUi.hasFile()){
-                ({response,data}=await attachmentUi.upload({
-                    conversationId:activeConversationId,
-                    content
-                }));
+                ({response,data}=await attachmentUi.upload({conversationId:activeConversationId,content}));
             }else{
-                ({response,data}=await window.PrimeWaySecretaria.requestJson(
-                    SEND_URL,
-                    {conversationId:activeConversationId,content}
-                ));
+                ({response,data}=await window.PrimeWaySecretaria.requestJson(SEND_URL,{conversationId:activeConversationId,content}));
             }
-
-            if(!response.ok||!data?.success){
-                throw new Error(data?.message||"Não foi possível enviar a mensagem.");
-            }
-
+            if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível enviar a mensagem.");
             messageInput.value="";
             attachmentUi.clear();
             await loadMessages(activeConversationId);
@@ -369,9 +327,7 @@ document.addEventListener("DOMContentLoaded",async function(){
         suspensionReason.value="";
         suspensionReasonField.hidden=reactivating;
         suspensionDialogIcon.classList.toggle("is-reactivate",reactivating);
-        suspensionDialogIcon.innerHTML=reactivating
-            ?'<i class="fa-solid fa-unlock" aria-hidden="true"></i>'
-            :'<i class="fa-solid fa-ban" aria-hidden="true"></i>';
+        suspensionDialogIcon.innerHTML=reactivating?'<i class="fa-solid fa-unlock" aria-hidden="true"></i>':'<i class="fa-solid fa-ban" aria-hidden="true"></i>';
         suspensionDialogTitle.textContent=reactivating?"Reativar chat?":"Suspender chat?";
         suspensionDialogMessage.textContent=reactivating
             ?`O acesso de ${activeConversation.title} ao chat será restaurado.`
@@ -389,22 +345,14 @@ document.addEventListener("DOMContentLoaded",async function(){
         cancelSuspensionAction.disabled=true;
 
         try{
-            const{response,data}=await window.PrimeWaySecretaria.requestJson(
-                SUSPENSION_URL,
-                {
-                    userId:activeConversation.userId,
-                    suspended:shouldSuspend,
-                    reason:shouldSuspend?suspensionReason.value.trim():""
-                }
-            );
-            if(!response.ok||!data?.success){
-                throw new Error(data?.message||"Não foi possível alterar a suspensão do chat.");
-            }
-
+            const{response,data}=await window.PrimeWaySecretaria.requestJson(SUSPENSION_URL,{
+                userId:activeConversation.userId,
+                suspended:shouldSuspend,
+                reason:shouldSuspend?suspensionReason.value.trim():""
+            });
+            if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível alterar a suspensão do chat.");
             suspensionDialog.close();
-            window.PrimeWayFeedback?.success(
-                data.message||(shouldSuspend?"Chat suspenso com sucesso.":"Chat reativado com sucesso.")
-            );
+            window.PrimeWayFeedback?.success(data.message||(shouldSuspend?"Chat suspenso com sucesso.":"Chat reativado com sucesso."));
             await loadMessages(activeConversationId);
             await loadIndex(true);
         }catch(error){
