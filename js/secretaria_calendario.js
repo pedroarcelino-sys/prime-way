@@ -5,7 +5,7 @@ const API="../api/secretaria/calendario";
 const URLS={list:`${API}/index.php`,create:`${API}/criar.php`,update:`${API}/atualizar.php`,status:`${API}/status.php`};
 const MONTHS=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const ICONS={Prova:"fa-file-pen",Atividade:"fa-list-check",Reunião:"fa-people-group",Evento:"fa-star",Feriado:"fa-umbrella-beach",Aviso:"fa-bullhorn"};
-const S={month:new Date(new Date().getFullYear(),new Date().getMonth(),1),events:[],upcoming:[],classes:[],selected:null,loading:false};
+const S={month:new Date(new Date().getFullYear(),new Date().getMonth(),1),events:[],upcoming:[],classes:[],selected:null,loading:false,confirmResolve:null};
 const E={};
 const $=id=>document.getElementById(id);
 
@@ -64,8 +64,73 @@ async function load(){
   finally{loading(false);}
 }
 
+function ensureConfirmationModal(){
+  if($("calendarConfirmationModal"))return;
+  const modal=document.createElement("div");
+  modal.className="calendar-modal";
+  modal.id="calendarConfirmationModal";
+  modal.hidden=true;
+  modal.innerHTML=`
+    <div class="calendar-modal-backdrop" data-close-confirmation-modal></div>
+    <section class="calendar-modal-card" role="dialog" aria-modal="true" aria-labelledby="calendarConfirmationTitle" aria-describedby="calendarConfirmationMessage">
+      <header class="calendar-modal-header event-view-header">
+        <div class="event-view-heading">
+          <div class="event-view-icon" id="calendarConfirmationIcon">
+            <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+          </div>
+          <div>
+            <span class="section-label">Confirmar ação</span>
+            <h2 id="calendarConfirmationTitle">Confirmar</h2>
+          </div>
+        </div>
+        <button type="button" class="calendar-modal-close" id="calendarConfirmationClose" aria-label="Fechar">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </header>
+      <div class="event-view-body">
+        <div class="event-view-description">
+          <span>Atenção</span>
+          <p id="calendarConfirmationMessage">Deseja continuar?</p>
+        </div>
+      </div>
+      <footer class="event-view-actions">
+        <button type="button" class="calendar-secondary-button" id="calendarConfirmationCancel">Voltar</button>
+        <button type="button" class="calendar-success-button" id="calendarConfirmationConfirm">
+          <i class="fa-solid fa-check" aria-hidden="true"></i>
+          Confirmar
+        </button>
+      </footer>
+    </section>`;
+  document.body.append(modal);
+}
 function show(m){m.hidden=false;document.body.classList.add("calendar-modal-open");}
-function hide(m){m.hidden=true;if(E.eventFormModal.hidden&&E.eventViewModal.hidden)document.body.classList.remove("calendar-modal-open");}
+function hide(m){m.hidden=true;if(E.eventFormModal.hidden&&E.eventViewModal.hidden&&E.calendarConfirmationModal.hidden)document.body.classList.remove("calendar-modal-open");}
+function finishConfirmation(value){
+  if(!E.calendarConfirmationModal)return;
+  hide(E.calendarConfirmationModal);
+  const resolve=S.confirmResolve;
+  S.confirmResolve=null;
+  if(typeof resolve==="function")resolve(Boolean(value));
+}
+function confirmAction(status,e){
+  const complete=status==="Concluído";
+  E.calendarConfirmationTitle.textContent=complete?"Concluir evento":"Cancelar evento";
+  E.calendarConfirmationMessage.textContent=complete
+    ?`Deseja marcar “${e.title}” como concluído?`
+    :`Deseja cancelar “${e.title}”? O evento será mantido no histórico.`;
+  E.calendarConfirmationIcon.innerHTML=complete
+    ?'<i class="fa-solid fa-circle-check" aria-hidden="true"></i>'
+    :'<i class="fa-solid fa-ban" aria-hidden="true"></i>';
+  E.calendarConfirmationIcon.style.background=complete?"#eafbf4":"#fff0f1";
+  E.calendarConfirmationIcon.style.color=complete?"var(--secretary-success)":"var(--secretary-danger)";
+  E.calendarConfirmationConfirm.className=complete?"calendar-success-button":"calendar-danger-button";
+  E.calendarConfirmationConfirm.innerHTML=complete
+    ?'<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Sim, concluir'
+    :'<i class="fa-solid fa-ban" aria-hidden="true"></i> Sim, cancelar evento';
+  show(E.calendarConfirmationModal);
+  setTimeout(()=>E.calendarConfirmationConfirm.focus(),0);
+  return new Promise(resolve=>{S.confirmResolve=resolve;});
+}
 function reset(){E.eventForm.reset();E.eventId.value="";E.eventFormModalTitle.textContent="Novo evento";E.eventSubmitButton.innerHTML='<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Salvar evento';}
 function create(date=""){reset();classOptions();E.eventDate.value=date||key(new Date());show(E.eventFormModal);setTimeout(()=>E.eventTitle.focus(),0);}
 function edit(e){if(!e||e.status!=="Agendado")return;reset();classOptions();E.eventId.value=e.id;E.eventTitle.value=e.title||"";E.eventType.value=e.type||"";E.eventClass.value=e.classId?String(e.classId):"";E.eventDate.value=e.date||"";E.eventTimeStart.value=e.timeStart||"";E.eventTimeEnd.value=e.timeEnd||"";E.eventLocation.value=e.location||"";E.eventDescription.value=e.description||"";E.eventFormModalTitle.textContent="Editar evento";E.eventSubmitButton.innerHTML='<i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Salvar alterações';hide(E.eventViewModal);show(E.eventFormModal);}
@@ -79,17 +144,18 @@ async function save(ev){
   catch(err){msg("error",err?.message||"Não foi possível salvar o evento.");}finally{E.eventSubmitButton.disabled=false;}
 }
 async function setStatus(status){
-  const e=find(S.selected);if(!e||e.status!=="Agendado")return;const ok=confirm(status==="Concluído"?`Marcar “${e.title}” como concluído?`:`Cancelar “${e.title}”? O evento será mantido no histórico.`);if(!ok)return;
+  const e=find(S.selected);if(!e||e.status!=="Agendado")return;
+  const ok=await confirmAction(status,e);if(!ok)return;
   try{const {response,data}=await window.PrimeWaySecretaria.requestJson(URLS.status,{id:e.id,status});if(!response.ok||!data?.success)throw new Error(data?.message||"Não foi possível alterar o status.");hide(E.eventViewModal);msg("success",data.message||"Status atualizado.");await load();if(data.event?.id)view(data.event.id);}
   catch(err){msg("error",err?.message||"Não foi possível alterar o status.");}
 }
 
 function bind(){
-  E.newEventButton.onclick=()=>create();E.previousMonthButton.onclick=async()=>{S.month=new Date(S.month.getFullYear(),S.month.getMonth()-1,1);await load();};E.nextMonthButton.onclick=async()=>{S.month=new Date(S.month.getFullYear(),S.month.getMonth()+1,1);await load();};E.todayButton.onclick=async()=>{const d=new Date();S.month=new Date(d.getFullYear(),d.getMonth(),1);await load();};[E.eventTypeFilter,E.eventStatusFilter,E.eventClassFilter].forEach(x=>x.onchange=renderCalendar);E.eventForm.onsubmit=save;E.eventFormClose.onclick=E.eventFormCancel.onclick=()=>hide(E.eventFormModal);document.querySelector("[data-close-form-modal]").onclick=()=>hide(E.eventFormModal);E.eventViewClose.onclick=()=>hide(E.eventViewModal);document.querySelector("[data-close-view-modal]").onclick=()=>hide(E.eventViewModal);E.editEventButton.onclick=()=>edit(find(S.selected));E.completeEventButton.onclick=()=>setStatus("Concluído");E.cancelEventButton.onclick=()=>setStatus("Cancelado");document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!E.eventFormModal.hidden)hide(E.eventFormModal);else if(!E.eventViewModal.hidden)hide(E.eventViewModal);}});
+  E.newEventButton.onclick=()=>create();E.previousMonthButton.onclick=async()=>{S.month=new Date(S.month.getFullYear(),S.month.getMonth()-1,1);await load();};E.nextMonthButton.onclick=async()=>{S.month=new Date(S.month.getFullYear(),S.month.getMonth()+1,1);await load();};E.todayButton.onclick=async()=>{const d=new Date();S.month=new Date(d.getFullYear(),d.getMonth(),1);await load();};[E.eventTypeFilter,E.eventStatusFilter,E.eventClassFilter].forEach(x=>x.onchange=renderCalendar);E.eventForm.onsubmit=save;E.eventFormClose.onclick=E.eventFormCancel.onclick=()=>hide(E.eventFormModal);document.querySelector("[data-close-form-modal]").onclick=()=>hide(E.eventFormModal);E.eventViewClose.onclick=()=>hide(E.eventViewModal);document.querySelector("[data-close-view-modal]").onclick=()=>hide(E.eventViewModal);E.editEventButton.onclick=()=>edit(find(S.selected));E.completeEventButton.onclick=()=>setStatus("Concluído");E.cancelEventButton.onclick=()=>setStatus("Cancelado");E.calendarConfirmationClose.onclick=()=>finishConfirmation(false);E.calendarConfirmationCancel.onclick=()=>finishConfirmation(false);E.calendarConfirmationConfirm.onclick=()=>finishConfirmation(true);document.querySelector("[data-close-confirmation-modal]").onclick=()=>finishConfirmation(false);document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!E.calendarConfirmationModal.hidden)finishConfirmation(false);else if(!E.eventFormModal.hidden)hide(E.eventFormModal);else if(!E.eventViewModal.hidden)hide(E.eventViewModal);}});
 }
 function collect(){
-  ["newEventButton","previousMonthButton","nextMonthButton","todayButton","calendarYear","calendarMonthTitle","calendarGrid","calendarLoading","eventTypeFilter","eventStatusFilter","eventClassFilter","summaryMonth","summaryScheduled","summaryCompleted","summaryCanceled","upcomingList","upcomingEmpty","eventFormModal","eventFormModalTitle","eventFormClose","eventFormCancel","eventForm","eventId","eventTitle","eventType","eventClass","eventDate","eventTimeStart","eventTimeEnd","eventLocation","eventDescription","eventSubmitButton","eventViewModal","eventViewClose","viewEventIcon","viewEventType","viewEventStatus","viewEventTitle","viewEventDate","viewEventTime","viewEventClass","viewEventLocation","viewEventDescription","viewEventCreator","eventViewActions","editEventButton","completeEventButton","cancelEventButton"].forEach(id=>E[id]=$(id));return Object.values(E).every(Boolean);
+  ["newEventButton","previousMonthButton","nextMonthButton","todayButton","calendarYear","calendarMonthTitle","calendarGrid","calendarLoading","eventTypeFilter","eventStatusFilter","eventClassFilter","summaryMonth","summaryScheduled","summaryCompleted","summaryCanceled","upcomingList","upcomingEmpty","eventFormModal","eventFormModalTitle","eventFormClose","eventFormCancel","eventForm","eventId","eventTitle","eventType","eventClass","eventDate","eventTimeStart","eventTimeEnd","eventLocation","eventDescription","eventSubmitButton","eventViewModal","eventViewClose","viewEventIcon","viewEventType","viewEventStatus","viewEventTitle","viewEventDate","viewEventTime","viewEventClass","viewEventLocation","viewEventDescription","viewEventCreator","eventViewActions","editEventButton","completeEventButton","cancelEventButton","calendarConfirmationModal","calendarConfirmationIcon","calendarConfirmationTitle","calendarConfirmationMessage","calendarConfirmationClose","calendarConfirmationCancel","calendarConfirmationConfirm"].forEach(id=>E[id]=$(id));return Object.values(E).every(Boolean);
 }
-async function init(){if(!window.PrimeWaySecretaria)return;const session=await window.PrimeWaySecretaria.ensureSecretary();if(!session||!collect())return;window.PrimeWaySecretaria.bindLogout();bind();await load();}
+async function init(){if(!window.PrimeWaySecretaria)return;const session=await window.PrimeWaySecretaria.ensureSecretary();if(!session)return;ensureConfirmationModal();if(!collect())return;window.PrimeWaySecretaria.bindLogout();bind();await load();}
 document.addEventListener("DOMContentLoaded",init);
 })();
