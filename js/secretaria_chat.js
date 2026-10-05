@@ -55,6 +55,7 @@ function initials(name){
 
 function roleLabel(role){
     const labels={
+        admin:"Administrador",
         professor:"Professor(a)",
         aluno:"Aluno",
         responsavel:"Responsável",
@@ -144,7 +145,7 @@ function renderContacts(){
             query
             &&
             !normalize(
-                `${item.name} ${item.description} ${item.role}`
+                `${item.name} ${item.email||""} ${item.description} ${item.role}`
             ).includes(query)
         ){
             return false;
@@ -181,8 +182,12 @@ function renderContacts(){
 
         const description=document.createElement("span");
         description.textContent=
-            item.description
-            || roleLabel(item.role);
+            [
+                item.description||roleLabel(item.role),
+                item.email||""
+            ]
+            .filter(Boolean)
+            .join(" • ");
 
         info.append(name,description);
 
