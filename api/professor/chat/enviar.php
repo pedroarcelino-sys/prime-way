@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../../_bootstrap.php';
+require_once __DIR__ . '/../../_chat_access.php';
 require_once __DIR__ . '/_chat.php';
 
 primewayExigirMetodo('POST');
@@ -73,6 +74,11 @@ try {
 
     $usuarioId =
         (int) $usuario['id'];
+
+    primewayChatExigirDisponivel(
+        $pdo,
+        $usuarioId
+    );
 
     $conversa =
         primewayProfessorChatConversa(
