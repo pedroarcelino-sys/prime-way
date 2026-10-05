@@ -97,6 +97,9 @@ try {
     }
 
     $relativePath = $relativeDirectory . '/' . $generatedName;
+    $messageType = $conteudo !== ''
+        ? 'misto'
+        : ($upload['kind'] === 'audio' ? 'audio' : 'arquivo');
 
     $pdo->beginTransaction();
 
@@ -122,7 +125,7 @@ try {
     $stmtMessage->execute([
         ':conversa_id' => $conversaId,
         ':usuario_id' => $usuarioId,
-        ':tipo' => $conteudo !== '' ? 'misto' : 'arquivo',
+        ':tipo' => $messageType,
         ':conteudo' => $conteudo !== '' ? $conteudo : null
     ]);
 
@@ -191,7 +194,10 @@ try {
     primewayResponderJson([
         'success' => true,
         'messageId' => $messageId,
-        'message' => 'Arquivo enviado com sucesso.'
+        'type' => $messageType,
+        'message' => $messageType === 'audio'
+            ? 'Áudio enviado com sucesso.'
+            : 'Arquivo enviado com sucesso.'
     ], 201);
 
 } catch (RuntimeException $erro) {
