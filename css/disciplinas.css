@@ -1069,6 +1069,7 @@
     .subjects-search,
     .subjects-actions select {
         width: 100%;
+        flex: 0 0 auto;
     }
 
 

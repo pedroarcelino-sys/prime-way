@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${escape(l?.teacher || "—")}${l && !l.teacherAvailable ? '<small class="subject-link-status">Professor indisponível</small>' : ""}</td>
             <td>${l ? `${escape(l.className)} • ${l.schoolYear}${l.classStatus === 'Inativa' ? ' (turma inativa)' : ''}` : 'Disciplina sem turma'}</td>
             <td>${l ? `${l.hours}h` : '—'}</td>
-            <td><span class="status-badge ${s.status === 'Ativa' ? 'active' : 'inactive'}">Disciplina ${escape(s.status.toLowerCase())}</span>${l ? `<span class="subject-link-status">Vínculo ${escape(l.status.toLowerCase())}</span>` : ''}</td>
+            <td><span class="status-badge ${s.status === 'Ativa' ? 'active' : 'inactive'}">Disciplina ${escape(s.status.toLowerCase())}</span>${l ? `<span class="subject-link-status">Vínculo ${l.status === 'Ativa' ? 'ativo' : 'inativo'}</span>` : ''}</td>
             <td><div class="subject-actions-buttons">
             ${button('view','Visualizar','fa-eye',s,l)}${button('identity','Editar disciplina','fa-pen',s,l)}
             ${button('link',l ? 'Editar vínculo' : 'Vincular à turma','fa-link',s,l)}
@@ -101,6 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         switchFields(); show(modal);
     }
     function switchFields() {
+        form.querySelector('[type="submit"] span').textContent = mode === "link" ? "Salvar vínculo" : "Salvar disciplina";
         for (const [id, enabled] of [["#subjectIdentityFields",mode === "identity"],["#subjectLinkFields",mode === "link"]]) {
             q(id).hidden = !enabled;
             q(id).querySelectorAll("input,select").forEach(input => { input.disabled = !enabled; });
@@ -127,7 +128,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showView(subject, link) {
         for (const [id,value] of Object.entries({viewSubjectName:subject.name,viewSubjectCode:subject.code,viewSubjectArea:subject.area,
             viewSubjectTeacher:link?.teacher || "—",viewSubjectClass:link ? `${link.className} • ${link.schoolYear}` : "Disciplina sem turma",
-            viewSubjectHours:link ? `${link.hours}h` : "—",viewSubjectStatus:`Disciplina ${subject.status.toLowerCase()}${link ? `; vínculo ${link.status.toLowerCase()}` : ''}`})) q('#'+id).textContent=value;
+            viewSubjectHours:link ? `${link.hours}h` : "—",viewSubjectStatus:`Disciplina ${subject.status.toLowerCase()}${link ? `; vínculo ${link.status === 'Ativa' ? 'ativo' : 'inativo'}` : ''}`})) q('#'+id).textContent=value;
         show(view);
     }
     async function changeStatus(subject, link, target) {
