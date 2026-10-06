@@ -2,9 +2,15 @@
 "use strict";
 
 const AUDIO_EXTENSIONS=new Set(["webm","ogg","mp3","m4a","wav"]);
+const DELIVERY_SYNC_URL="../api/chat/entregas.php";
+const MESSAGE_STATUS_URL="../api/chat/status.php";
+const DELIVERY_REFRESH_MS=12000;
 let pendingMessageId=null;
 let pendingExpiresAt=0;
 let pendingFrame=0;
+let statusRefreshFrame=0;
+let deliveryTimer=null;
+let statusTimer=null;
 
 function ensureCompactLayout(){
     if(document.querySelector('link[data-primeway-chat-compact="1"]'))return;
@@ -12,6 +18,15 @@ function ensureCompactLayout(){
     link.rel="stylesheet";
     link.href="../css/chat_compact_layout.css?v=20261005-1";
     link.dataset.primewayChatCompact="1";
+    document.head.append(link);
+}
+
+function ensureDeliveryStyles(){
+    if(document.querySelector('link[data-primeway-chat-delivery-status="1"]'))return;
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="../css/chat_delivery_status.css?v=20261006-1";
+    link.dataset.primewayChatDeliveryStatus="1";
     document.head.append(link);
 }
 
@@ -179,6 +194,122 @@ function schedulePendingFocus(){
     });
 }
 
+function deliveryStatusLabel(status){
+    if(status==="read")return"Lida";
+    if(status==="delivered")return"Entregue";
+    return"Enviada";
+}
+
+function renderDeliveryStatus(node,status){
+    const normalized=["sent","delivered","read"].includes(status)?status:"sent";
+    const label=deliveryStatusLabel(normalized);
+    node.dataset.status=normalized;
+    node.title=label;
+    node.setAttribute("aria-label",label);
+    node.innerHTML=normalized==="sent"
+        ?'<i class="fa-solid fa-check" aria-hidden="true"></i>'
+        :'<i class="fa-solid fa-check" aria-hidden="true"></i><i class="fa-solid fa-check" aria-hidden="true"></i>';
+}
+
+function ensureStatusNodes(){
+    ensureDeliveryStyles();
+
+    document.querySelectorAll('[data-message-id].own').forEach(message=>{
+        const time=message.querySelector("time");
+        if(!time||time.querySelector(".pw-chat-delivery-status"))return;
+
+        const status=document.createElement("span");
+        status.className="pw-chat-delivery-status";
+        renderDeliveryStatus(status,"sent");
+        time.append(status);
+    });
+}
+
+function visibleOwnMessageIds(){
+    const ids=[];
+    const seen=new Set();
+
+    document.querySelectorAll('[data-message-id].own').forEach(message=>{
+        const id=Number(message.dataset.messageId||0);
+        if(!Number.isInteger(id)||id<=0||seen.has(id)||ids.length>=200)return;
+        seen.add(id);
+        ids.push(id);
+    });
+
+    return ids;
+}
+
+function applyStatuses(statuses){
+    if(!statuses||typeof statuses!=="object")return;
+
+    for(const [id,data] of Object.entries(statuses)){
+        const escaped=window.CSS?.escape?CSS.escape(String(id)):String(id).replace(/["\\]/g,"\\$&");
+        const message=document.querySelector(`[data-message-id="${escaped}"].own`);
+        const statusNode=message?.querySelector(".pw-chat-delivery-status");
+        if(!statusNode)continue;
+        renderDeliveryStatus(statusNode,String(data?.status||"sent"));
+    }
+}
+
+async function refreshDeliveryStatuses(){
+    ensureStatusNodes();
+    const ids=visibleOwnMessageIds();
+    if(ids.length===0)return;
+
+    try{
+        const response=await fetch(
+            `${MESSAGE_STATUS_URL}?messageIds=${encodeURIComponent(ids.join(","))}`,
+            {
+                method:"GET",
+                credentials:"same-origin",
+                cache:"no-store",
+                headers:{Accept:"application/json"}
+            }
+        );
+
+        if(!response.ok)return;
+        const data=await response.json();
+        if(data?.success)applyStatuses(data.statuses);
+    }catch{
+        // Atualização visual silenciosa: o envio continua independente.
+    }
+}
+
+function scheduleStatusRefresh(){
+    if(statusRefreshFrame)return;
+    statusRefreshFrame=window.requestAnimationFrame(()=>{
+        statusRefreshFrame=0;
+        refreshDeliveryStatuses();
+    });
+}
+
+async function syncDeliveries(){
+    try{
+        await fetch(DELIVERY_SYNC_URL,{
+            method:"GET",
+            credentials:"same-origin",
+            cache:"no-store",
+            headers:{Accept:"application/json"}
+        });
+    }catch{
+        // O recibo de entrega não deve interromper o uso do Chat.
+    }
+}
+
+function startDeliveryTracking(){
+    ensureDeliveryStyles();
+    syncDeliveries();
+    scheduleStatusRefresh();
+
+    if(!deliveryTimer){
+        deliveryTimer=window.setInterval(syncDeliveries,DELIVERY_REFRESH_MS);
+    }
+
+    if(!statusTimer){
+        statusTimer=window.setInterval(refreshDeliveryStatuses,DELIVERY_REFRESH_MS);
+    }
+}
+
 // Regras do compositor: áudio e texto nunca pertencem à mesma mensagem.
 document.addEventListener("click",event=>{
     const micButton=event.target.closest?.(".pw-chat-audio-button");
@@ -241,9 +372,16 @@ document.addEventListener("click",event=>{
     if(id)jumpToMessage(id);
 },true);
 
+document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState!=="visible")return;
+    syncDeliveries();
+    scheduleStatusRefresh();
+});
+
 const observer=new MutationObserver(mutations=>{
     let composerChanged=false;
     let messagesChanged=false;
+    let statusChanged=false;
 
     for(const mutation of mutations){
         const target=mutation.target instanceof Element?mutation.target:null;
@@ -277,10 +415,23 @@ const observer=new MutationObserver(mutations=>{
         ){
             messagesChanged=true;
         }
+
+        if(
+            mutation.type==="childList"&&
+            Array.from(mutation.addedNodes||[]).some(node=>
+                node instanceof Element&&(
+                    node.matches?.("[data-message-id]")||
+                    node.querySelector?.("[data-message-id]")
+                )
+            )
+        ){
+            statusChanged=true;
+        }
     }
 
     if(composerChanged)syncAllComposers();
     if(messagesChanged)schedulePendingFocus();
+    if(statusChanged)scheduleStatusRefresh();
 });
 
 observer.observe(document.body,{
@@ -292,5 +443,6 @@ observer.observe(document.body,{
 
 ensureCompactLayout();
 syncAllComposers();
+startDeliveryTracking();
 
 })();
