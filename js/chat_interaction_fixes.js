@@ -150,7 +150,7 @@ function jumpToMessage(messageId){
     if(!id)return false;
 
     const escaped=window.CSS?.escape?CSS.escape(id):id.replace(/["\\]/g,"\\$&");
-    const target=document.querySelector(`[data-message-id="${escaped}"]`);
+    const target=document.querySelector(`.pw-chat-message-decorated[data-message-id="${escaped}"]`);
     if(!target)return false;
 
     const scroller=findScrollableAncestor(target);

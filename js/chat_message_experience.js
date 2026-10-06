@@ -441,7 +441,7 @@ function registerPinnedMessage(container,message){
             const id=banner.dataset.messageId;
             if(!id)return;
 
-            const target=list.querySelector(`[data-message-id="${CSS.escape(id)}"]`);
+            const target=list.querySelector(`.pw-chat-message-decorated[data-message-id="${CSS.escape(id)}"]`);
             if(!target)return;
 
             focusMessageInsideList(list,target,banner);

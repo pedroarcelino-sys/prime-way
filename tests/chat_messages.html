@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Regressão das mensagens — PrimeWay</title>
+<h1>Regressão das mensagens do Chat</h1>
+<p>Teste isolado do navegador, sem banco, autenticação ou microfone.</p>
+<pre id="result">Executando…</pre>
+<div id="messageList" class="test-message-list" style="height:300px;overflow-y:auto"></div>
+<script>
+window.fetch=async()=>new Response('{"success":true,"statuses":{}}',{
+    headers:{"Content-Type":"application/json"}
+});
+</script>
+<script src="../js/chat_message_experience.js"></script>
+<script src="../js/chat_interaction_fixes.js"></script>
+<script>
+(async()=>{
+    const list=document.querySelector("#messageList");
+    const result=document.querySelector("#result");
+    const checks=[];
+    const settle=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+    function check(condition,label){
+        if(!condition)throw new Error(label);
+        checks.push("[OK] "+label);
+    }
+    try{
+        for(let id=1;id<=30;id++){
+            const article=document.createElement("article");
+            article.style.cssText="min-height:60px;margin:10px";
+            article.textContent="Mensagem "+id;
+            window.PrimeWayChatMessageExperience.decorateMessage(article,{
+                id,content:article.textContent,pinned:id===2,own:true
+            });
+            list.append(article);
+        }
+        await settle();
+        list.scrollTop=list.scrollHeight;
+        const banner=list.querySelector(".pw-chat-pinned-banner");
+        banner.click();
+        await settle();
+        const target=list.querySelector('article[data-message-id="2"]');
+        const bounds=list.getBoundingClientRect();
+        const rect=target.getBoundingClientRect();
+        check(rect.top>=bounds.top&&rect.bottom<=bounds.bottom,
+            "Um clique no banner encontra a mensagem antiga");
+        check(target.classList.contains("pw-chat-message-focus"),
+            "O destaque é aplicado à mensagem");
+        check(!banner.classList.contains("pw-chat-message-focus"),
+            "O banner não é confundido com a mensagem");
+        result.textContent=checks.join("\n");
+        result.dataset.status="passed";
+    }catch(error){
+        result.textContent=checks.concat("[FALHA] "+error.message).join("\n");
+        result.dataset.status="failed";
+    }
+})();
+</script>
+</html>
