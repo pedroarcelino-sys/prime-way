@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         requests: []
     };
 
-    // Distância e horário ficam apenas na memória da página.
+    // Distância e precisão ficam apenas na memória da página.
     const liveLocation =
         new Map();
 
@@ -31,6 +31,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let lastSent =
         0;
+
+    let watchGeneration = 0;
+    let pendingPosition = null;
+    let gpsState = "GPS parado";
+    let loadGeneration = 0;
+    let statusVersion = 0;
+    let pageActive = true;
+    let pollTimer = null;
+    const arrivalNotices = new Set();
+    const mapView = window.PrimeWayPickupMap.create(
+        document.querySelector("#pickupMap"), document.querySelector("#pickupMapNotice")
+    );
 
     const activeStatuses = [
         "Aguardando",
@@ -141,6 +153,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     function fillStudents() {
+        const previousSelection = student.value;
         student
             .querySelectorAll(
                 "option:not(:first-child)"
@@ -188,6 +201,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             items.length;
 
         const selected =
+            previousSelection ||
             new URLSearchParams(
                 location.search
             ).get(
@@ -264,257 +278,128 @@ document.addEventListener("DOMContentLoaded", async function () {
             .join("");
     }
 
-    function stopWatch() {
-        if (
-            watchId !== null
-            &&
-            navigator.geolocation
-        ) {
-            navigator.geolocation
-                .clearWatch(
-                    watchId
-                );
-        }
-
-        watchId =
-            null;
-
-        watchedRequestId =
-            null;
-
-        renderActive();
+    function stopWatch(message = "GPS parado", render = true) {
+        watchGeneration++;
+        if (watchId !== null && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        watchedRequestId = null;
+        lastSent = 0;
+        pendingPosition = null;
+        liveLocation.clear();
+        mapView.clearPosition();
+        gpsState = message;
+        if (render) renderActive();
     }
 
-    async function sendPosition(
-        request,
-        position
-    ) {
-        const now =
-            Date.now();
+    function isCurrentWatch(request, generation) {
+        return pageActive && generation === watchGeneration
+            && watchedRequestId === Number(request.id)
+            && state.requests.some(item => Number(item.id) === Number(request.id)
+                && activeStatuses.includes(item.status));
+    }
 
-        if (
-            now - lastSent
-            < 5000
-        ) {
-            return;
-        }
-
-        lastSent =
-            now;
-
-        const {
-            response,
-            data
-        } =
-            await window
-                .PrimeWayResponsavel
-                .requestJson(
-                    UPDATE,
-                    {
-                        requestId:
-                            request.id,
-
-                        latitude:
-                            position
-                                .coords
-                                .latitude,
-
-                        longitude:
-                            position
-                                .coords
-                                .longitude
-                    }
-                );
-
-        if (
-            !response.ok
-            ||
-            !data?.success
-        ) {
-            throw new Error(
-                data?.message
-                ||
-                "Não foi possível processar a localização."
-            );
-        }
-
-        liveLocation.set(
-            Number(
-                request.id
-            ),
-            {
-                distanceMeters:
-                    Number(
-                        data.distanceMeters
-                    ),
-
-                insideRadius:
-                    Boolean(
-                        data.insideRadius
-                    ),
-
-                updatedAt:
-                    new Date()
+    async function sendPosition(request, position, generation) {
+        if (!isCurrentWatch(request, generation)) return;
+        const now = Date.now();
+        if (pendingPosition || (lastSent && now - lastSent < 5000)) return;
+        lastSent = now;
+        const operation = {};
+        pendingPosition = operation;
+        try {
+            const { response, data } = await window.PrimeWayResponsavel.requestJson(UPDATE, {
+                requestId: request.id,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            });
+            // clearWatch não cancela callbacks ou requisições que já estavam em andamento.
+            if (!isCurrentWatch(request, generation)) return;
+            if (!response.ok || !data?.success) {
+                stopWatch(data?.message || "GPS interrompido: não foi possível confirmar a solicitação.");
+                await load();
+                return;
             }
-        );
-
-        const local =
-            state.requests.find(
-                (item) =>
-                    Number(
-                        item.id
-                    )
-                    ===
-                    Number(
-                        request.id
-                    )
-            );
-
-        if (local) {
-            local.status =
-                data.status;
+            const local = state.requests.find(item => Number(item.id) === Number(request.id));
+            const order = ["Aguardando", "No raio", "Preparando", "Liberado", "Cancelado"];
+            // Uma resposta de GPS anterior à consulta de status não regride Preparando/Liberado.
+            if (local && order.indexOf(data.status) >= order.indexOf(local.status)) local.status = data.status;
+            statusVersion++;
+            if (data.staffNotified && !arrivalNotices.has(Number(request.id))) {
+                arrivalNotices.add(Number(request.id));
+                window.PrimeWayFeedback?.success(arrivalMessage(request));
+            }
+            renderActive();
+            renderHistory();
+            await window.PrimeWayResponsavel.refreshNavigationBadges();
+        } catch {
+            if (isCurrentWatch(request, generation)) {
+                stopWatch("GPS interrompido: conexão indisponível. Ative novamente para tentar.");
+            }
+        } finally {
+            if (pendingPosition === operation) pendingPosition = null;
         }
-
-        if (
-            data.staffNotified
-        ) {
-            window.PrimeWayFeedback?.success(
-                "Você entrou no raio configurado. A equipe escolar foi notificada."
-            );
-        }
-
-        renderAll();
-
-        await window
-            .PrimeWayResponsavel
-            .refreshNavigationBadges();
     }
 
-    function geolocationError(
-        error
-    ) {
-        let message =
-            "Não foi possível obter sua localização.";
-
-        if (
-            error?.code
-            === 1
-        ) {
-            message =
-                "Permissão de localização negada. Autorize o navegador para usar a Saída Segura.";
-        } else if (
-            error?.code
-            === 2
-        ) {
-            message =
-                "O dispositivo não conseguiu determinar sua localização agora.";
-        } else if (
-            error?.code
-            === 3
-        ) {
-            message =
-                "O GPS demorou demais para responder. Tente novamente.";
-        }
-
-        window.PrimeWayFeedback?.error(
-            message
-        );
+    function arrivalMessage(request) {
+        return `Você entrou no raio da escola. A equipe foi avisada. Estamos preparando ${request.studentName} para a retirada.`;
     }
 
-    function startWatch(
-        request
-    ) {
-        if (
-            !navigator.geolocation
-        ) {
-            window.PrimeWayFeedback?.error(
-                "Este navegador não oferece suporte à geolocalização."
-            );
+    function geolocationError(error) {
+        let message = "GPS indisponível. Tente novamente.";
+        if (error?.code === 1) message = "Permissão negada. Autorize a localização no navegador e tente novamente.";
+        else if (error?.code === 3) message = "GPS indisponível: tempo de espera esgotado. Tente novamente.";
+        stopWatch(message);
+        window.PrimeWayFeedback?.error(message);
+    }
 
+    function startWatch(request) {
+        if (!navigator.geolocation) {
+            stopWatch("GPS indisponível: este navegador não oferece geolocalização.");
             return;
         }
-
-        if (
-            watchId !== null
-        ) {
-            return;
-        }
-
-        watchedRequestId =
-            Number(
-                request.id
-            );
-
-        window.PrimeWayFeedback?.info(
-            "Aguardando a localização real do dispositivo..."
-        );
-
-        watchId =
-            navigator.geolocation
-                .watchPosition(
-                    (position) => {
-                        sendPosition(
-                            request,
-                            position
-                        ).catch(
-                            (error) =>
-                                window.PrimeWayFeedback?.error(
-                                    error?.message
-                                    ||
-                                    "Não foi possível processar a localização."
-                                )
-                        );
-                    },
-
-                    geolocationError,
-
-                    {
-                        enableHighAccuracy:
-                            true,
-
-                        timeout:
-                            20000,
-
-                        maximumAge:
-                            3000
-                    }
-                );
-
+        if (!state.location || !activeStatuses.includes(request.status) || !pageActive) return;
+        if (watchId !== null) return;
+        watchedRequestId = Number(request.id);
+        const generation = ++watchGeneration;
+        gpsState = "Aguardando GPS";
         renderActive();
+        try {
+            watchId = navigator.geolocation.watchPosition(position => {
+                if (!isCurrentWatch(request, generation)) return;
+                const { latitude, longitude, accuracy } = position.coords;
+                if (!Number.isFinite(latitude) || !Number.isFinite(longitude)
+                    || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+                    geolocationError({ code: 2 });
+                    return;
+                }
+                const distance = window.PrimeWayPickupMap.distanceMeters(latitude, longitude, state.location);
+                liveLocation.set(Number(request.id), {
+                    distanceMeters: distance,
+                    proximity: window.PrimeWayPickupMap.proximity(distance, state.location.radiusMeters),
+                    accuracy: Number.isFinite(accuracy) && accuracy >= 0 ? accuracy : null
+                });
+                mapView.update(latitude, longitude);
+                gpsState = "Localização ativa";
+                renderActive();
+                sendPosition(request, position, generation);
+            }, error => {
+                if (isCurrentWatch(request, generation)) geolocationError(error);
+            }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 3000 });
+            renderActive();
+        } catch { geolocationError({ code: 2 }); }
     }
 
     function renderActive() {
-        const request =
-            state.requests.find(
-                (item) =>
-                    activeStatuses
-                        .includes(
-                            item.status
-                        )
-            );
-
-        q(
-            "#activeCount"
-        ).textContent =
-            request
-                ? 1
-                : 0;
-
+        const active = state.requests.filter(item => activeStatuses.includes(item.status));
+        const request = active[0] || state.requests[0];
+        if (watchedRequestId !== null && (!active.length || Number(active[0].id) !== watchedRequestId)) {
+            stopWatch("GPS parado: solicitação encerrada ou substituída.", false);
+        }
+        q("#activeCount").textContent = active.length;
+        const trackingInfo = q("#pickupTrackingInfo");
+        trackingInfo.replaceChildren();
         if (!request) {
-            activeBox.className =
-                "guardian-empty";
-
-            activeBox.innerHTML =
-                '<i class="fa-solid fa-route"></i>'
-                +
-                'Nenhuma solicitação ativa.';
-
-            if (
-                watchId !== null
-            ) {
-                stopWatch();
-            }
-
+            activeBox.className = "guardian-empty";
+            activeBox.textContent = "Nenhuma solicitação ativa.";
             return;
         }
 
@@ -604,41 +489,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )
             );
 
-        strong.textContent =
-            live
-                ? `${Math.round(
-                    live.distanceMeters
-                )} m da escola`
-                : "GPS ainda não iniciado";
-
-        const small =
-            document.createElement(
-                "span"
-            );
-
-        small.textContent =
-            live
-                ? `Última leitura nesta página: ${
-                    new Intl.DateTimeFormat(
-                        "pt-BR",
-                        {
-                            hour:
-                                "2-digit",
-                            minute:
-                                "2-digit",
-                            second:
-                                "2-digit"
-                        }
-                    ).format(
-                        live.updatedAt
-                    )
-                }. Coordenadas não armazenadas.`
-                : "Ative o GPS para calcular a distância em tempo real.";
-
-        distance.append(
-            strong,
-            small
-        );
+        strong.textContent = live ? `Distância: ${Math.round(live.distanceMeters)} m` : "Distância: —";
+        const proximity = document.createElement("span");
+        proximity.textContent = live ? `Status: ${live.proximity.text}` : "Ative o GPS para acompanhar a distância.";
+        distance.dataset.proximity = live?.proximity.key || "unknown";
+        const gps = document.createElement("span");
+        gps.id = "pickupGpsState";
+        gps.textContent = gpsState;
+        const accuracy = document.createElement("span");
+        accuracy.textContent = live?.accuracy != null ? `Precisão aproximada: ${Math.round(live.accuracy)} m. A confirmação de entrada é feita pela escola.` : "";
+        distance.append(strong, proximity, gps, accuracy);
 
         const actions =
             document.createElement(
@@ -649,7 +509,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             "pickup-actions";
 
         const isWatching =
-            watchId !== null
+            watchedRequestId !== null
             &&
             watchedRequestId
             ===
@@ -662,6 +522,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "button"
             );
 
+        gpsButton.id = "pickupGpsButton";
+        gpsButton.disabled = !activeStatuses.includes(request.status) || !state.location;
         gpsButton.type =
             "button";
 
@@ -693,6 +555,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "button"
             );
 
+        cancelButton.id = "pickupCancelButton";
+        cancelButton.disabled = !activeStatuses.includes(request.status);
         cancelButton.type =
             "button";
 
@@ -728,12 +592,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                 request.status
             );
 
-        activeBox.append(
-            top,
-            distance,
-            actions,
-            steps
-        );
+        activeBox.append(top);
+        if (activeStatuses.includes(request.status)
+            && (request.enteredRadiusAt || arrivalNotices.has(Number(request.id)))) {
+            const notice = document.createElement("p");
+            notice.className = "pickup-arrival";
+            notice.textContent = arrivalMessage(request);
+            trackingInfo.append(notice);
+        }
+        trackingInfo.append(distance, actions, steps);
     }
 
     function renderHistory() {
@@ -854,6 +721,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     function renderAll() {
         configUI();
+        if (state.location) mapView.configure(state.location);
         fillStudents();
         renderActive();
         renderHistory();
@@ -884,6 +752,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
 
+        stopWatch();
+
         try {
             const {
                 response,
@@ -911,12 +781,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
             }
 
-            liveLocation.delete(
-                Number(
-                    request.id
-                )
-            );
-
+            const local = state.requests.find(item => Number(item.id) === Number(request.id));
+            if (local) local.status = "Cancelado";
+            statusVersion++;
             stopWatch();
 
             window.PrimeWayFeedback?.success(
@@ -1025,6 +892,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     async function load() {
+        const generation = ++loadGeneration;
+        const version = statusVersion;
         try {
             const {
                 response,
@@ -1048,6 +917,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 );
             }
 
+            if (!pageActive || generation !== loadGeneration || version !== statusVersion) return;
+
             state = {
                 students:
                     data.students
@@ -1069,6 +940,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 .refreshNavigationBadges();
 
         } catch (error) {
+            if (!pageActive || generation !== loadGeneration || version !== statusVersion) return;
+            if (watchedRequestId !== null) stopWatch("GPS interrompido: não foi possível atualizar a solicitação.");
             console.error(
                 error
             );
@@ -1101,19 +974,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await load();
 
-    window.addEventListener(
-        "beforeunload",
-        () => {
-            if (
-                watchId !== null
-                &&
-                navigator.geolocation
-            ) {
-                navigator.geolocation
-                    .clearWatch(
-                        watchId
-                    );
-            }
+    function leavePage() {
+        pageActive = false;
+        loadGeneration++;
+        clearInterval(pollTimer);
+        stopWatch();
+    }
+    pollTimer = setInterval(load, 7000);
+    window.addEventListener("pagehide", leavePage);
+    window.addEventListener("beforeunload", leavePage);
+    q("#logoutButton")?.addEventListener("click", () => stopWatch(), { capture: true });
+    window.addEventListener("pageshow", event => {
+        if (event.persisted) {
+            pageActive = true;
+            clearInterval(pollTimer);
+            pollTimer = setInterval(load, 7000);
+            load();
         }
-    );
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && pageActive) load();
+    });
 });

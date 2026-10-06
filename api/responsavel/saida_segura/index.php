@@ -67,6 +67,8 @@ try {
         'location' => [
             'name' => $config['nome'],
             'configured' => true,
+            'latitude' => $config['latitude'],
+            'longitude' => $config['longitude'],
             'radiusMeters' => $config['raio_metros']
         ],
         'requests' => $requests
