@@ -96,6 +96,11 @@ Os testes `tests/chat_messages.html` e `tests/chat_visibility.html` verificam
 mensagens fixadas, preservação do player/scroll e leitura em segundo plano.
 Veja os resultados e o roteiro autenticado em [Revisão do Chat](docs/chat-revisao-2026-10-06.md).
 
+Para a Fase 1 do mapa da Saída Segura, execute `php tests/saida_segura_backend.php`
+e abra `tests/saida_segura_mapa.html` pelo servidor local. O parâmetro `?real=1`
+testa também o Leaflet real, com GPS e APIs simulados. Resultados, privacidade e
+roteiro autenticado: [Mapa da Saída Segura](docs/saida-segura-mapa-fase-1.md).
+
 Com o banco local configurado, a consulta relacional de Alunos pode ser testada sem alterar dados:
 
 ```powershell
