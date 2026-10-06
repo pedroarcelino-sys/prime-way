@@ -71,8 +71,22 @@ function normalizeHistory(array $data): array {
     return $data;
 }
 $before=$pdo->query('SELECT id,status FROM disciplinas ORDER BY id')->fetchAll();
+$deliveriesBefore=$pdo->query('SELECT * FROM entregas_atividades ORDER BY id')->fetchAll();
 $pdo->beginTransaction();
 try {
+    $stmt=$pdo->prepare('SELECT id FROM entregas_atividades WHERE atividade_id=? AND matricula_id=?');
+    $stmt->execute([$params['atividade_id'],$params['matricula_id']]);
+    $params['entrega_id']=(int)$stmt->fetchColumn();
+    if(!$params['entrega_id']) {
+        $pdo->prepare("INSERT INTO entregas_atividades (atividade_id,matricula_id,status) VALUES (?,?,'Entregue')")
+            ->execute([$params['atividade_id'],$params['matricula_id']]);
+        $params['entrega_id']=(int)$pdo->lastInsertId();
+    }
+    $correctionSql=routeSql('api/professor/atividades/corrigir.php','FROM entregas_atividades ea');
+    checkHistory(count(rows($pdo,$correctionSql,$params))===1,'correção encontra entrega com vínculo ativo');
+    // A entrega temporária também participa dos contadores das consultas de histórico.
+    foreach ($baseline as &$case) $case[2]=rows($pdo,$case[1],$params);
+    unset($case);
     // Disciplina e vínculo inativos são cenários independentes.
     foreach (['disciplinas'=>$link['disciplina_id'],'turma_disciplinas'=>$link['id']] as $table=>$id) {
         $pdo->prepare("UPDATE $table SET status='Inativa' WHERE id=?")->execute([$id]);
@@ -83,6 +97,7 @@ try {
         }
         foreach (['api/professor/notas/salvar_notas.php'=>'FROM avaliacoes av',
             'api/professor/frequencia/salvar_aula.php'=>'FROM turma_disciplinas td',
+            'api/professor/atividades/corrigir.php'=>'FROM entregas_atividades ea',
             'api/professor/frequencia/salvar_frequencia.php'=>'FROM aulas au'] as $file=>$marker) {
             checkHistory(rows($pdo,routeSql($file,$marker),$params)===[], "$table inativa bloqueia escrita: $file");
         }
@@ -90,4 +105,5 @@ try {
     }
 } finally { $pdo->rollBack(); }
 checkHistory($before===$pdo->query('SELECT id,status FROM disciplinas ORDER BY id')->fetchAll(), 'status originais preservados por rollback');
+checkHistory($deliveriesBefore===$pdo->query('SELECT * FROM entregas_atividades ORDER BY id')->fetchAll(), 'entregas originais preservadas por rollback');
 echo "$total verificações de histórico aprovadas.\n";
