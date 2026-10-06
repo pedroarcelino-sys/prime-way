@@ -182,14 +182,8 @@ document.addEventListener("DOMContentLoaded",async function(){
         }
     }
 
-    function renderMessages(data){
-        messageList.replaceChildren();
-        if(!Array.isArray(data.messages)||!data.messages.length){
-            messageList.innerHTML='<div class="secretary-chat-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>';
-            return;
-        }
-
-        for(const item of data.messages){
+    function renderMessages(data,followEnd=false){
+        Experience.updateMessageList(messageList,data.messages,item=>{
             const article=document.createElement("article");
             article.className=`secretary-message ${item.own?"own":"other"}`;
             const sender=document.createElement("strong");
@@ -210,6 +204,7 @@ document.addEventListener("DOMContentLoaded",async function(){
 
             Experience.decorateMessage(article,item,{
                 csrfToken:session?.csrfToken||"",
+                managePinnedBanner:false,
                 onChanged:async()=>{
                     if(activeConversationId){
                         await loadMessages(activeConversationId,true);
@@ -218,13 +213,12 @@ document.addEventListener("DOMContentLoaded",async function(){
                 },
                 onError:message=>window.PrimeWayFeedback?.error(message)
             });
-
-            messageList.append(article);
-        }
-        messageList.scrollTop=messageList.scrollHeight;
+            return article;
+        },{conversationId:activeConversationId,emptyHtml:'<div class="secretary-chat-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>',followEnd});
     }
 
     async function markConversationRead(conversationId){
+        if(document.visibilityState!=="visible"||Number(activeConversationId)!==Number(conversationId))return;
         const{response}=await window.PrimeWaySecretaria.requestJson(READ_URL,{conversationId});
         if(response.ok){
             const item=conversations.find(conversation=>Number(conversation.id)===Number(conversationId));
@@ -244,7 +238,7 @@ document.addEventListener("DOMContentLoaded",async function(){
             conversationTitle.textContent=activeConversation?.title||"Conversa";
             conversationRole.textContent=`${roleLabel(activeConversation?.role)}${activeConversation?.suspended?" • Chat suspenso":""}`;
             updateSuspensionControls();
-            renderMessages(data);
+            renderMessages(data,!quiet);
             await markConversationRead(conversationId);
         }catch(error){
             if(!quiet)window.PrimeWayFeedback?.error(error?.message||"Não foi possível carregar as mensagens.");
@@ -390,6 +384,10 @@ document.addEventListener("DOMContentLoaded",async function(){
         await loadIndex(true);
         if(activeConversationId)await loadMessages(activeConversationId,true);
     },15000);
+
+    document.addEventListener("visibilitychange",()=>{
+        if(document.visibilityState==="visible"&&activeConversationId)loadMessages(activeConversationId,true);
+    });
 
     window.addEventListener("beforeunload",()=>{
         if(refreshTimer)window.clearInterval(refreshTimer);

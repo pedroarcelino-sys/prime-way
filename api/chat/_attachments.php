@@ -155,6 +155,20 @@ function primewayChatValidateUpload(array $file): array
     ];
 }
 
+function primewayChatAttachmentMessageType(string $kind, string $content): string
+{
+    if ($kind === 'audio') {
+        if (trim($content) !== '') {
+            throw new RuntimeException(
+                'Envie o áudio separadamente, sem texto na mesma mensagem.'
+            );
+        }
+        return 'audio';
+    }
+
+    return trim($content) !== '' ? 'misto' : 'arquivo';
+}
+
 function primewayChatAttachmentKind(string $mimeType): string
 {
     if (str_starts_with($mimeType, 'image/')) {

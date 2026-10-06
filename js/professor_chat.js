@@ -190,15 +190,8 @@ function renderContacts(){
     }
 }
 
-function renderMessages(data){
-    messageList.replaceChildren();
-
-    if(!Array.isArray(data.messages)||!data.messages.length){
-        messageList.innerHTML='<div class="professor-empty"><i class="fa-regular fa-comments" aria-hidden="true"></i>Nenhuma mensagem nesta conversa.</div>';
-        return;
-    }
-
-    for(const item of data.messages){
+function renderMessages(data,followEnd=false){
+    Experience.updateMessageList(messageList,data.messages,item=>{
         const article=document.createElement("article");
         article.className=`teacher-message ${item.own?"own":"other"}`;
 
@@ -220,6 +213,7 @@ function renderMessages(data){
 
         Experience.decorateMessage(article,item,{
             csrfToken:session?.csrfToken||"",
+            managePinnedBanner:false,
             onChanged:async()=>{
                 if(activeConversationId){
                     await loadMessages(activeConversationId,true);
@@ -228,14 +222,12 @@ function renderMessages(data){
             },
             onError:message=>window.PrimeWayFeedback?.error(message)
         });
-
-        messageList.append(article);
-    }
-
-    messageList.scrollTop=messageList.scrollHeight;
+        return article;
+    },{conversationId:activeConversationId,emptyHtml:'<div class="professor-empty"><i class="fa-regular fa-comments" aria-hidden="true"></i>Nenhuma mensagem nesta conversa.</div>',followEnd});
 }
 
 async function markConversationRead(conversationId){
+    if(document.visibilityState!=="visible"||Number(activeConversationId)!==Number(conversationId))return;
     const{response}=await window.PrimeWayProfessor.requestJson(READ_URL,{conversationId});
     if(response.ok){
         const item=conversations.find(conversation=>Number(conversation.id)===Number(conversationId));
@@ -252,7 +244,7 @@ async function loadMessages(conversationId,quiet=false){
         if(Number(activeConversationId)!==Number(conversationId))return;
         conversationTitle.textContent=data.conversation.title;
         conversationRole.textContent=roleLabel(data.conversation.role);
-        renderMessages(data);
+        renderMessages(data,!quiet);
         await markConversationRead(conversationId);
     }catch(error){
         if(!quiet)window.PrimeWayFeedback?.error(error?.message||"Não foi possível carregar as mensagens.");
@@ -346,6 +338,10 @@ refreshTimer=window.setInterval(async()=>{
     await loadIndex(true);
     if(activeConversationId)await loadMessages(activeConversationId,true);
 },15000);
+
+document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible"&&activeConversationId)loadMessages(activeConversationId,true);
+});
 
 window.addEventListener("beforeunload",()=>{
     if(refreshTimer)window.clearInterval(refreshTimer);

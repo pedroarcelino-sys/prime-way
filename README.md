@@ -92,6 +92,10 @@ Para verificar a regressão do travamento do áudio, abra
 O teste usa o DOM e o `MutationObserver` do navegador, intercepta as consultas
 de entrega e não acessa o banco nem o microfone. Todos os resultados devem ser `[OK]`.
 
+Os testes `tests/chat_messages.html` e `tests/chat_visibility.html` verificam
+mensagens fixadas, preservação do player/scroll e leitura em segundo plano.
+Veja os resultados e o roteiro autenticado em [Revisão do Chat](docs/chat-revisao-2026-10-06.md).
+
 Com o banco local configurado, a consulta relacional de Alunos pode ser testada sem alterar dados:
 
 ```powershell
