@@ -197,6 +197,32 @@ try {
         'cache de Alunos não é duplicado no estado genérico'
     );
 
+    require_once $raiz . '/api/chat/_attachments.php';
+
+    verificar(
+        primewayChatAttachmentMessageType('audio', '') === 'audio',
+        'áudio sem texto mantém o tipo audio'
+    );
+
+    $audioComTextoRejeitado = false;
+    try {
+        primewayChatAttachmentMessageType('audio', 'Texto junto com áudio');
+    } catch (RuntimeException $erro) {
+        $audioComTextoRejeitado = true;
+    }
+    verificar($audioComTextoRejeitado, 'áudio com texto é rejeitado no backend');
+
+    foreach (['image', 'pdf', 'document'] as $kind) {
+        verificar(
+            primewayChatAttachmentMessageType($kind, '') === 'arquivo',
+            $kind . ' sem legenda mantém o tipo arquivo'
+        );
+        verificar(
+            primewayChatAttachmentMessageType($kind, 'Legenda') === 'misto',
+            $kind . ' permite legenda sem afetar a regra de áudio'
+        );
+    }
+
     echo sprintf(
         "%s%d verificações concluídas com sucesso.%s",
         PHP_EOL,

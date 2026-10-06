@@ -87,13 +87,7 @@ try {
 
     $upload = primewayChatValidateUpload($_FILES['file']);
 
-    // Áudio é sempre uma mensagem independente. Não aceitamos texto junto
-    // nem mesmo em requisições manipuladas fora da interface.
-    if ($upload['kind'] === 'audio' && $conteudo !== '') {
-        throw new RuntimeException(
-            'Envie o áudio separadamente, sem texto na mesma mensagem.'
-        );
-    }
+    $messageType = primewayChatAttachmentMessageType($upload['kind'], $conteudo);
 
     $relativeDirectory = date('Y/m');
     $directory = primewayChatEnsureStorageDirectory($relativeDirectory);
@@ -105,10 +99,6 @@ try {
     }
 
     $relativePath = $relativeDirectory . '/' . $generatedName;
-    $messageType = $upload['kind'] === 'audio'
-        ? 'audio'
-        : ($conteudo !== '' ? 'misto' : 'arquivo');
-
     $pdo->beginTransaction();
 
     $stmtMessage = $pdo->prepare(

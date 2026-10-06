@@ -69,6 +69,7 @@ try {
     }
 
     $upload = primewayChatValidateUpload($_FILES['file']);
+    $messageType = primewayChatAttachmentMessageType($upload['kind'], $conteudo);
 
     $relativeDirectory = date('Y/m');
     $directory = primewayChatEnsureStorageDirectory($relativeDirectory);
@@ -105,7 +106,7 @@ try {
     $stmtMessage->execute([
         ':conversa_id' => $conversaId,
         ':usuario_id' => $usuarioId,
-        ':tipo' => $conteudo !== '' ? 'misto' : 'arquivo',
+        ':tipo' => $messageType,
         ':conteudo' => $conteudo !== '' ? $conteudo : null
     ]);
 
