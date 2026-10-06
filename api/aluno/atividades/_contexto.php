@@ -325,6 +325,12 @@ function primewayPermissoesAtividadeAluno(
     array $linha
 ): array {
 
+    if (($linha['vinculo_status'] ?? 'Ativa') !== 'Ativa'
+        || ($linha['disciplina_status'] ?? 'Ativa') !== 'Ativa') {
+        return ['canSaveDraft' => false, 'canSubmit' => false, 'canWithdraw' => false,
+            'canComment' => false, 'canResubmit' => false];
+    }
+
     $atividadePublicada =
         (string) $linha[
             'atividade_status'

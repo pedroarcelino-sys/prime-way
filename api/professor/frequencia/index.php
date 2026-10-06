@@ -66,6 +66,7 @@ try {
             "
                 SELECT
                     td.id,
+                    (td.status = 'Ativa' AND t.status = 'Ativa' AND d.status = 'Ativa') AS disponivel,
                     td.turma_id,
                     td.disciplina_id,
                     td.carga_horaria,
@@ -90,9 +91,9 @@ try {
                 WHERE td.professor_id =
                     :professor_id
 
-                  AND td.status = 'Ativa'
-                  AND t.status = 'Ativa'
-                  AND d.status = 'Ativa'
+
+
+
                   AND t.ano_letivo_id =
                     :ano_letivo_id
 
@@ -147,6 +148,8 @@ try {
 
                 'area' =>
                     (string) $row['area'],
+
+                'available' => (bool) $row['disponivel'],
 
                 'workload' =>
                     (int) $row['carga_horaria']
@@ -398,8 +401,8 @@ try {
                 WHERE td.professor_id =
                     :professor_id
 
-                  AND td.status = 'Ativa'
-                  AND t.status = 'Ativa'
+
+
                   AND t.ano_letivo_id =
                     :ano_letivo_id
 

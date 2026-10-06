@@ -114,6 +114,8 @@ try {
 
                 d.id AS disciplina_id,
                 d.nome AS disciplina_nome,
+                td.status AS vinculo_status,
+                d.status AS disciplina_status,
                 d.codigo AS disciplina_codigo,
 
                 pl.id AS periodo_id,
@@ -241,13 +243,9 @@ try {
                 td.turma_id =
                 :turma_id
 
-                AND
-                td.status =
-                'Ativa'
 
-                AND
-                d.status =
-                'Ativa'
+
+
 
                 AND
                 atv.status IN (

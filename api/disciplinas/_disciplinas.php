@@ -97,6 +97,7 @@ function primewayDisciplinaSalvar(PDO $pdo, array $data): int
     $id = primewayDisciplinaId($data['id'] ?? null, true);
     $name = primewayDisciplinaTexto($data['name'] ?? null, 100, 'um nome');
     $code = mb_strtoupper(primewayDisciplinaTexto($data['code'] ?? null, 20, 'um código'));
+    primewayDisciplinaTexto($code, 20, 'um código');
     if (preg_match('/\s/u', $code)) primewayDisciplinaErro('O código não pode conter espaços.');
     $area = primewayDisciplinaTexto($data['area'] ?? null, 60, 'uma área');
     if (!in_array($area, ['Linguagens', 'Matemática', 'Ciências da Natureza', 'Ciências Humanas', 'Artes', 'Tecnologia'], true)) {

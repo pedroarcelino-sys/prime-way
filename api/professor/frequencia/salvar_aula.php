@@ -243,6 +243,8 @@ try {
                 INNER JOIN turmas t
                     ON t.id = td.turma_id
 
+                INNER JOIN disciplinas d ON d.id = td.disciplina_id
+
                 WHERE td.id =
                     :turma_disciplina_id
 
@@ -251,6 +253,7 @@ try {
 
                   AND td.status = 'Ativa'
                   AND t.status = 'Ativa'
+                  AND d.status = 'Ativa'
 
                 LIMIT 1
             "

@@ -461,7 +461,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         ) {
 
             const label =
-                `${item.className} • ${item.subjectName}`;
+                `${item.className} • ${item.subjectName}${item.available === false ? " (somente histórico)" : ""}`;
 
 
             const filterOption =
@@ -487,6 +487,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 filterOption.cloneNode(
                     true
                 );
+
+            formOption.disabled = item.available === false;
 
             evaluationClassSubject
                 ?.append(
@@ -1842,8 +1844,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         newEvaluationButton.disabled =
-            state.classSubjects.length ===
-                0 ||
+            !state.classSubjects.some(item => item.available !== false) ||
             state.periods.length ===
                 0;
 

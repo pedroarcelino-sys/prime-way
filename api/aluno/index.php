@@ -153,7 +153,7 @@ try {
              INNER JOIN disciplinas d ON d.id = td.disciplina_id
              LEFT JOIN aulas au ON au.turma_disciplina_id = td.id AND au.status = 'Realizada'
              LEFT JOIN frequencias f ON f.aula_id = au.id AND f.matricula_id = :matricula_id
-             WHERE td.turma_id = :turma_id AND td.status = 'Ativa'
+             WHERE td.turma_id = :turma_id
              GROUP BY td.id, d.nome
              ORDER BY d.nome"
         );

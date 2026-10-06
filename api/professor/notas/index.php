@@ -171,6 +171,7 @@ try {
             "
                 SELECT
                     td.id AS turma_disciplina_id,
+                    (td.status = 'Ativa' AND t.status = 'Ativa' AND d.status = 'Ativa') AS disponivel,
 
                     t.id AS turma_id,
                     t.nome AS turma_nome,
@@ -194,9 +195,9 @@ try {
                     ON d.id = td.disciplina_id
 
                 WHERE td.professor_id = :professor_id
-                  AND td.status = 'Ativa'
-                  AND t.status = 'Ativa'
-                  AND d.status = 'Ativa'
+
+
+
                   AND t.ano_letivo_id = :ano_letivo_id
 
                 ORDER BY
@@ -279,7 +280,9 @@ try {
                     'disciplina_area'
                 ],
 
-            'workload' =>
+            'available' => (bool) $linha['disponivel'],
+
+                'workload' =>
                 (int) $linha[
                     'carga_horaria'
                 ]
@@ -658,8 +661,8 @@ try {
                 WHERE td.professor_id =
                     :professor_id
 
-                  AND td.status = 'Ativa'
-                  AND t.status = 'Ativa'
+
+
                   AND t.ano_letivo_id =
                     :ano_letivo_id
 
