@@ -1,0 +1,26 @@
+.pw-chat-delivery-status {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 5px;
+    color: #8f99aa;
+    font-size: 7px;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.pw-chat-delivery-status i {
+    display: inline-block;
+    line-height: 1;
+}
+
+.pw-chat-delivery-status i + i {
+    margin-left: -3px;
+}
+
+.pw-chat-delivery-status[data-status="read"] {
+    color: #3f7fdc;
+}
+
+.pw-chat-delivery-status[data-status="sent"] i:first-child {
+    margin-right: 0;
+}
