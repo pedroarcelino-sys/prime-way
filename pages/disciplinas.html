@@ -29,7 +29,7 @@
 
     <link
         rel="stylesheet"
-        href="../css/disciplinas.css"
+        href="../css/disciplinas.css?v=20261006-2"
     >
 
 
@@ -314,7 +314,7 @@
                 <div>
 
                     <span class="section-label">
-                        Secretaria
+                        Administração
                     </span>
 
                     <h1>
@@ -347,6 +347,7 @@
                 </button>
 
 
+                <button type="button" class="secondary-button" id="newLinkButton">Vincular disciplina à turma</button>
             </header>
 
 
@@ -726,7 +727,7 @@
                 <div>
 
                     <span class="section-label">
-                        Secretaria
+                        Administração
                     </span>
 
                     <h2 id="subjectModalTitle">
@@ -762,196 +763,31 @@
             >
 
 
-                <input
-                    type="hidden"
-                    id="subjectId"
-                >
-
-
-                <!-- NOME / CÓDIGO -->
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label for="subjectName">
-                            Nome da disciplina
-                        </label>
-
-                        <input
-                            type="text"
-                            id="subjectName"
-                            required
-                            autocomplete="off"
-                            placeholder="Ex: Matemática"
-                        >
-
+                <input type="hidden" id="subjectId">
+                <input type="hidden" id="subjectLinkId">
+                <div id="subjectIdentityFields">
+                    <div class="form-grid">
+                        <div class="form-group"><label for="subjectName">Nome da disciplina</label><input id="subjectName" maxlength="100" required autocomplete="off"></div>
+                        <div class="form-group"><label for="subjectCode">Código único</label><input id="subjectCode" maxlength="20" required autocomplete="off" placeholder="Ex: MAT01"></div>
                     </div>
-
-
-                    <div class="form-group">
-
-                        <label for="subjectCode">
-                            Código
-                        </label>
-
-                        <input
-                            type="text"
-                            id="subjectCode"
-                            required
-                            autocomplete="off"
-                            placeholder="Ex: MAT01"
-                        >
-
+                    <div class="form-grid">
+                        <div class="form-group"><label for="subjectArea">Área de conhecimento</label><select id="subjectArea" required><option value="">Selecione</option><option>Linguagens</option><option>Matemática</option><option>Ciências da Natureza</option><option>Ciências Humanas</option><option>Artes</option><option>Tecnologia</option></select></div>
+                        <div class="form-group"><label for="subjectStatus">Status da disciplina</label><select id="subjectStatus"><option>Ativa</option><option>Inativa</option></select></div>
                     </div>
-
-
+                    <p class="subject-form-note">O cadastro da disciplina é compartilhado entre suas turmas. Os vínculos são gerenciados separadamente.</p>
                 </div>
-
-
-                <!-- ÁREA / CARGA HORÁRIA -->
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label for="subjectArea">
-                            Área de conhecimento
-                        </label>
-
-                        <select
-                            id="subjectArea"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="Linguagens">
-                                Linguagens
-                            </option>
-
-                            <option value="Matemática">
-                                Matemática
-                            </option>
-
-                            <option value="Ciências da Natureza">
-                                Ciências da Natureza
-                            </option>
-
-                            <option value="Ciências Humanas">
-                                Ciências Humanas
-                            </option>
-
-                            <option value="Artes">
-                                Artes
-                            </option>
-
-                            <option value="Tecnologia">
-                                Tecnologia
-                            </option>
-
-                        </select>
-
+                <div id="subjectLinkFields" hidden>
+                    <div class="form-group"><label for="linkSubject">Disciplina cadastrada</label><select id="linkSubject" required></select></div>
+                    <div class="form-grid">
+                        <div class="form-group"><label for="subjectTeacher">Professor</label><select id="subjectTeacher" required></select></div>
+                        <div class="form-group"><label for="subjectClass">Turma</label><select id="subjectClass" required></select></div>
                     </div>
-
-
-                    <div class="form-group">
-
-                        <label for="subjectHours">
-                            Carga horária anual
-                        </label>
-
-                        <input
-                            type="number"
-                            id="subjectHours"
-                            min="1"
-                            max="1000"
-                            step="1"
-                            required
-                            inputmode="numeric"
-                            placeholder="Ex: 160"
-                        >
-
+                    <div class="form-grid">
+                        <div class="form-group"><label for="subjectHours">Carga horária anual do vínculo</label><input type="number" id="subjectHours" min="1" max="1000" step="1" required></div>
+                        <div class="form-group"><label for="linkStatus">Status do vínculo</label><select id="linkStatus"><option>Ativa</option><option>Inativa</option></select></div>
                     </div>
-
-
+                    <p class="subject-form-note" id="subjectLinkNotice"></p>
                 </div>
-
-
-                <!-- PROFESSOR / TURMA -->
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label for="subjectTeacher">
-                            Professor responsável
-                        </label>
-
-                        <input
-                            type="text"
-                            id="subjectTeacher"
-                            required
-                            autocomplete="off"
-                            placeholder="Nome do professor"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="subjectClass">
-                            Turma
-                        </label>
-
-                        <select
-                            id="subjectClass"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione uma turma
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                </div>
-
-
-                <!-- STATUS -->
-
-                <div class="form-group">
-
-                    <label for="subjectStatus">
-                        Status
-                    </label>
-
-                    <select
-                        id="subjectStatus"
-                        required
-                    >
-
-                        <option value="Ativa">
-                            Ativa
-                        </option>
-
-                        <option value="Inativa">
-                            Inativa
-                        </option>
-
-                    </select>
-
-                </div>
-
 
                 <!-- AÇÕES -->
 
@@ -979,7 +815,7 @@
                             aria-hidden="true"
                         ></i>
 
-                        Salvar disciplina
+                        <span>Salvar disciplina</span>
 
                     </button>
 
@@ -1175,8 +1011,8 @@
                         JAVASCRIPT
     =================================================== -->
 
-    <script src="../js/core.js?v=20260915-4"></script>
-    <script src="../js/disciplinas.js?v=20260921-1"></script>
+    <script src="../js/core.js?v=20261006-1"></script>
+    <script src="../js/disciplinas.js?v=20261006-2"></script>
 
 
 </body>

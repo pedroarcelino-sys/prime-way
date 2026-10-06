@@ -53,6 +53,8 @@ function primewayObterAtividadeAluno(
 
                 d.id AS disciplina_id,
                 d.nome AS disciplina_nome,
+                td.status AS vinculo_status,
+                d.status AS disciplina_status,
 
                 CASE
                     WHEN
@@ -80,13 +82,9 @@ function primewayObterAtividadeAluno(
                 td.turma_id =
                 :turma_id
 
-                AND
-                td.status =
-                'Ativa'
 
-                AND
-                d.status =
-                'Ativa'
+
+
 
                 AND
                 atv.status IN (
@@ -129,6 +127,13 @@ function primewayObterAtividadeAluno(
         );
     }
 
+
+    // Leitura e anexos históricos permanecem acessíveis; novas escritas exigem vínculo ativo.
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET'
+        && ($atividade['vinculo_status'] !== 'Ativa' || $atividade['disciplina_status'] !== 'Ativa')) {
+        primewayResponderJson(['success' => false,
+            'message' => 'Disciplina ou vínculo inativo. O histórico continua disponível para consulta.'], 409);
+    }
 
     return $atividade;
 }

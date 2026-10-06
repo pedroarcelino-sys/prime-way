@@ -7,7 +7,6 @@
     const DATA_MODEL_VERSION = "database-first-v1";
     const MANAGED_STORAGE_KEYS = new Set([
         "primewayGuardians",
-        "primewaySubjects",
         "primewayClasses",
         "primewayCalendarEvents",
         "primewayNotifications",
@@ -31,7 +30,6 @@
         const legacyKeys = [
             "primewayStudents",
             "primewayGuardians",
-            "primewaySubjects",
             "primewayClasses",
             "primewayCalendarEvents",
             "primewayNotifications",

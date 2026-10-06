@@ -1069,6 +1069,7 @@
     .subjects-search,
     .subjects-actions select {
         width: 100%;
+        flex: 0 0 auto;
     }
 
 
@@ -1199,3 +1200,11 @@
     }
 
 }
+.subject-form [hidden]{display:none!important}
+#subjectIdentityFields,#subjectLinkFields{display:grid;gap:18px;grid-column:1/-1}
+.subject-form-note{font:12px/1.5 Arial,sans-serif;color:var(--texto-secundario);margin:0}
+.subject-link-status{display:block;margin-top:5px;font-size:10px;white-space:normal}
+.subject-actions-buttons{flex-wrap:wrap}
+.subject-actions-buttons button{min-width:30px}
+.subjects-header{flex-wrap:wrap}
+#newLinkButton{white-space:normal}

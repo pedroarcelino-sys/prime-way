@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         for (const item of state.classSubjects) {
             const label =
-                `${item.className} • ${item.subjectName}`;
+                `${item.className} • ${item.subjectName}${item.available === false ? " (somente histórico)" : ""}`;
 
             for (const target of targets) {
                 const option =
@@ -283,6 +283,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 option.textContent =
                     label;
 
+                option.disabled = target === lessonClassSubject && item.available === false;
                 target.append(option);
             }
         }
@@ -1128,8 +1129,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     : "Ano letivo —";
 
             newLessonButton.disabled =
-                state.classSubjects.length ===
-                    0 ||
+                !state.classSubjects.some(item => item.available !== false) ||
                 state.periods.length ===
                     0;
 

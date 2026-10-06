@@ -190,6 +190,9 @@ try {
                     ON td.id =
                        au.turma_disciplina_id
 
+                INNER JOIN disciplinas d ON d.id = td.disciplina_id
+                INNER JOIN turmas t ON t.id = td.turma_id
+
                 WHERE au.id =
                     :aula_id
 
@@ -197,6 +200,8 @@ try {
                     :professor_id
 
                   AND td.status = 'Ativa'
+
+                AND d.status = 'Ativa' AND t.status = 'Ativa'
 
                 LIMIT 1
 

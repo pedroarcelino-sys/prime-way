@@ -135,11 +135,9 @@ try {
                     WHERE td.turma_id =
                         :turma_id
 
-                      AND td.status =
-                        'Ativa'
 
-                      AND d.status =
-                        'Ativa'
+
+
 
                     GROUP BY
                         d.id,

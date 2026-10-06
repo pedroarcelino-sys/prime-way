@@ -91,12 +91,12 @@ try {
                     ON td.turma_id = t.id
                    AND td.professor_id =
                        :professor_disciplina
-                   AND td.status = 'Ativa'
+
 
                 WHERE t.ano_letivo_id =
                     :ano_letivo_id
 
-                  AND t.status = 'Ativa'
+
 
                   AND (
                         t.professor_id =
@@ -219,8 +219,8 @@ try {
                     ON d.id = td.disciplina_id
 
                 WHERE td.professor_id = ?
-                  AND td.status = 'Ativa'
-                  AND d.status = 'Ativa'
+
+
                   AND td.turma_id IN (
                         {$placeholders}
                   )

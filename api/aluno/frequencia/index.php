@@ -103,8 +103,8 @@ try {
                    AND f.matricula_id = :matricula_id
 
                 WHERE td.turma_id = :turma_id
-                  AND td.status = 'Ativa'
-                  AND d.status = 'Ativa'
+
+
 
                 GROUP BY
                     td.id,

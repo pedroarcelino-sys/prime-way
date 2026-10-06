@@ -246,6 +246,9 @@ try {
                 ON td.id =
                    atv.turma_disciplina_id
 
+             INNER JOIN disciplinas d ON d.id = td.disciplina_id
+             INNER JOIN turmas t ON t.id = td.turma_id
+
              WHERE
                 ea.id =
                 :entrega_id
@@ -257,6 +260,10 @@ try {
                 AND
                 td.professor_id =
                 :professor_id
+
+                AND td.status = 'Ativa'
+                AND d.status = 'Ativa'
+                AND t.status = 'Ativa'
 
              LIMIT 1
 
@@ -289,7 +296,7 @@ try {
             [
                 'success' => false,
                 'message' =>
-                    'Entrega não encontrada ou acesso não autorizado.'
+                    'Entrega não encontrada, vínculo acadêmico inativo ou acesso não autorizado. O histórico permanece disponível para consulta.'
             ],
             404
         );

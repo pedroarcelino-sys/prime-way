@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Disciplinas — regressão da interface relacional</title>
+<h1>Disciplinas: interface real, APIs simuladas</h1>
+<p>Não usa sessão nem banco reais. Inclui core.js para verificar o abandono do estado legado.</p>
+<pre id="result">Executando…</pre>
+<script>
+function fixture(snapshot = null) {
+    const probe = window.probe = { requests:[], errors:[], fail:false };
+    window.addEventListener('error', e=>probe.errors.push(e.message));
+    const subjects = probe.subjects = snapshot?.subjects || [
+        {id:1,code:'MAT01',name:'Matemática',area:'Matemática',status:'Ativa',links:[{id:2,disciplinaId:1,turmaId:3,professorId:3,className:'Turma real',schoolYear:2026,classStatus:'Ativa',teacher:'Professor cadastrado',teacherAvailable:true,hours:80,status:'Ativa',hasHistory:true}]},
+        {id:2,code:'POR01',name:'Português',area:'Linguagens',status:'Ativa',links:[]},
+        {id:3,code:'CIE01',name:'Ciências',area:'Ciências da Natureza',status:'Ativa',links:[]},
+        {id:4,code:'HIS01',name:'História',area:'Ciências Humanas',status:'Ativa',links:[]},
+        {id:5,code:'ART01',name:'Artes',area:'Artes',status:'Ativa',links:[]}
+    ];
+    localStorage.setItem('primewaySubjects',JSON.stringify([{id:900,name:'Legado não confiável'}]));
+    window.fetch = async (url, init={})=> {
+        const route = new URL(url,document.baseURI).pathname, payload = init.body ? JSON.parse(init.body) : null;
+        probe.requests.push({route,payload,csrf:new Headers(init.headers).get('X-CSRF-Token')});
+        const result = (data,status=200)=>new Response(JSON.stringify({success:status<400,...data}),{status,headers:{'Content-Type':'application/json'}});
+        if (route.endsWith('/auth/session.php')) return result({authenticated:true,usuario:{perfil:'admin'},csrfToken:'a'.repeat(64)});
+        if (route.endsWith('/estado/index.php')) return result({state:{primewaySubjects:[{id:999,name:'Estado genérico'}]},writableKeys:['primewaySubjects']});
+        if (probe.fail) return result({message:'Falha simulada do servidor'},500);
+        if (payload && probe.rejectNext) {const error=probe.rejectNext;probe.rejectNext=null;return result({message:error},409);}
+        if (route.endsWith('/disciplinas/index.php')) return result({subjects});
+        if (route.endsWith('/turmas/index.php')) return result({classes:snapshot?.classes || [{id:3,name:'Turma real',schoolYear:2026,status:'Ativa'},{id:8,name:'Turma inativa',schoolYear:2026,status:'Inativa'}]});
+        if (route.endsWith('/professores/index.php')) return result({professors:snapshot?.professors || [{id:3,name:'Professor cadastrado',available:true},{id:9,name:'Professor indisponível',available:false}]});
+        if (route.endsWith('/disciplinas/salvar.php')) {
+            if (subjects.some(s=>s.code===payload.code && s.id!==Number(payload.id))) return result({message:'Código duplicado'},409);
+            const old=subjects.find(s=>s.id===Number(payload.id));
+            if(old) Object.assign(old,{...payload,id:old.id}); else subjects.push({...payload,id:6,links:[]});
+            return result({id:old?.id || 6});
+        }
+        if (route.endsWith('/disciplinas/salvar_vinculo.php')) {
+            const subject=subjects.find(s=>s.id===Number(payload.disciplinaId));
+            subject.links.push({...subjects[0].links[0],id:7,disciplinaId:subject.id,hours:Number(payload.hours),hasHistory:false});
+            return result({id:7});
+        }
+        if (route.endsWith('/disciplinas/status.php')) {
+            const item=payload.target==='disciplina'?subjects.find(s=>s.id===payload.id):subjects.flatMap(s=>s.links).find(l=>l.id===payload.id);
+            item.status=payload.status; return result({id:item.id});
+        }
+        throw new Error('API inesperada '+route);
+    };
+}
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function waitFor(fn) { for(let i=0;i<200;i++){if(fn())return;await pause(25);}throw Error('Tempo limite no teste'); }
+(async()=>{
+    const params=new URLSearchParams(location.search);
+    const snapshot=params.has('database') ? await(await fetch('/__test__/disciplinas')).json() : null;
+    let html=await(await fetch('../pages/disciplinas.html')).text();
+    if(!params.has('preview')) html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,'');
+    html=html.replace(/<head>/i,'<head><base href="'+new URL('../pages/',location.href).href+'"><script>('+fixture.toString()+')('+JSON.stringify(snapshot).replaceAll('<','\\u003c')+');<\/script>');
+    const frame=window.previewFrame=document.createElement('iframe');frame.style.cssText='width:100%;height:950px;border:0';frame.srcdoc=html;document.body.append(frame);
+    await waitFor(()=>frame.contentDocument.querySelectorAll('#subjectsTableBody tr').length===5);
+    if(params.has('preview')) { document.querySelector('#result').textContent='Visualização dos cinco registros, sem escrita no banco.';document.querySelector('#result').dataset.status='passed';return; }
+    const w=frame.contentWindow,d=frame.contentDocument,q=s=>d.querySelector(s),p=w.probe;
+    let count=0;const check=(ok,message)=>{if(!ok)throw Error(message);count++;};
+    const click=s=>q(s).click(),value=(s,v)=>{q(s).value=v;q(s).dispatchEvent(new w.Event(s==='#subjectSearch'?'input':'change',{bubbles:true}));};
+    const open=()=>q('#subjectModal').classList.contains('active');
+    const submit=()=>q('#subjectForm').requestSubmit();
+    check(q('#totalSubjects').textContent==='5','cinco identidades');
+    check((q('#subjectsTableBody').textContent.match(/Disciplina sem turma/g)||[]).length===4,'quatro sem vínculo visíveis');
+    check(q('#subjectsTableBody').textContent.includes('Professor cadastrado')&&q('#totalHours').textContent==='80h','vínculo existente com professor e carga');
+    check(!q('#subjectsTableBody').textContent.includes('Legado'),'estado legado ignorado na renderização');
+    check(!w.PrimeWay.managedStorageKeys.has('primewaySubjects'),'core não gerencia disciplinas');
+    w.localStorage.setItem('primewaySubjects','[{"id":999}]');await pause(300);
+    check(!p.requests.some(r=>r.route.includes('/estado/')&&r.payload?.key==='primewaySubjects'),'core não envia disciplinas ao estado');
+    value('#subjectSearch','portugues');check(d.querySelectorAll('#subjectsTableBody tr').length===1,'pesquisa ignora acentos');value('#subjectSearch','');
+    value('#areaFilter','Artes');check(d.querySelectorAll('#subjectsTableBody tr').length===1,'filtro de área');value('#areaFilter','');
+    click('[data-action="view"][data-subject-id="2"]');check(q('#viewSubjectClass').textContent==='Disciplina sem turma','visualização sem vínculo');click('#subjectViewClose');
+    click('#newSubjectButton');check(open()&&q('#subjectLinkFields').hidden,'cadastro de identidade independente');
+    value('#subjectName','Disciplina criada');value('#subjectCode','MAT01');value('#subjectArea','Tecnologia');submit();
+    await waitFor(()=>d.body.textContent.includes('Código duplicado'));check(open(),'erro do servidor mantém formulário');
+    value('#subjectCode','TEC01');submit();await waitFor(()=>q('#totalSubjects').textContent==='6');
+    check(!open()&&p.subjects.at(-1).id===6,'criação usa ID retornado pelo servidor');
+    click('[data-action="identity"][data-subject-id="6"]');value('#subjectName','Identidade editada');submit();await waitFor(()=>q('#subjectsTableBody').textContent.includes('Identidade editada'));
+    check(p.subjects.at(-1).id===6,'edição preserva ID');
+    click('[data-action="link"][data-subject-id="1"]');await waitFor(open);
+    check(q('#subjectTeacher').tagName==='SELECT','professor não é texto livre');
+    check(q('#subjectTeacher').disabled&&q('#subjectClass').disabled&&q('#linkSubject').disabled,'histórico protege três relações');
+    check(q('#subjectTeacher').value==='3'&&q('#subjectLinkId').value==='2','vínculo e professor possuem IDs próprios');click('#subjectCancelButton');
+    click('[data-action="link"][data-subject-id="6"]');await waitFor(open);
+    check(![...q('#subjectTeacher').options].some(o=>o.value==='9')&&![...q('#subjectClass').options].some(o=>o.value==='8'),'novas opções excluem professor/turma indisponíveis');
+    value('#subjectTeacher','3');value('#subjectClass','3');value('#subjectHours','1.5');check(!q('#subjectHours').checkValidity(),'carga fracionária inválida no HTML');
+    value('#subjectHours','1001');check(!q('#subjectHours').checkValidity(),'limite superior da carga');value('#subjectHours','120');
+    for(const message of ['Vínculo duplicado por turma e disciplina','Professor inativo ou indisponível','Turma inativa','Histórico impede alteração estrutural']) {
+        p.rejectNext=message;submit();await waitFor(()=>d.body.textContent.includes(message));
+        check(open()&&q('#subjectTeacher').value==='3'&&q('#subjectHours').value==='120','rejeição da API mantém dados: '+message);
+    }
+    submit();await waitFor(()=>!open());
+    check(p.requests.some(r=>r.route.endsWith('salvar_vinculo.php')&&r.payload.disciplinaId==='6'&&r.payload.professorId==='3'&&r.payload.turmaId==='3'),'envio do vínculo por IDs');
+    click('[data-action="subject-status"][data-subject-id="6"]');await waitFor(()=>q('[data-primeway-confirm-accept]'));click('[data-primeway-confirm-accept]');await waitFor(()=>p.subjects.at(-1).status==='Inativa');await pause(50);
+    value('#statusFilter','Inativa');check(d.querySelectorAll('#subjectsTableBody tr').length===1,'filtro de inativas');
+    check(p.subjects.at(-1).links.length===1,'inativação mantém vínculo');value('#statusFilter','');
+    await waitFor(()=>!q('.primeway-confirm'));
+    click('[data-action="subject-status"][data-subject-id="6"]');await waitFor(()=>q('[data-primeway-confirm-accept]'));click('[data-primeway-confirm-accept]');await waitFor(()=>p.subjects.at(-1).status==='Ativa');await pause(50);
+    check(q('#activeSubjects').textContent==='6','reativação atualiza indicador');
+    await waitFor(()=>!q('.primeway-confirm'));
+    click('[data-action="link-status"][data-subject-id="1"]');await waitFor(()=>q('[data-primeway-confirm-accept]'));click('[data-primeway-confirm-accept]');await waitFor(()=>p.subjects[0].links[0].status==='Inativa');await pause(50);
+    check(d.querySelectorAll('#subjectsTableBody tr').length===6&&q('[data-action="link"][data-link-id="2"]'),'vínculo histórico inativo permanece na tabela');
+    click('[data-action="link"][data-subject-id="1"]');await waitFor(open);check(q('#subjectTeacher').disabled&&q('#subjectLinkNotice').textContent.includes('histórico'),'histórico inativo permanece identificável e protegido');click('#subjectCancelButton');
+    check(p.requests.filter(r=>r.payload&&r.route.includes('/disciplinas/')).every(r=>r.csrf==='a'.repeat(64)),'CSRF acompanha todas as escritas');
+    p.fail=true;click('#newSubjectButton');value('#subjectName','Falha');value('#subjectCode','FAIL');value('#subjectArea','Artes');submit();await waitFor(()=>d.body.textContent.includes('Falha simulada do servidor'));check(open(),'falha de rede/servidor não fecha dados');click('#subjectCancelButton');p.fail=false;
+    check(p.errors.length===0,'nenhuma exceção JavaScript');
+    document.querySelector('#result').textContent=`${count} verificações aprovadas.`;document.querySelector('#result').dataset.status='passed';
+})().catch(error=>{document.querySelector('#result').textContent=error.stack;document.querySelector('#result').dataset.status='failed';});
+</script>
+</html>

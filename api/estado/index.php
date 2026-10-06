@@ -68,7 +68,6 @@ $chavesPorPerfil = [
 
     'admin' => [
         'primewayGuardians',
-        'primewaySubjects',
         'primewayClasses',
         'primewayCalendarEvents',
         'primewayNotifications',
