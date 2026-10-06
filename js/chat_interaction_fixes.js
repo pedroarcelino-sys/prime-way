@@ -72,9 +72,11 @@ function syncComposer(composer){
     const recording=Boolean(micButton?.classList.contains("is-recording"));
     const composerEnabled=attachButton?!attachButton.disabled:!input.disabled;
 
+    // O observer acompanha disabled: reatribuir true gera outra mutação no DOM.
+    // Só altere o atributo quando o estado realmente precisar mudar.
     if(audioSelected){
         input.value="";
-        input.disabled=true;
+        if(!input.disabled)input.disabled=true;
         input.placeholder="Envie o áudio separadamente.";
         return;
     }
@@ -82,11 +84,11 @@ function syncComposer(composer){
     input.placeholder=input.dataset.pwDefaultPlaceholder;
 
     if(recording){
-        input.disabled=true;
+        if(!input.disabled)input.disabled=true;
         return;
     }
 
-    if(composerEnabled){
+    if(composerEnabled&&input.disabled){
         input.disabled=false;
     }
 }

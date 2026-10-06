@@ -87,6 +87,11 @@ Para validar JavaScript:
 Get-ChildItem js -Filter *.js | ForEach-Object { node --check $_.FullName }
 ```
 
+Para verificar a regressão do travamento do áudio, abra
+`http://127.0.0.1:8000/tests/chat_composer.html` com o servidor local iniciado.
+O teste usa o DOM e o `MutationObserver` do navegador, intercepta as consultas
+de entrega e não acessa o banco nem o microfone. Todos os resultados devem ser `[OK]`.
+
 Com o banco local configurado, a consulta relacional de Alunos pode ser testada sem alterar dados:
 
 ```powershell

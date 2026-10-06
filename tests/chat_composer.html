@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Regressão do compositor de áudio — PrimeWay</title>
+<h1>Regressão do compositor de áudio</h1>
+<p>Teste isolado com DOM e MutationObserver reais, sem banco ou microfone.</p>
+<pre id="result">Executando…</pre>
+<div class="pw-chat-composer">
+    <div class="pw-chat-selected-file" hidden><i class="fa-microphone"></i></div>
+    <textarea placeholder="Digite sua mensagem..."></textarea>
+    <button class="pw-chat-attach-button" type="button">Anexar</button>
+    <button class="pw-chat-audio-button" type="button">Gravar</button>
+</div>
+<script>
+// Impede que o rastreamento de entregas consulte ou altere dados reais.
+window.fetch=async()=>new Response('{"success":true,"statuses":{}}',{
+    headers:{"Content-Type":"application/json"}
+});
+let loopDetected=false;
+let observerCalls=0;
+const NativeObserver=window.MutationObserver;
+window.MutationObserver=class extends NativeObserver{
+    constructor(callback){
+        super((records,observer)=>{
+            // O limite encerra a regressão antes que ela congele a aba de teste.
+            if(++observerCalls>50){
+                loopDetected=true;
+                observer.disconnect();
+                return;
+            }
+            callback(records,observer);
+        });
+    }
+};
+</script>
+<script src="../js/chat_interaction_fixes.js"></script>
+<script>
+(async()=>{
+    const result=document.querySelector("#result");
+    const input=document.querySelector("textarea");
+    const mic=document.querySelector(".pw-chat-audio-button");
+    const attach=document.querySelector(".pw-chat-attach-button");
+    const selected=document.querySelector(".pw-chat-selected-file");
+    const passed=[];
+    function check(condition,message){
+        if(!condition)throw new Error(message);
+        passed.push(message);
+    }
+    async function settle(){
+        await new Promise(resolve=>setTimeout(resolve,0));
+        check(!loopDetected,"Observer estabiliza sem realimentação");
+        observerCalls=0;
+    }
+    try{
+        await settle();
+        check(!input.disabled,"Texto habilitado em repouso");
+        input.value="Mensagem pendente";
+        const click=new MouseEvent("click",{bubbles:true,cancelable:true});
+        mic.dispatchEvent(click);
+        check(click.defaultPrevented,"Texto pendente impede gravação");
+        input.value="";
+
+        for(let cycle=0;cycle<2;cycle++){
+            mic.classList.add("is-recording");
+            attach.disabled=true;
+            input.disabled=true;
+            await settle();
+            check(input.disabled,"Texto bloqueado durante gravação");
+            input.disabled=false;
+            await settle();
+            check(input.disabled,"Gravação restabelece bloqueio alterado externamente");
+            mic.classList.remove("is-recording");
+            attach.disabled=false;
+            await settle();
+            check(!input.disabled,"Cancelar/parar libera texto");
+        }
+
+        input.value="Texto que deve ser removido";
+        selected.hidden=false;
+        await settle();
+        check(input.disabled&&input.value==="","Áudio preparado bloqueia e limpa texto");
+        selected.hidden=true;
+        await settle();
+        check(!input.disabled,"Remover áudio libera texto");
+
+        attach.disabled=true;
+        input.disabled=true;
+        await settle();
+        check(input.disabled,"Conversa desabilitada permanece bloqueada");
+        result.textContent=passed.map(message=>"[OK] "+message).join("\n");
+        result.dataset.status="passed";
+    }catch(error){
+        result.textContent="[FALHA] "+error.message;
+        result.dataset.status="failed";
+    }
+})();
+</script>
+</html>
