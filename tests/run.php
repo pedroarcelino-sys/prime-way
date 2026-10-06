@@ -223,6 +223,15 @@ try {
         );
     }
 
+    require_once $raiz . '/api/responsavel/saida_segura/_config.php';
+    verificar(primewayDistanciaMetros(0, 0, 0, 0) === 0.0, 'distância GPS na escola é zero');
+    verificar(abs(primewayDistanciaMetros(0, 0, 0.01, 0) - 1111.95) < 0.1,
+        'distância GPS usa metros na superfície terrestre');
+    verificar(primewayDistanciaMetros(0, 0, 0.001, 0) <= 300,
+        'posição próxima está dentro do raio de 300 m');
+    verificar(primewayDistanciaMetros(0, 0, 0.003, 0) > 300,
+        'posição além de 300 m permanece fora do raio');
+
     echo sprintf(
         "%s%d verificações concluídas com sucesso.%s",
         PHP_EOL,
