@@ -8,6 +8,7 @@ let confirmResolver=null;
 let globalEventsBound=false;
 let audioContext=null;
 const processedAudios=new WeakMap();
+const messageLists=new WeakMap();
 
 function ensureStyles(){
     if(document.querySelector('link[data-primeway-chat-message-experience="1"]'))return;
@@ -459,12 +460,78 @@ function registerPinnedMessage(container,message){
     if(preview)preview.textContent=messagePreview(message);
 }
 
+function updateMessageList(list,messages,createMessage,{
+    conversationId,
+    emptyHtml="",
+    followEnd=false
+}={}){
+    const items=Array.isArray(messages)?messages:[];
+    const previous=messageLists.get(list);
+    const sameConversation=Boolean(previous)&&previous.conversationId===conversationId;
+    const signature=JSON.stringify(items);
+
+    // Não remova o player, menus ou recibos quando a consulta não trouxe mudanças.
+    if(sameConversation&&previous.signature===signature){
+        if(followEnd)list.scrollTop=list.scrollHeight;
+        return;
+    }
+
+    const top=list.scrollTop;
+    const atEnd=list.scrollHeight-list.clientHeight-top<24;
+    const listTop=list.getBoundingClientRect().top;
+    const bannerHeight=list.querySelector(":scope > .pw-chat-pinned-banner")?.offsetHeight||0;
+    const anchor=Array.from(list.children).find(node=>
+        node.matches(".pw-chat-message-decorated")&&
+        node.getBoundingClientRect().bottom>listTop+bannerHeight
+    );
+    const anchorTop=anchor?.getBoundingClientRect().top;
+    const entries=new Map();
+
+    for(const item of items){
+        const id=String(item.id);
+        const snapshot=JSON.stringify(item);
+        const old=sameConversation?previous.entries.get(id):null;
+        const node=old?.snapshot===snapshot&&old.node.parentElement===list
+            ?old.node:createMessage(item);
+        entries.set(id,{node,snapshot});
+    }
+
+    const kept=new Set(Array.from(entries.values(),entry=>entry.node));
+    for(const node of Array.from(list.children)){
+        if(kept.has(node))continue;
+        node.querySelectorAll("audio").forEach(audio=>audio.pause());
+        node.remove();
+    }
+
+    // Os elementos existentes permanecem conectados, inclusive durante novos envios.
+    let cursor=list.firstElementChild;
+    for(const {node} of entries.values()){
+        if(node===cursor)cursor=cursor.nextElementSibling;
+        else list.insertBefore(node,cursor);
+    }
+
+    if(items.length===0)list.innerHTML=emptyHtml;
+    for(const item of items){
+        if(item.pinned)registerPinnedMessage(entries.get(String(item.id)).node,item);
+    }
+    messageLists.set(list,{conversationId,signature,entries});
+
+    if(followEnd||!sameConversation||atEnd){
+        list.scrollTop=list.scrollHeight;
+    }else if(anchor?.parentElement===list){
+        list.scrollTop+=anchor.getBoundingClientRect().top-anchorTop;
+    }else{
+        list.scrollTop=top;
+    }
+}
+
 function decorateMessage(container,message,{
     csrfToken="",
     actionUrl="../api/chat/mensagem_acao.php",
     onChanged,
     onError,
-    onSuccess
+    onSuccess,
+    managePinnedBanner=true
 }={}){
     if(!container||!message||container.dataset.pwMessageDecorated==="1")return;
 
@@ -481,7 +548,7 @@ function decorateMessage(container,message,{
         pinned.className="pw-chat-pinned-badge";
         pinned.innerHTML='<i class="fa-solid fa-thumbtack" aria-hidden="true"></i><span>Fixada</span>';
         container.insertBefore(pinned,container.firstChild);
-        queueMicrotask(()=>registerPinnedMessage(container,message));
+        if(managePinnedBanner)queueMicrotask(()=>registerPinnedMessage(container,message));
     }
 
     const wrapper=document.createElement("div");
@@ -597,6 +664,7 @@ function decorateMessage(container,message,{
 
 ensureStyles();
 window.PrimeWayChatMessageExperience=Object.freeze({
+    updateMessageList,
     decorateMessage,
     enhanceAudio,
     formatDuration

@@ -24,15 +24,22 @@ window.fetch=async()=>new Response('{"success":true,"statuses":{}}',{
         checks.push("[OK] "+label);
     }
     try{
-        for(let id=1;id<=30;id++){
+        const experience=window.PrimeWayChatMessageExperience;
+        let messages=Array.from({length:30},(_,index)=>({
+            id:index+1,content:"Mensagem "+(index+1),pinned:index===1,own:true
+        }));
+        const createMessage=message=>{
             const article=document.createElement("article");
             article.style.cssText="min-height:60px;margin:10px";
-            article.textContent="Mensagem "+id;
-            window.PrimeWayChatMessageExperience.decorateMessage(article,{
-                id,content:article.textContent,pinned:id===2,own:true
-            });
-            list.append(article);
-        }
+            article.textContent=message.content;
+            if(message.id===30)article.append(document.createElement("audio"));
+            experience.decorateMessage(article,message,{managePinnedBanner:false});
+            return article;
+        };
+        const render=(options={})=>experience.updateMessageList(list,messages,createMessage,{
+            conversationId:1,...options
+        });
+        render();
         await settle();
         list.scrollTop=list.scrollHeight;
         const banner=list.querySelector(".pw-chat-pinned-banner");
@@ -47,6 +54,41 @@ window.fetch=async()=>new Response('{"success":true,"statuses":{}}',{
             "O destaque é aplicado à mensagem");
         check(!banner.classList.contains("pw-chat-message-focus"),
             "O banner não é confundido com a mensagem");
+        const audio=list.querySelector("audio");
+        const top=list.scrollTop;
+        let playerRemoved=false;
+        const observer=new MutationObserver(records=>{
+            if(records.some(record=>Array.from(record.removedNodes).some(node=>node.contains(audio)))){
+                playerRemoved=true;
+            }
+        });
+        observer.observe(list,{childList:true,subtree:true});
+        render();
+        await settle();
+        check(list.scrollTop===top,"Consulta idêntica preserva posição de leitura");
+        check(list.querySelector("audio")===audio&&!playerRemoved,
+            "Consulta idêntica mantém o player conectado");
+        messages.push({id:31,content:"Mensagem nova",pinned:false,own:false});
+        render();
+        await settle();
+        check(Math.abs(list.scrollTop-top)<=1,"Mensagem nova não desloca leitura antiga");
+        check(list.querySelector("audio")===audio&&!playerRemoved,
+            "Mensagem nova não reconstrói o player existente");
+        messages=messages.map(message=>({...message,pinned:false}));
+        render();
+        await settle();
+        check(!list.querySelector(".pw-chat-pinned-banner"),"Desafixar remove o banner");
+        messages=messages.filter(message=>message.id!==3);
+        render();
+        check(!list.querySelector('article[data-message-id="3"]'),"Exclusão remove a mensagem");
+        check(list.querySelector("audio")===audio&&!playerRemoved,
+            "Atualizar outra mensagem preserva o player");
+        render({followEnd:true});
+        check(list.scrollHeight-list.clientHeight-list.scrollTop<=1,
+            "Envio explícito pode acompanhar o final");
+        observer.disconnect();
+        render({conversationId:2});
+        check(list.querySelector("audio")!==audio,"Trocar conversa não reutiliza player da anterior");
         result.textContent=checks.join("\n");
         result.dataset.status="passed";
     }catch(error){

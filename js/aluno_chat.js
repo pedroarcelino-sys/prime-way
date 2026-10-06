@@ -206,15 +206,8 @@ function renderContacts(){
     }
 }
 
-function renderMessages(data){
-    msgs.replaceChildren();
-
-    if(!Array.isArray(data.messages)||!data.messages.length){
-        msgs.innerHTML='<div class="student-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>';
-        return;
-    }
-
-    for(const item of data.messages){
+function renderMessages(data,followEnd=false){
+    Experience.updateMessageList(msgs,data.messages,item=>{
         const article=document.createElement("article");
         article.className=`chat-message ${item.own?"own":"other"}`;
 
@@ -239,6 +232,7 @@ function renderMessages(data){
 
         Experience.decorateMessage(article,item,{
             csrfToken:session?.csrfToken||"",
+            managePinnedBanner:false,
             onChanged:async()=>{
                 if(active){
                     await loadMessages(active,true);
@@ -247,11 +241,8 @@ function renderMessages(data){
             },
             onError:message=>window.PrimeWayFeedback?.error(message)
         });
-
-        msgs.append(article);
-    }
-
-    msgs.scrollTop=msgs.scrollHeight;
+        return article;
+    },{conversationId:active,emptyHtml:'<div class="student-empty"><i class="fa-regular fa-comments"></i>Nenhuma mensagem nesta conversa.</div>',followEnd});
 }
 
 async function markRead(id){
@@ -278,7 +269,7 @@ async function loadMessages(id,quiet=false){
 
         title.textContent=data.conversation.title;
         role.textContent=roleLabel(data.conversation.role);
-        renderMessages(data);
+        renderMessages(data,!quiet);
         await markRead(id);
     }catch(error){
         if(!quiet){
