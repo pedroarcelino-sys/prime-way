@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Regressão da leitura em segundo plano — PrimeWay</title>
+<h1>Leitura em segundo plano</h1>
+<p>Páginas reais com sessão e APIs simuladas. Nenhum acesso ao banco.</p>
+<pre id="result">Executando…</pre>
+<script>
+// Este código é injetado antes dos scripts de cada página, somente no iframe.
+function fixture(){
+    window.testReads=0;
+    Object.defineProperty(document,"visibilityState",{configurable:true,value:"visible"});
+    window.fetch=async url=>{
+        const path=String(url).split("?")[0];
+        const conversation={id:1,title:"Contato de teste",role:"professor"};
+        let data={success:true,statuses:{}};
+        if(path.endsWith("/index.php"))data={success:true,conversations:[conversation],contacts:[]};
+        if(path.endsWith("/mensagens.php"))data={success:true,conversation,messages:[]};
+        if(path.endsWith("/marcar_lida.php"))window.testReads++;
+        return new Response(JSON.stringify(data),{headers:{"Content-Type":"application/json"}});
+    };
+    const session=async()=>({csrfToken:"teste-isolado"});
+    const request=async(url,options)=>{
+        const response=await fetch(url,options);
+        return {response,data:await response.json()};
+    };
+    const common={
+        ensureStudent:session,ensureProfessor:session,ensureGuardian:session,ensureSecretary:session,
+        bindLogout(){},refreshNavigationBadges:async()=>{},formatDate:()=>"Agora",
+        request,requestJson:(url,data)=>request(url,{method:"POST",body:JSON.stringify(data)})
+    };
+    window.PrimeWayAluno=window.PrimeWayProfessor=window.PrimeWayResponsavel=window.PrimeWaySecretaria=common;
+    window.PrimeWayStorage={ready:Promise.resolve()};
+    window.PrimeWayFeedback={error:message=>{throw new Error(message);}};
+    const interval=window.setInterval;
+    window.setInterval=(callback,ms,...args)=>{
+        if(ms===15000){window.testPoll=callback;return 0;}
+        return interval(callback,ms,...args);
+    };
+}
+(async()=>{
+    const result=document.querySelector("#result");
+    const checks=[];
+    let frame;
+    const waitFor=async condition=>{
+        for(let i=0;i<100;i++){
+            if(condition())return;
+            await new Promise(resolve=>setTimeout(resolve,50));
+        }
+        throw new Error("Tempo limite ao preparar a página");
+    };
+    try{
+        for(const role of ["aluno","professor","responsavel","secretaria"]){
+            const response=await fetch("../pages/"+role+"_chat.html");
+            if(!response.ok)throw new Error("Falha ao carregar "+role);
+            let html=await response.text();
+            html=html.replace(/<script\b[^>]*src="\.\.\/js\/(?:core|aluno_common|professor_common|responsavel_common|secretaria_common)\.js[^"\s]*"[^>]*><\/script>/g,"");
+            html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,"");
+            const base=new URL("../pages/",location.href).href;
+            html=html.replace(/<head>/i,'<head><base href="'+base+'"><script>('+fixture.toString()+')();<\/script>');
+            frame=document.createElement("iframe");
+            frame.style.cssText="width:900px;height:300px";
+            frame.srcdoc=html;
+            document.body.append(frame);
+            await waitFor(()=>frame.contentDocument.querySelector("#conversationList button")&&frame.contentWindow.testPoll);
+            frame.contentDocument.querySelector("#conversationList button").click();
+            await waitFor(()=>frame.contentWindow.testReads>0);
+            const win=frame.contentWindow;
+            const before=win.testReads;
+            Object.defineProperty(win.document,"visibilityState",{configurable:true,value:"hidden"});
+            await win.testPoll();
+            if(win.testReads!==before)throw new Error(role+": marcou leitura com aba oculta");
+            Object.defineProperty(win.document,"visibilityState",{configurable:true,value:"visible"});
+            win.document.dispatchEvent(new win.Event("visibilitychange"));
+            await waitFor(()=>win.testReads>before);
+            checks.push("[OK] "+role+": aba oculta não lê; retornar à conversa registra leitura");
+            frame.remove();
+        }
+        result.textContent=checks.join("\n");
+        result.dataset.status="passed";
+    }catch(error){
+        result.textContent=checks.concat("[FALHA] "+error.message).join("\n");
+        result.dataset.status="failed";
+    }finally{
+        frame?.remove();
+    }
+})();
+</script>
+</html>

@@ -218,6 +218,7 @@ document.addEventListener("DOMContentLoaded",async function(){
     }
 
     async function markConversationRead(conversationId){
+        if(document.visibilityState!=="visible"||Number(activeConversationId)!==Number(conversationId))return;
         const{response}=await window.PrimeWaySecretaria.requestJson(READ_URL,{conversationId});
         if(response.ok){
             const item=conversations.find(conversation=>Number(conversation.id)===Number(conversationId));
@@ -383,6 +384,10 @@ document.addEventListener("DOMContentLoaded",async function(){
         await loadIndex(true);
         if(activeConversationId)await loadMessages(activeConversationId,true);
     },15000);
+
+    document.addEventListener("visibilitychange",()=>{
+        if(document.visibilityState==="visible"&&activeConversationId)loadMessages(activeConversationId,true);
+    });
 
     window.addEventListener("beforeunload",()=>{
         if(refreshTimer)window.clearInterval(refreshTimer);

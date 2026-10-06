@@ -210,6 +210,7 @@ function renderMessages(data,followEnd=false){
 }
 
 async function markRead(id){
+    if(document.visibilityState!=="visible"||Number(active)!==Number(id))return;
     const{response}=await window.PrimeWayResponsavel.requestJson(READ,{conversationId:id});
     if(response.ok){
         const item=conv.find(conversation=>Number(conversation.id)===Number(id));
@@ -317,6 +318,10 @@ timer=setInterval(async()=>{
     await loadIndex(true);
     if(active)await loadMessages(active,true);
 },15000);
+
+document.addEventListener("visibilitychange",()=>{
+    if(document.visibilityState==="visible"&&active)loadMessages(active,true);
+});
 
 window.addEventListener("beforeunload",()=>{
     if(timer)clearInterval(timer);
