@@ -48,6 +48,18 @@ function fixture(options = {}) {
         if (ms === 7000) { probe.poll = callback; return 0; }
         return interval(callback, ms, ...args);
     };
+    if (options.realMap) {
+        let leaflet;
+        Object.defineProperty(window, "L", {
+            configurable: true,
+            get: () => leaflet,
+            set(value) {
+                leaflet = value;
+                const createMap = value.map;
+                value.map = (...args) => (probe.realMap = createMap(...args));
+            }
+        });
+    }
     if (!options.realMap) {
         function layer(kind, point, config) {
             const value = { kind, point, config, removed: false, moves: 0,
@@ -88,7 +100,7 @@ async function openFixture(options = {}) {
     return frame;
 }
 async function waitFor(condition) {
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 500; i++) {
         if (condition()) return;
         await new Promise(resolve => setTimeout(resolve, 30));
     }
@@ -106,6 +118,40 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 40));
             document.querySelectorAll("h1,p,pre").forEach(node => node.remove());
             frame.style.cssText = "position:fixed;inset:0;width:100%;height:100%;border:0";
             window.previewFrame = frame;
+            return;
+        }
+        if (new URLSearchParams(location.search).has("real")) {
+            frame = await openFixture({ realMap: true });
+            const win = frame.contentWindow, doc = frame.contentDocument, p = win.probe;
+            await waitFor(() => p.realMap && doc.querySelector(".pickup-school-marker"));
+            const map = p.realMap, L = win.L;
+            const layers = Type => Object.values(map._layers).filter(layer => layer instanceof Type);
+            const guardian = () => layers(L.CircleMarker).filter(layer => !(layer instanceof L.Circle));
+            const schoolMarker = layers(L.Marker)[0], circle = layers(L.Circle)[0];
+            check(schoolMarker.getLatLng().equals([p.school.latitude, p.school.longitude]), "Leaflet real: escola na posição configurada");
+            check(circle.getRadius() === 300, "Leaflet real: círculo de 300 metros");
+            doc.querySelector("#pickupGpsButton").click(); p.position(0.005); await settle();
+            const marker = guardian()[0];
+            check(guardian().length === 1 && map.getBounds().contains(marker.getLatLng())
+                && map.getBounds().contains(schoolMarker.getLatLng()), "Leaflet real: primeiro enquadramento inclui escola e responsável");
+            map.setZoom(17, { animate: false }); map.panBy([80, 50], { animate: false }); await settle();
+            const center = map.getCenter(), zoom = map.getZoom();
+            p.position(0.004); await p.poll(); await settle();
+            check(guardian().length === 1 && guardian()[0] === marker
+                && marker.getLatLng().equals([p.school.latitude + 0.004, p.school.longitude]), "Leaflet real: reutiliza e move um único marcador");
+            check(map.getCenter().equals(center) && map.getZoom() === zoom, "Leaflet real: GPS e consulta preservam zoom/pan manual");
+            p.clock += 6000; p.position(0); await settle();
+            check(circle.options.color === "#059669", "Leaflet real: entrada visual no raio destaca o círculo");
+            check(doc.querySelector("#activePickupBox .guardian-badge").textContent === "Aguardando", "Leaflet real: destaque visual não altera estado oficial");
+            layers(L.TileLayer)[0].fire("tileerror");
+            p.position(0.005); await settle();
+            check(doc.querySelector("#pickupMapNotice").textContent.includes("parte do mapa")
+                && doc.querySelector("#pickupGpsState").textContent === "Localização ativa", "Leaflet real: erro de tiles mantém GPS e página funcionais");
+            doc.querySelector("#pickupGpsButton").click();
+            check(guardian().length === 0 && p.cleared.length === 1 && p.storage.length === 0,
+                "Leaflet real: parada remove posição sem persistência");
+            frame.remove();
+            result.textContent = checks.join("\n"); result.dataset.status = "passed";
             return;
         }
         frame = await openFixture();
@@ -160,7 +206,7 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 40));
         check(status().includes("GPS indisponível"), "Erro de GPS indisponível é mostrado");
         gps(); p.watches.at(-1).error({ code: 3 });
         check(status().includes("tempo de espera"), "Timeout de GPS interrompe acompanhamento e informa nova tentativa");
-        gps(); p.position(100); await settle();
+        gps(); p.position(200); await settle();
         check(markers().length === 0 && status().includes("GPS indisponível"), "Coordenada inválida não aparece no mapa nem segue para a API");
         gps(); p.position(0); await settle();
         p.request.status = "Liberado"; await p.poll();
@@ -169,6 +215,19 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 40));
         p.request.status = "Aguardando"; await p.poll(); gps(); p.position(0.01); await settle();
         doc.querySelector("#pickupCancelButton").click(); await settle();
         check(p.request.status === "Cancelado" && markers().length === 0, "Cancelamento interrompe GPS e limpa marcador");
+        p.request.status = "Aguardando"; await p.poll(); gps();
+        p.defer = true; p.position(0); await settle();
+        const latePosition = p.watches.at(-1).success;
+        const successCount = p.feedback.filter(x => x.kind === "success").length;
+        doc.querySelector("#pickupCancelButton").click(); await settle();
+        const afterCancelPosts = p.posts.length;
+        p.pending(); latePosition({ coords: { latitude: p.school.latitude, longitude: p.school.longitude } }); await settle();
+        check(markers().length === 0 && p.posts.length === afterCancelPosts
+            && doc.querySelector("#activePickupBox .guardian-badge").textContent === "Cancelado",
+            "Resposta e callback atrasados após cancelar não restauram posição nem estado");
+        check(p.feedback.filter(x => x.kind === "success").length === successCount + 1,
+            "Resposta tardia não exibe aviso de entrada após cancelamento");
+        p.defer = false;
         doc.querySelector("#pickupStudent").value = "1";
         doc.querySelector("#pickupForm").dispatchEvent(new win.Event("submit", { cancelable: true })); await settle();
         check(p.request.status === "Aguardando" && status() === "Aguardando GPS", "Iniciar retirada preserva fluxo existente e solicita GPS");
