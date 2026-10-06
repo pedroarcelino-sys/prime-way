@@ -8,7 +8,6 @@
     const MANAGED_STORAGE_KEYS = new Set([
         "primewayGuardians",
         "primewayClasses",
-        "primewayCalendarEvents",
         "primewayNotifications",
         "primewayChatProfessor"
     ]);
@@ -31,8 +30,7 @@
             "primewayStudents",
             "primewayGuardians",
             "primewayClasses",
-            "primewayCalendarEvents",
-            "primewayNotifications",
+                "primewayNotifications",
             "primewayChatProfessor"
         ];
 

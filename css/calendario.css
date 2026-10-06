@@ -1413,6 +1413,12 @@
         AÇÕES DA VISUALIZAÇÃO
 ====================================================*/
 
+.calendar-page [hidden], .event-view-modal [hidden] { display: none !important; }
+.calendar-notice { font: 12px/1.5 Arial, sans-serif; color: var(--texto-secundario); margin: 8px 0 0; }
+.calendar-event { width: 100%; border: 0; text-align: left; cursor: pointer; }
+.calendar-event.canceled { opacity: .7; text-decoration: line-through; }
+.event-view-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
 .event-view-actions {
     padding:
         0
