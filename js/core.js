@@ -30,9 +30,10 @@
             "primewayStudents",
             "primewayGuardians",
             "primewayClasses",
-                "primewayNotifications",
             "primewayChatProfessor"
         ];
+
+        // Avisos existentes continuam válidos após a migração do Calendário.
 
         for (const key of legacyKeys) {
             originalRemoveItem.call(window.localStorage, key);

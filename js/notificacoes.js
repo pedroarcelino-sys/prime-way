@@ -1225,7 +1225,7 @@ const focoAnteriorPorModal =
 
 
     /*====================================================
-            STORAGE DO CALENDÁRIO
+            AVISOS PRESERVADOS
     ====================================================*/
 
     // Avisos existentes são independentes do calendário; ausência de evento não exclui avisos.

@@ -1417,6 +1417,7 @@
 .calendar-notice { font: 12px/1.5 Arial, sans-serif; color: var(--texto-secundario); margin: 8px 0 0; }
 .calendar-event { width: 100%; border: 0; text-align: left; cursor: pointer; }
 .calendar-event.canceled { opacity: .7; text-decoration: line-through; }
+.calendar-event:focus-visible, .upcoming-card:focus-visible { outline: 2px solid var(--secundaria); outline-offset: 2px; }
 .event-view-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 .event-view-actions {
@@ -1603,7 +1604,6 @@
     }
 
 
-    .calendar-toolbar,
     .weekdays,
     .calendar-grid {
         min-width: 700px;
@@ -1611,20 +1611,22 @@
 
 
     .calendar-toolbar {
-        flex-direction: row;
-        align-items: center;
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
     }
 
 
     .calendar-toolbar-actions {
-        width: auto;
+        width: 100%;
 
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
     }
 
 
     .calendar-toolbar-actions select {
-        flex: none;
+        min-width: 0;
+        flex: 1 1 130px;
     }
 
 
@@ -1687,7 +1689,6 @@
     }
 
 
-    .calendar-toolbar,
     .weekdays,
     .calendar-grid {
         min-width: 680px;
@@ -1761,7 +1762,6 @@
     }
 
 
-    .calendar-toolbar,
     .weekdays,
     .calendar-grid {
         min-width: 660px;

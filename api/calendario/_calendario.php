@@ -29,7 +29,7 @@ function primewayCalendarScope(PDO $pdo, array $user): ?int {
     if (($user['perfil']??'')!=='professor') primewayCalendarFail('Acesso não autorizado.',403);
     $stmt=$pdo->prepare("SELECT p.id FROM professores p
         JOIN pessoas pe ON pe.id=p.pessoa_id JOIN usuarios u ON u.pessoa_id=p.pessoa_id
-        WHERE u.id=:user AND u.ativo=1 AND pe.ativo=1 AND p.status='ativo' LIMIT 1");
+        WHERE u.id=:user AND u.perfil='professor' AND u.ativo=1 AND pe.ativo=1 AND p.status='ativo' LIMIT 1");
     $stmt->execute(['user'=>$user['id']]);
     $id=$stmt->fetchColumn();
     if (!$id) primewayCalendarFail('Professor indisponível ou sem cadastro vinculado.',403);

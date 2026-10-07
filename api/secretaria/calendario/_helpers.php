@@ -191,6 +191,7 @@ function primewayCalendarioMapearEvento(array $row): array
             ? (int) $row['turma_id']
             : null,
         'className' => (string) ($row['turma_nome'] ?? ''),
+        'classStatus' => $row['turma_status'] ?? null,
         'createdByUserId' => $row['criado_por_usuario_id'] !== null
             ? (int) $row['criado_por_usuario_id']
             : null,
@@ -221,6 +222,7 @@ function primewayCalendarioBuscarEvento(
                 ec.criado_em,
                 ec.atualizado_em,
                 t.nome AS turma_nome,
+                t.status AS turma_status,
                 COALESCE(pe.nome, u.nome, u.email, '') AS criador_nome
             FROM eventos_calendario ec
             LEFT JOIN turmas t

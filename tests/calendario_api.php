@@ -20,7 +20,9 @@ if ($argc === 1) {
             $expected=$route==='estado'?422:($role==='anonimo'?401:(in_array($role,['admin','professor'],true)&&$route==='index'?200:403));
             $check($result['status']===$expected,"$route / $role retorna HTTP $expected");
             if($role==='admin' && $route==='index') {
-                $check(count($result['data']['events'])===3,'GET real retorna três eventos');
+                require_once dirname(__DIR__).'/config/database.php';
+                $expectedEvents=(int)primewayPdo()->query("SELECT COUNT(*) FROM eventos_calendario WHERE data_evento BETWEEN '2026-01-01' AND '2026-12-31'")->fetchColumn();
+                $check(count($result['data']['events'])===$expectedEvents,'GET real retorna eventos do banco local');
                 $check($result['data']['canManage']===true,'Admin gerencia');
             }
             if($role==='professor' && $route==='index') $check($result['data']['canManage']===false,'Professor recebe somente leitura');
@@ -47,6 +49,7 @@ primewayIniciarSessao();
 if($role!=='anonimo') {
     $stmt=primewayPdo()->prepare('SELECT id FROM usuarios WHERE perfil=? AND ativo=1 ORDER BY id LIMIT 1');$stmt->execute([$role]);
     $_SESSION=['usuario_id'=>(int)$stmt->fetchColumn(),'usuario_email'=>'isolado@local.invalid','usuario_perfil'=>$role];
+    if (!$_SESSION['usuario_id']) throw new RuntimeException('Usuário ativo inexistente para perfil '.$role.'; nenhum usuário será criado.');
 }
 $_GET=['inicio'=>'2026-01-01','fim'=>'2026-12-31'];
 $_SERVER['REQUEST_METHOD']=$route==='index'?'GET':'POST';
