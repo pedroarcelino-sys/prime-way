@@ -66,7 +66,7 @@ async function waitFor(fn) { for(let i=0;i<200;i++){if(fn())return;await pause(2
     check((q('#subjectsTableBody').textContent.match(/Disciplina sem turma/g)||[]).length===4,'quatro sem vínculo visíveis');
     check(q('#subjectsTableBody').textContent.includes('Professor cadastrado')&&q('#totalHours').textContent==='80h','vínculo existente com professor e carga');
     check(!q('#subjectsTableBody').textContent.includes('Legado'),'estado legado ignorado na renderização');
-    check(!w.PrimeWay.managedStorageKeys.has('primewaySubjects'),'core não gerencia disciplinas');
+    check(!w.PrimeWayStorage&&!w.PrimeWay.managedStorageKeys,'core não possui sincronização genérica');
     w.localStorage.setItem('primewaySubjects','[{"id":999}]');await pause(300);
     check(!p.requests.some(r=>r.route.includes('/estado/')&&r.payload?.key==='primewaySubjects'),'core não envia disciplinas ao estado');
     value('#subjectSearch','portugues');check(d.querySelectorAll('#subjectsTableBody tr').length===1,'pesquisa ignora acentos');value('#subjectSearch','');

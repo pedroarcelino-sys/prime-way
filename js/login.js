@@ -21,10 +21,6 @@ const SESSION_USUARIO_KEY =
 const SESSION_PERFIL_KEY =
     "primewayPerfil";
 
-const SETTINGS_STORAGE_KEY =
-    "primewaySettings";
-
-
 const PAGINA_INICIAL_PADRAO =
     "dashboard.html";
 
@@ -99,62 +95,16 @@ const submitButton =
                 PÁGINA INICIAL
 ====================================================*/
 
-function obterPaginaInicialAdmin() {
-
+async function obterPaginaInicialAdmin() {
     try {
-
-        const salvo =
-            localStorage.getItem(
-                SETTINGS_STORAGE_KEY
-            );
-
-
-        if (!salvo) {
-
-            return PAGINA_INICIAL_PADRAO;
-
-        }
-
-
-        const configuracoes =
-            JSON.parse(
-                salvo
-            );
-
-
-        const pagina =
-            configuracoes
-                ?.system
-                ?.defaultPage;
-
-
-        if (
-            PAGINAS_INICIAIS_VALIDAS.has(
-                pagina
-            )
-        ) {
-
-            return pagina;
-
-        }
-
-    } catch {
-
-        /*
-            Se as configurações estiverem ausentes,
-            inválidas ou corrompidas, o Admin usa
-            a página inicial padrão do sistema.
-        */
-
-    }
-
-
+        const response = await fetch("../api/configuracoes/index.php", {credentials:"same-origin", cache:"no-store"});
+        const data = await response.json();
+        const page = data.settings?.system?.defaultPage;
+        if (response.ok && data.success && PAGINAS_INICIAIS_VALIDAS.has(page)) return page;
+    } catch { /* A falha de configuração mantém a página inicial padrão. */ }
     return PAGINA_INICIAL_PADRAO;
-
 }
-
-
-function obterPaginaInicial(
+async function obterPaginaInicial(
     perfil
 ) {
 
@@ -740,8 +690,7 @@ if (
 
 
                 window.location.replace(
-                    obterPaginaInicial(
-                        usuario.perfil
+                    await obterPaginaInicial(usuario.perfil
                     )
                 );
 
@@ -864,8 +813,7 @@ async function verificarSessaoExistente() {
 
 
         window.location.replace(
-            obterPaginaInicial(
-                usuario.perfil
+            await obterPaginaInicial(usuario.perfil
             )
         );
 

@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="pt-BR"><meta charset="UTF-8"><title>Limpeza de estado legado</title>
+<pre id="result">Executando…</pre>
+<script>
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function waitFor(fn){for(let i=0;i<300;i++){if(fn())return;await pause(25);}throw Error('Tempo limite');}
+function fixture(page){
+    const keys=['primewayGuardians','primewayClasses','primewayChatProfessor','primewayNotifications','primewayCalendarEvents','primewaySubjects','primewayStudents','primewaySettings','primewayDataModelVersion'];
+    const p=window.probe={keys,requests:[],errors:[],messages:[{id:1,content:'Mensagem SQL',senderName:'Secretaria',senderUserId:2,type:'texto',attachments:[],own:false,sentAt:'2026-10-06 10:00:00',pinned:false}]};
+    window.addEventListener('error',e=>p.errors.push(e.message));
+    for(const key of keys)localStorage.setItem(key,JSON.stringify([{id:900,name:'Legado adulterado'}]));
+    localStorage.setItem('preferencia-teste','preservar');sessionStorage.setItem('sessao-teste','preservar');
+    window.fetch=async(url,init={})=>{
+        const u=new URL(url,document.baseURI),route=u.pathname,payload=init.body?JSON.parse(init.body):null;
+        p.requests.push({route,payload,csrf:new Headers(init.headers).get('X-CSRF-Token')});
+        if(route.includes('/estado/'))throw Error('Consulta de estado genérico indevida');
+        const result=data=>new Response(JSON.stringify({success:true,...data}),{headers:{'Content-Type':'application/json'}});
+        if(route.endsWith('/auth/session.php'))return result({authenticated:page!=='login',usuario:{id:1,perfil:'admin',email:'teste@local.invalid'},csrfToken:'b'.repeat(64)});
+        if(route.endsWith('/configuracoes/index.php'))return result({settings:{system:{defaultPage:p.invalidPage?'pagina-invalida.html':'calendario.html'}}});
+        if(route.endsWith('/chat/central.php')) {
+            if(payload?.action==='send')p.messages.push({...p.messages[0],id:2,own:true,content:payload.content,senderUserId:1});
+            if(payload)return result({messageId:2});
+            if(u.searchParams.has('conversationId'))return result({conversation:{id:3,title:'Conversa SQL',role:'secretaria',suspended:false},messages:p.messages});
+            return result({conversations:[{id:3,title:'Conversa SQL',role:'secretaria',unread:1}]});
+        }
+        if(route.endsWith('/alunos/index.php'))return result({students:[],activeSchoolYear:{id:1,year:2026}});
+        if(route.endsWith('/turmas/alunos.php'))return result({students:[]});
+        if(route.endsWith('/turmas/index.php'))return result({classes:[],activeSchoolYear:{id:1,year:2026}});
+        if(route.endsWith('/responsaveis/index.php'))return result({guardians:[]});
+        if(route.endsWith('/professores/index.php'))return result({professors:[],teachers:[]});
+        if(route.endsWith('/chat/entregas.php')||route.endsWith('/chat/status.php'))return result({statuses:{}});
+        throw Error('API inesperada: '+route);
+    };
+}
+async function frame(page){
+    let html=await(await fetch('../pages/'+page+'.html')).text();html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,'');
+    html=html.replace(/<head>/i,'<head><base href="'+new URL('../pages/',location.href).href+'"><script>('+fixture.toString()+')('+JSON.stringify(page)+');<\/script>');
+    const f=document.createElement('iframe');f.style.cssText='width:1440px;height:1000px;border:0';f.srcdoc=html;document.body.append(f);return f;
+}
+(async()=>{
+    let total=0;const check=(ok,label)=>{if(!ok)throw Error(label);total++;};
+    for(const [page,counter] of [['alunos','#totalStudents'],['turmas','#totalClasses'],['responsaveis','#totalGuardians'],['chat-professor',null]]) {
+        const f=window.previewFrame=await frame(page);
+        await waitFor(()=>f.contentWindow.probe?.requests.some(r=>r.route.endsWith(page==='chat-professor'?'/chat/central.php':'/'+page+'/index.php')));
+        await pause(250);const w=f.contentWindow,d=f.contentDocument,p=w.probe,q=s=>d.querySelector(s);
+        check(!w.PrimeWayStorage&&!w.PrimeWay.managedStorageKeys,page+': sem sincronização/espera genérica');
+        check(p.keys.every(key=>w.localStorage.getItem(key)===null),page+': chaves antigas removidas');
+        check(w.localStorage.getItem('preferencia-teste')==='preservar'&&w.sessionStorage.getItem('sessao-teste')==='preservar',page+': demais preferências/sessão preservadas');
+        for(const key of p.keys){w.localStorage.setItem(key,'[]');w.dispatchEvent(new w.StorageEvent('storage',{key,newValue:'[{"id":900,"name":"Legado adulterado"}]'}));}
+        await pause(250);check(p.keys.every(key=>w.localStorage.getItem(key)===null)&&!d.body.textContent.includes('Legado adulterado'),page+': interface antiga não substitui dados reais');
+        check(!p.requests.some(r=>r.route.includes('/estado/')),page+': nenhuma chamada de estado');
+        check(w.sessionStorage.getItem('primewayCsrfToken')==='b'.repeat(64),page+': protocolo CSRF continua ativo');
+        if(counter)check(q(counter).textContent.trim()==='0',page+': contador vem da API vazia');
+        else {
+            check(d.querySelectorAll('.conversation').length===1&&q('.conversation').textContent.includes('Conversa SQL'),'Chat Admin lista relações reais');
+            q('.conversation').click();await waitFor(()=>q('.chat-messages').textContent.includes('Mensagem SQL'));
+            check(p.requests.some(r=>r.payload?.action==='read'),'leitura é individual no backend');
+            q('.chat-input-area input[type="text"]').value='Envio relacional';q('.chat-send').click();
+            await waitFor(()=>q('.chat-messages').textContent.includes('Envio relacional'));
+            check(p.requests.find(r=>r.payload?.action==='send').csrf==='b'.repeat(64),'Chat envia com CSRF');
+            check(q('#newChatButton').hidden&&q('#conversationOptionsButton').hidden&&!q('#newChatButton').getClientRects().length&&!q('#conversationOptionsButton').getClientRects().length,'Chat não oferece criação/exclusão sem permissão PHP');
+            for(const width of [1440,390]){f.style.width=width+'px';await pause(100);check(d.documentElement.scrollWidth<=d.documentElement.clientWidth,'Chat sem transbordamento em '+width);}
+        }
+        check(p.errors.length===0,page+': sem exceções JavaScript');f.remove();
+    }
+    const login=window.previewFrame=await frame('login');await waitFor(()=>typeof login.contentWindow.obterPaginaInicial==='function');
+    const w=login.contentWindow;
+    check(await w.obterPaginaInicial('admin')==='calendario.html','login Admin usa configuração relacional');
+    w.probe.invalidPage=true;check(await w.obterPaginaInicial('admin')==='dashboard.html','login valida destino da configuração');
+    for(const [role,page] of [['professor','professor.html'],['secretaria','secretaria.html'],['aluno','aluno_portal.html'],['responsavel','responsavel.html']])
+        check(await w.obterPaginaInicial(role)===page,'login preserva destino '+role);
+    check(!w.probe.requests.some(r=>r.route.includes('/estado/'))&&!w.PrimeWayStorage,'login sem estado genérico');login.remove();
+    document.querySelector('#result').dataset.status='passed';document.querySelector('#result').textContent=total+' verificações aprovadas.';
+})().catch(e=>{document.querySelector('#result').dataset.status='failed';document.querySelector('#result').textContent=e.stack;});
+</script></html>

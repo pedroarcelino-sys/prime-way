@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
     "use strict";
-    await window.PrimeWayStorage?.ready;
     const q = s => document.querySelector(s);
     const key = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     const date = s => new Date(`${s}T12:00:00`);

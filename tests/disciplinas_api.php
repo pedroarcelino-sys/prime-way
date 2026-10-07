@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // Rotas e guards reais, sessão somente em memória. Nenhuma escrita autorizada é enviada.
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
-if ($argc === 1) {
+if ($argc === 1 || ($argv[1] ?? '') === '--local-data') {
     $total=0;
     $check=static function (bool $ok,string $label) use (&$total): void {
         if (!$ok) throw new RuntimeException($label);
@@ -21,9 +21,20 @@ if ($argc === 1) {
             $check($result['status']===$expected,"$route / $role retorna HTTP $expected");
             if($role==='admin' && $route==='index') {
                 $subjects=$result['data']['subjects'];
-                $check(count($subjects)===5,'GET real retorna cinco disciplinas');
-                $check(count(array_filter($subjects,fn($s)=>$s['links']===[]))===4,'GET real preserva quatro sem vínculo');
-                $check(count(array_filter($subjects,fn($s)=>count($s['links'])===1))===1,'GET real identifica vínculo');
+                if (($argv[1] ?? '') === '--local-data') {
+                    require_once dirname(__DIR__).'/config/database.php';
+                    $pdo=primewayPdo();
+                    $ids=array_map('intval',$pdo->query('SELECT id FROM disciplinas ORDER BY id')->fetchAll(PDO::FETCH_COLUMN));
+                    $received=array_column($subjects,'id');sort($received);
+                    $check($received===$ids,'GET real preserva todas as identidades deste banco');
+                    $links=[];foreach($subjects as $subject)foreach($subject['links'] as $link)$links[]=$link['id'];sort($links);
+                    $expectedLinks=array_map('intval',$pdo->query('SELECT id FROM turma_disciplinas ORDER BY id')->fetchAll(PDO::FETCH_COLUMN));
+                    $check($links===$expectedLinks,'GET real preserva os vínculos deste banco');
+                } else {
+                    $check(count($subjects)===5,'GET real retorna cinco disciplinas');
+                    $check(count(array_filter($subjects,fn($s)=>$s['links']===[]))===4,'GET real preserva quatro sem vínculo');
+                    $check(count(array_filter($subjects,fn($s)=>count($s['links'])===1))===1,'GET real identifica vínculo');
+                }
             }
             if($role==='admin' && !in_array($route,['index','estado'],true)) {
                 $check(str_contains($result['data']['message'],'Token'),'escrita sem CSRF bloqueada pelo guard real');

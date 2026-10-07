@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded",async function(){
-await window.PrimeWayStorage?.ready;
-
 async function loadAttachmentModule(){
     if(window.PrimeWayChatAttachments)return window.PrimeWayChatAttachments;
 

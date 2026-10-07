@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
     "use strict";
-    await window.PrimeWayStorage?.ready;
     const q = selector => document.querySelector(selector);
     const feedback = (kind, message) => window.PrimeWayFeedback?.[kind]?.(message);
     let csrf = "", subjects = [], classes = [], teachers = [], busy = false, generation = 0;

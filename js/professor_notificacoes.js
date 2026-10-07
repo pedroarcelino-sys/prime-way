@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     const INDEX_URL =
         "../api/professor/notificacoes/index.php";
 

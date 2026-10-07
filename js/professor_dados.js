@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     const API_URL =
         "../api/professor/dados/index.php";
 

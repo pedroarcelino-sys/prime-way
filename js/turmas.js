@@ -3,8 +3,6 @@
 ====================================================*/
 
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     /*====================================================
                     APIs / SESSÃO
     ====================================================*/
@@ -26,9 +24,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const PROFESSORS_API_URL =
         "../api/professores/index.php";
-
-    const CLASSES_STORAGE_KEY =
-        "primewayClasses";
 
     const AUTH_SESSION_URL =
         "../api/auth/session.php";
@@ -841,11 +836,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         classes =
             data.classes;
-
-        localStorage.setItem(
-            CLASSES_STORAGE_KEY,
-            JSON.stringify(classes)
-        );
 
         activeSchoolYear =
             data.activeSchoolYear ||

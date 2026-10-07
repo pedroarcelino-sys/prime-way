@@ -4,17 +4,9 @@
 
 
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     /*====================================================
                 STORAGE / AUTENTICAÇÃO
     ====================================================*/
-
-    const STORAGE_KEY =
-        "primewayStudents";
-
-    const CLASSES_STORAGE_KEY =
-        "primewayClasses";
 
     const STUDENTS_API_URL =
         "../api/alunos/index.php";
@@ -556,130 +548,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     DADOS PADRÃO
     ====================================================*/
 
-    const defaultStudents = [
-
-        {
-            id: 1,
-            name: "Ana Carolina Martins",
-            registration: "PW2026001",
-            className: "1º Ano A",
-            average: 9.1,
-            attendance: 97,
-            status: "Ativo",
-            newStudent: true
-        },
-
-        {
-            id: 2,
-            name: "Bruno Henrique Souza",
-            registration: "PW2026002",
-            className: "1º Ano A",
-            average: 8.4,
-            attendance: 94,
-            status: "Ativo",
-            newStudent: false
-        },
-
-        {
-            id: 3,
-            name: "Camila Ferreira Lima",
-            registration: "PW2026003",
-            className: "2º Ano B",
-            average: 7.7,
-            attendance: 89,
-            status: "Ativo",
-            newStudent: false
-        },
-
-        {
-            id: 4,
-            name: "Daniel Oliveira Costa",
-            registration: "PW2026004",
-            className: "2º Ano B",
-            average: 6.8,
-            attendance: 82,
-            status: "Pendente",
-            newStudent: false
-        },
-
-        {
-            id: 5,
-            name: "Eduarda Ribeiro Alves",
-            registration: "PW2026005",
-            className: "3º Ano A",
-            average: 9.4,
-            attendance: 98,
-            status: "Ativo",
-            newStudent: true
-        },
-
-        {
-            id: 6,
-            name: "Felipe Gomes Santos",
-            registration: "PW2026006",
-            className: "3º Ano A",
-            average: 7.9,
-            attendance: 91,
-            status: "Ativo",
-            newStudent: false
-        },
-
-        {
-            id: 7,
-            name: "Gabriela Mendes Rocha",
-            registration: "PW2026007",
-            className: "4º Ano B",
-            average: 8.8,
-            attendance: 95,
-            status: "Ativo",
-            newStudent: true
-        },
-
-        {
-            id: 8,
-            name: "Henrique Barbosa Melo",
-            registration: "PW2026008",
-            className: "4º Ano B",
-            average: 6.3,
-            attendance: 78,
-            status: "Pendente",
-            newStudent: false
-        }
-
-    ];
-
-
-    const defaultClasses = [
-
-        {
-            name: "1º Ano A",
-            status: "Ativa"
-        },
-
-        {
-            name: "2º Ano B",
-            status: "Ativa"
-        },
-
-        {
-            name: "3º Ano A",
-            status: "Ativa"
-        },
-
-        {
-            name: "4º Ano B",
-            status: "Ativa"
-        }
-
-    ];
-
-
-    /*====================================================
-                    ESTADO DA PÁGINA
-    ====================================================*/
-
-    let students =
-        carregarAlunos();
+    let students = [];
+    let classes = [];
 
 
     const focoAnteriorPorModal =
@@ -828,12 +698,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        localStorage.setItem(
-            CLASSES_STORAGE_KEY,
-            JSON.stringify(
-                data.classes
-            )
-        );
+        classes = data.classes;
 
 
         return data.classes;
@@ -919,23 +784,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         students =
             await carregarAlunosServidor();
-
-
-        salvarAlunos(
-            students
-        );
-    }
-
-
-    function clonarAlunosPadrao() {
-
-        return [];
-    }
-
-
-    function clonarTurmasPadrao() {
-
-        return [];
     }
 
 
@@ -1203,163 +1051,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     STORAGE - ALUNOS
     ====================================================*/
 
-    function carregarAlunos() {
-
-        try {
-
-            const saved =
-                localStorage.getItem(
-                    STORAGE_KEY
-                );
-
-
-            if (!saved) {
-
-                return clonarAlunosPadrao();
-            }
-
-
-            const dados =
-                JSON.parse(
-                    saved
-                );
-
-
-            if (
-                !Array.isArray(
-                    dados
-                )
-            ) {
-
-                return clonarAlunosPadrao();
-            }
-
-
-            return dados
-                .map(
-                    normalizarAluno
-                )
-                .filter(
-                    Boolean
-                );
-
-
-        } catch (
-            erro
-        ) {
-
-            console.warn(
-                "Erro ao carregar alunos:",
-                erro
-            );
-
-
-            return clonarAlunosPadrao();
-        }
-    }
-
-
-    function salvarAlunos(
-        lista = students
-    ) {
-
-        try {
-
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(
-                    lista
-                )
-            );
-
-
-            return true;
-
-
-        } catch (
-            erro
-        ) {
-
-            console.error(
-                "Erro ao salvar alunos:",
-                erro
-            );
-
-
-            return false;
-        }
-    }
-
-
-    /*====================================================
-                    STORAGE - TURMAS
-    ====================================================*/
-
-    function carregarTurmas() {
-
-        try {
-
-            const saved =
-                localStorage.getItem(
-                    CLASSES_STORAGE_KEY
-                );
-
-
-            if (!saved) {
-
-                return clonarTurmasPadrao();
-            }
-
-
-            const turmas =
-                JSON.parse(
-                    saved
-                );
-
-
-            if (
-                !Array.isArray(
-                    turmas
-                )
-            ) {
-
-                return clonarTurmasPadrao();
-            }
-
-
-            return turmas.filter(
-                function (
-                    turma
-                ) {
-
-                    return (
-                        turma &&
-                        typeof turma ===
-                            "object" &&
-                        String(
-                            turma.name ??
-                            ""
-                        ).trim()
-                    );
-                }
-            );
-
-
-        } catch (
-            erro
-        ) {
-
-            console.warn(
-                "Erro ao carregar turmas:",
-                erro
-            );
-
-
-            return clonarTurmasPadrao();
-        }
-    }
-
-
     function turmaEstaAtiva(
         turma
     ) {
@@ -1417,7 +1108,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     ) {
 
         const turmas =
-            carregarTurmas();
+            classes;
 
 
         const turmasAtivas =
@@ -1534,7 +1225,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             new Set();
 
 
-        carregarTurmas().forEach(
+        classes.forEach(
             function (
                 turma
             ) {
@@ -2425,7 +2116,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const turmaSelecionada =
                 nomeTurmaSelecionada
-                    ? carregarTurmas().find(
+                    ? classes.find(
                         turma =>
                             normalizarTexto(
                                 turma.name
@@ -3095,54 +2786,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             SINCRONIZAÇÃO ENTRE ABAS
     ====================================================*/
 
-    window.addEventListener(
-        "storage",
-        function (
-            event
-        ) {
-
-            if (
-                event.key ===
-                STORAGE_KEY
-            ) {
-
-                students =
-                    carregarAlunos();
-
-
-                preencherFiltroTurmas();
-
-
-                renderStudents();
-
-
-                return;
-            }
-
-
-            if (
-                event.key ===
-                CLASSES_STORAGE_KEY
-            ) {
-
-                preencherFiltroTurmas();
-
-
-                if (
-                    studentModal.classList.contains(
-                        "active"
-                    )
-                ) {
-
-                    preencherSelectTurmas(
-                        studentClass.value
-                    );
-                }
-            }
-        }
-    );
-
-
     /*====================================================
                     INICIALIZAÇÃO
     ====================================================*/
@@ -3162,11 +2805,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             alunosServidor;
 
 
-        salvarAlunos(
-            students
-        );
-
-
     } catch (
         error
     ) {
@@ -3178,7 +2816,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
         PrimeWayFeedback.warning(
-            "Não foi possível atualizar os alunos pelo servidor. A última cópia local disponível será exibida."
+            "Não foi possível carregar os alunos pelo servidor. Tente novamente."
         );
     }
 

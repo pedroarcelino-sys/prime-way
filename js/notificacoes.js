@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
     "use strict";
-    await window.PrimeWayStorage?.ready;
     const q=s=>document.querySelector(s), feedback=(kind,message)=>window.PrimeWayFeedback?.[kind]?.(message);
     const normalize=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
     const form=q("#notificationForm"),modal=q("#notificationModal"),view=q("#notificationViewModal");

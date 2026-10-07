@@ -51,8 +51,8 @@ async function frameFor(page,role) {
         await waitFor(()=>frame.contentDocument.querySelectorAll('.calendar-event').length===3);
         const w=frame.contentWindow,d=frame.contentDocument,q=s=>d.querySelector(s),p=w.probe;
         check(!d.body.textContent.includes('Legado ignorado'),'eventos legados ignorados');
-        check(!w.PrimeWay.managedStorageKeys.has('primewayCalendarEvents'),'core não gerencia calendário legado');
-        check(!w.PrimeWay.managedStorageKeys.has('primewayNotifications'),'core não gerencia notificações relacionais');
+        check(!w.PrimeWay.managedStorageKeys,'core não gerencia calendário legado');
+        check(!w.PrimeWayStorage,'core não hidrata notificações relacionais');
         check(w.localStorage.getItem('primewayNotifications')===null,'core limpa somente a compatibilidade do navegador');
         w.localStorage.setItem('primewayCalendarEvents','[]');await pause(300);
         check(!p.requests.some(r=>r.payload?.key==='primewayCalendarEvents'),'estado não recebe calendário legado');
