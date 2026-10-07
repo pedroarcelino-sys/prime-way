@@ -1,6 +1,6 @@
 (function(){"use strict";
 const SESSION_URL="../api/auth/session.php",LOGOUT_URL="../api/auth/logout.php",NAV_URL="../api/aluno/navegacao.php",LOGIN_PAGE="login.html";
-const ROLE_PAGES={admin:"dashboard.html",professor:"professor.html",responsavel:"responsavel.html",secretaria:"dashboard.html"};let cached=null;
+const ROLE_PAGES={admin:"dashboard.html",professor:"professor.html",responsavel:"responsavel.html",secretaria:"secretaria.html"};let cached=null;
 async function readJson(r){try{return await r.json()}catch{return null}}
 function clear(){["primewayLogado","primewayUsuario","primewayPerfil"].forEach(k=>sessionStorage.removeItem(k))}
 async function getSession(force=false){if(cached&&!force)return cached;const r=await fetch(SESSION_URL,{credentials:"same-origin",cache:"no-store",headers:{Accept:"application/json"}}),d=await readJson(r);if(!r.ok||!d?.authenticated||!d.usuario){cached=null;return null}cached=d;return d}

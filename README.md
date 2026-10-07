@@ -29,7 +29,7 @@ Também é possível configurar o banco com as variáveis descritas em `.env.exa
 
 - `database/primeway.sql`: schema consolidado para instalação limpa;
 - `database/migrations/`: evolução incremental de uma instalação existente;
-- `database/migrations/010_estado_aplicacao.sql`: persistência compartilhada dos módulos que antes dependiam exclusivamente de `localStorage`.
+- `database/migrations/010_estado_aplicacao.sql`: migration histórica preservada; a sincronização genérica foi aposentada.
 
 Não execute o schema consolidado sobre um banco existente. Para atualizar a instalação atual, aplique somente as migrations ainda não executadas, em ordem.
 
@@ -51,9 +51,11 @@ O executor registra `002` a `009` e aplica automaticamente as posteriores. Não 
 
 ## Persistência da interface
 
-Autenticação, configurações, turmas e alunos possuem APIs relacionais próprias. Responsáveis, disciplinas, calendário, notificações e chat são sincronizados pela API `api/estado/index.php`. O navegador conserva uma cópia em `localStorage` como cache de compatibilidade e modo offline; quando há dados no servidor, eles têm prioridade na abertura da página.
+Os cinco perfis utilizam APIs próprias em PHP, com MySQL como fonte de verdade e autorização no servidor. Turmas, alunos, responsáveis, disciplinas, calendário, notificações, chat e registros acadêmicos não dependem de coleções em `localStorage` nem de `PrimeWayStorage`.
 
-O chat possui escopo por usuário. As demais coleções sincronizadas são compartilhadas e respeitam os perfis autorizados pela API.
+`api/estado/index.php` permanece somente como barreira para clientes antigos: não publica coleções e rejeita gravações de chaves aposentadas. O navegador remove e impede a regravação dessas chaves; os registros relacionais permanecem intactos. Não há modo offline de dados acadêmicos.
+
+O checklist por perfil e os limites da validação automatizada estão em [docs/fechamento-funcional.md](docs/fechamento-funcional.md). A recuperação de acesso orienta contato com a Secretaria; não há recuperação automática de senha.
 
 ## Segurança
 

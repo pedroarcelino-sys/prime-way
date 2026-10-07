@@ -11,9 +11,18 @@ $usuario = primewayExigirPerfis(['admin']);
 try {
     $pdo = primewayPdo();
 
-    $contar = static function (PDO $pdo, string $sql): int {
-        return (int) $pdo->query($sql)->fetchColumn();
+    $contar = static function (PDO $pdo, string $sql, array $params=[]): int {
+        $stmt=$pdo->prepare($sql);$stmt->execute($params);
+        return (int) $stmt->fetchColumn();
     };
+
+    $regras=['media_aprovacao'=>6.0,'frequencia_minima'=>75.0];
+    foreach ($pdo->query("SELECT chave,valor FROM configuracoes_sistema WHERE grupo='academico'
+        AND chave IN ('media_aprovacao','frequencia_minima')")->fetchAll() as $regra) {
+        $max=$regra['chave']==='media_aprovacao'?10:100;
+        if (is_numeric($regra['valor']) && (float)$regra['valor']>=0 && (float)$regra['valor']<=$max)
+            $regras[$regra['chave']]=(float)$regra['valor'];
+    }
 
     $media = $pdo->query(
         "
@@ -123,9 +132,10 @@ try {
                 FROM notas n
                 INNER JOIN avaliacoes a ON a.id = n.avaliacao_id
                 GROUP BY n.matricula_id
-                HAVING AVG((n.valor / NULLIF(a.valor_maximo, 0)) * 10) < 6
+                HAVING AVG((n.valor / NULLIF(a.valor_maximo, 0)) * 10) < :media_aprovacao
             ) medias_baixas
-        "
+        ",
+        ['media_aprovacao'=>$regras['media_aprovacao']]
     );
 
     $baixaFrequencia = $contar(
@@ -139,9 +149,10 @@ try {
                 HAVING (
                     SUM(CASE WHEN situacao IN ('Presente', 'Atraso') THEN 1 ELSE 0 END)
                     / NULLIF(COUNT(*), 0)
-                ) < 0.75
+                ) < :frequencia_minima
             ) frequencias_baixas
-        "
+        ",
+        ['frequencia_minima'=>$regras['frequencia_minima']/100]
     );
 
     $notasPendentes = $contar(

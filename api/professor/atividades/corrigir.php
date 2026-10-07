@@ -37,29 +37,19 @@ $entregaId =
     );
 
 
-$nota =
-    isset(
-        $dados['grade']
-    )
-        ? (float) $dados['grade']
-        : null;
+function primewayCorrecaoNumero(mixed $value): ?float {
+    if (!is_int($value) && !is_float($value) && !is_string($value)) return null;
+    if (is_string($value)) $value=str_replace(',','.',trim($value));
+    return is_numeric($value) && is_finite((float)$value) ? round((float)$value,2) : null;
+}
+$nota = primewayCorrecaoNumero($dados['grade'] ?? null);
 
 
-$valorMaximo =
-    isset(
-        $dados['maximum']
-    )
-        ? (float) $dados['maximum']
-        : null;
+$valorMaximo = primewayCorrecaoNumero($dados['maximum'] ?? null);
 
 
-$feedback =
-    trim(
-        (string) (
-            $dados['feedback']
-            ?? ''
-        )
-    );
+if (!is_string($dados['feedback'] ?? '')) primewayResponderJson(['success'=>false,'message'=>'Feedback inválido.'],422);
+$feedback = trim($dados['feedback'] ?? '');
 
 
 /*====================================================
@@ -458,6 +448,15 @@ try {
             (int) $avaliacao[
                 'id'
             ];
+
+        // O máximo é compartilhado pela avaliação: proteger notas já lançadas.
+        $stmtMaiorNota=$pdo->prepare('SELECT MAX(valor) FROM notas WHERE avaliacao_id=?');
+        $stmtMaiorNota->execute([$avaliacaoId]);
+        $maiorNota=$stmtMaiorNota->fetchColumn();
+        if ($maiorNota!==null && $maiorNota!==false && $valorMaximo<(float)$maiorNota) {
+            $pdo->rollBack();
+            primewayResponderJson(['success'=>false,'message'=>'O valor máximo não pode ser menor que uma nota já lançada.'],409);
+        }
 
 
         /*============================================

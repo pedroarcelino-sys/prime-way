@@ -56,7 +56,13 @@ if(!in_array($route,['index','salvar','salvar_vinculo','status','estado'],true))
 require_once dirname(__DIR__).'/api/_bootstrap.php';
 session_set_save_handler(new DisciplinasTestSession(),true);
 primewayIniciarSessao();
-if($role!=='anonimo')$_SESSION=['usuario_id'=>1,'usuario_email'=>'isolado@local.invalid','usuario_perfil'=>$role];
+if($role!=='anonimo') {
+    // O perfil é revalidado no banco: usar uma conta existente do perfil exercitado.
+    $stmt=primewayPdo()->prepare('SELECT id FROM usuarios WHERE perfil=? AND ativo=1 ORDER BY id LIMIT 1');
+    $stmt->execute([$role]);$id=$stmt->fetchColumn();
+    if(!$id)throw new RuntimeException('Perfil necessário para o teste: '.$role);
+    $_SESSION=['usuario_id'=>(int)$id,'usuario_email'=>'isolado@local.invalid','usuario_perfil'=>$role];
+}
 $_SERVER['REQUEST_METHOD']=$route==='index'?'GET':'POST';
 if($route==='estado')$_SERVER['HTTP_X_CSRF_TOKEN']=primewayTokenCsrf();
 http_response_code(200);
