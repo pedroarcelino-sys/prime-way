@@ -8,6 +8,6 @@ declare(strict_types=1);
 */
 
 return [
-    'username' => 'root',
-    'password' => '123456'
+    'user' => 'primeway_migracao',
+    'password' => '' // Preencher somente no arquivo local ignorado pelo Git.
 ];

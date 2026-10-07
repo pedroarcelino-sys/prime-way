@@ -1,0 +1,45 @@
+# Modelo para domínio na raiz; substituir domínio, paths, socket e certificados.
+server {
+    listen 80;
+    server_name escola.example.org;
+    # Se usar HTTP-01/ACME, configurar sua location antes do redirect.
+    location / { return 301 https://escola.example.org$request_uri; }
+}
+server {
+    listen 443 ssl;
+    server_tokens off;
+    server_name escola.example.org;
+    root /var/www/primeway/current;
+    index index.html;
+    ssl_certificate /etc/letsencrypt/live/escola.example.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/escola.example.org/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    autoindex off;
+    client_max_body_size 22m;
+    add_header X-Content-Type-Options nosniff always;
+    add_header X-Frame-Options SAMEORIGIN always;
+    add_header Referrer-Policy strict-origin-when-cross-origin always;
+    add_header Permissions-Policy 'geolocation=(self), microphone=(self), camera=(self)' always;
+    add_header Strict-Transport-Security 'max-age=31536000' always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'" always;
+    location ~ ^/(?:config|database|tests|docs|deploy|storage|vendor|node_modules|backups|tmp|logs)(?:/|$) { return 404; }
+    location ~ /\.(?!well-known(?:/|$)) { return 404; }
+    location ~ ^/api/(?:.*/)?_[^/]*\.php$ { return 404; }
+    location ~* (?:\.(?:sql|log|ini|conf|yaml|yml|toml|md|bak|dump|pem|key|p12|pfx|example|zip|tar|tgz|7z|gz|bz2|tmp|pid)|composer\.(?:json|lock)|package(?:-lock)?\.json)$ { return 404; }
+    location / { try_files $uri $uri/ =404; }
+    location ~ \.php$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS on;
+        fastcgi_pass unix:/run/php/primeway.sock;
+        # Headers de PHP repetem os de segurança do servidor: deixar um único valor.
+        fastcgi_hide_header X-Powered-By;
+        fastcgi_hide_header X-Content-Type-Options;
+        fastcgi_hide_header X-Frame-Options;
+        fastcgi_hide_header Referrer-Policy;
+        fastcgi_hide_header Permissions-Policy;
+        fastcgi_hide_header Content-Security-Policy;
+        fastcgi_hide_header Strict-Transport-Security;
+    }
+}
