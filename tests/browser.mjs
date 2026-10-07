@@ -46,7 +46,7 @@ try {
     ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise(resolve=>ws.addEventListener('open',resolve));
     ws.addEventListener('message',event=>{const m=JSON.parse(event.data),p=pending.get(m.id);if(!p)return;clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);});
     await send('Runtime.enable');await send('Page.enable');
-    const pages=['disciplinas.html','chat_composer.html','chat_messages.html','chat_visibility.html','saida_segura_mapa.html'];
+    const pages=['calendario.html','disciplinas.html','chat_composer.html','chat_messages.html','chat_visibility.html','saida_segura_mapa.html'];
     if(process.argv.includes('--leaflet-real'))pages.push('saida_segura_mapa.html?real=1');
     for(const file of pages) {
         await send('Page.navigate',{url:origin+'/tests/'+file});
@@ -54,6 +54,21 @@ try {
         const result=await evaluate("({status:document.querySelector('#result').dataset.status,text:document.querySelector('#result').textContent})");
         console.log(JSON.stringify({file,...result}));
         if(result.status!=='passed')throw Error('Falha em '+file);
+    }
+    if(process.argv.includes('--calendar-visual')) {
+        await send('Page.navigate',{url:origin+'/tests/calendario.html?preview=1'});
+        await until("document.querySelector('#result')?.dataset.status");
+        for(const width of [1440,390]) {
+            await send('Emulation.setDeviceMetricsOverride',{width,height:1100,deviceScaleFactor:1,mobile:false});await pause(300);
+            const layout=await evaluate("(()=>{const d=previewFrame.contentDocument,q=s=>d.querySelector(s);return {overflow:d.documentElement.scrollWidth>d.documentElement.clientWidth,toolbar:q('.calendar-toolbar').getBoundingClientRect().width,panel:q('.calendar-panel').clientWidth,days:d.querySelectorAll('.calendar-day').length};})()");
+            if(layout.overflow||layout.toolbar>layout.panel||layout.days!==42)throw Error('Layout Calendário: '+JSON.stringify(layout));
+            console.log(JSON.stringify({calendarWidth:width,...layout}));
+            const shot=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,`calendario-${width}.png`),Buffer.from(shot.data,'base64'));
+            await evaluate("previewFrame.contentDocument.querySelector('[data-event-id=\"2\"]').click()");await pause(100);
+            const modal=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(output,`calendario-modal-${width}.png`),Buffer.from(modal.data,'base64'));
+            await evaluate("previewFrame.contentDocument.querySelector('#eventViewClose').click()");
+        }
+        console.log('Imagens: '+output);
     }
     if(process.argv.includes('--visual')) {
         await send('Page.navigate',{url:origin+'/tests/disciplinas.html?preview=1&database=1'});

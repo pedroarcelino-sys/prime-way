@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Calendário — interface relacional</title>
+<h1>Calendário: interface real, APIs simuladas</h1>
+<pre id="result">Executando…</pre>
+<script>
+function fixture(role='admin') {
+    const p=window.probe={requests:[],errors:[],role,fail:false};
+    window.addEventListener('error',e=>p.errors.push(e.message));
+    const today=new Date(),date=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-15`;
+    p.events=[{id:2,title:'Histórico inativo',type:'Reunião',date,timeStart:'09:00',timeEnd:'10:00',classId:8,className:'Turma histórica',classStatus:'Inativa',status:'Agendado',creatorName:'Admin',description:'Descrição preservada'},
+        {id:3,title:'Evento concluído',type:'Prova',date,timeStart:'',classId:null,className:'',status:'Concluído'},
+        {id:4,title:'Evento cancelado',type:'Aviso',date,timeStart:'',classId:null,className:'',status:'Cancelado'}];
+    p.classes=[{id:3,name:'Turma ativa',schoolYear:2026,status:'Ativa',available:true},{id:8,name:'Turma histórica',schoolYear:2025,status:'Inativa',available:false}];
+    localStorage.removeItem('primewayDataModelVersion');
+    localStorage.setItem('primewayNotifications',JSON.stringify([{id:'calendar-999',title:'Aviso histórico',type:'Evento',message:'Preservar',date,source:'calendar',sourceId:'999',read:true,audience:'Todos'}]));
+    localStorage.setItem('primewayCalendarEvents',JSON.stringify([{id:900,title:'Legado ignorado'}]));
+    window.fetch=async(url,init={})=>{
+        const u=new URL(url,document.baseURI),payload=init.body?JSON.parse(init.body):null;
+        p.requests.push({route:u.pathname,payload,csrf:new Headers(init.headers).get('X-CSRF-Token')});
+        const result=(data,status=200)=>new Response(JSON.stringify({success:status<400,...data}),{status,headers:{'Content-Type':'application/json'}});
+        if(u.pathname.endsWith('/auth/session.php'))return result({authenticated:true,usuario:{perfil:role},csrfToken:'a'.repeat(64)});
+        if(u.pathname.endsWith('/estado/index.php'))return result({state:{},writableKeys:[]});
+        if(p.fail)return result({message:'Falha simulada'},500);
+        if(u.pathname.endsWith('/calendario/index.php')) {
+            const events=p.events.filter(e=>e.date>=u.searchParams.get('inicio')&&e.date<=u.searchParams.get('fim')&&(!u.searchParams.get('status')||e.status===u.searchParams.get('status')));
+            return result({events,upcoming:p.events.filter(e=>e.status==='Agendado'),classes:p.classes,canManage:role==='admin'});
+        }
+        if(role!=='admin')throw Error('Professor tentou escrever');
+        if(u.pathname.endsWith('/calendario/criar.php')){const event={...payload,id:20,status:'Agendado',className:'Toda a escola'};p.events.push(event);return result({event},201);}
+        if(u.pathname.endsWith('/calendario/atualizar.php')){const event=p.events.find(e=>e.id===payload.id);Object.assign(event,payload);return result({event});}
+        if(u.pathname.endsWith('/calendario/status.php')){const event=p.events.find(e=>e.id===payload.id);event.status=payload.status;return result({event});}
+        throw Error('API inesperada '+u.pathname);
+    };
+}
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function waitFor(fn){for(let i=0;i<200;i++){if(fn())return;await pause(25);}throw Error('Tempo limite');}
+async function frameFor(page,role) {
+    let html=await(await fetch('../pages/'+page)).text();
+    html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,'');
+    html=html.replace(/<head>/i,'<head><base href="'+new URL('../pages/',location.href).href+'"><script>('+fixture.toString()+')('+JSON.stringify(role)+');<\/script>');
+    const frame=document.createElement('iframe');frame.style.cssText='width:100%;height:950px;border:0';frame.srcdoc=html;document.body.append(frame);return frame;
+}
+(async()=>{
+    const preview=new URLSearchParams(location.search).has('preview');
+    let count=0;const check=(ok,label)=>{if(!ok)throw Error(label);count++;};
+    for(const role of ['admin','professor']) {
+        const frame=window.previewFrame=await frameFor('calendario.html',role);
+        await waitFor(()=>frame.contentDocument.querySelectorAll('.calendar-event').length===3);
+        const w=frame.contentWindow,d=frame.contentDocument,q=s=>d.querySelector(s),p=w.probe;
+        check(!d.body.textContent.includes('Legado ignorado'),'eventos legados ignorados');
+        check(!w.PrimeWay.managedStorageKeys.has('primewayCalendarEvents'),'core não gerencia calendário legado');
+        check(w.PrimeWay.managedStorageKeys.has('primewayNotifications'),'core preserva notificações');
+        check(JSON.parse(w.localStorage.getItem('primewayNotifications'))[0].read===true,'primeira execução do core preserva aviso lido');
+        w.localStorage.setItem('primewayCalendarEvents','[]');await pause(300);
+        check(!p.requests.some(r=>r.payload?.key==='primewayCalendarEvents'),'estado não recebe calendário legado');
+        if(preview&&role==='admin'){document.querySelector('#result').dataset.status='passed';document.querySelector('#result').textContent='Preview com dados simulados; nenhuma escrita no banco.';return;}
+        q('[data-event-id="2"]').click();
+        check(q('#viewEventClass').textContent.includes('inativa'),'histórico inativo identificado');
+        if(role==='professor') {
+            check(q('#newEventButton').hidden&&!q('#eventModal')&&!q('.event-view-actions'),'Professor somente leitura');
+            check(q('#eventViewModal').classList.contains('active'),'Professor consulta detalhes');
+            q('#eventViewClose').click();
+            check(p.requests.every(r=>!r.payload),'Professor não envia escrita');
+        } else {
+            q('#editEventButton').click();
+            check(q('#eventClass').value==='8','edição mantém turma inativa');
+            q('#eventTitle').value='Histórico editado';q('#eventForm').requestSubmit();
+            await waitFor(()=>q('#calendarGrid').textContent.includes('Histórico editado'));
+            check(p.events[0].classId===8,'payload mantém vínculo histórico');
+            q('#newEventButton').click();
+            check(![...q('#eventClass').options].some(o=>o.value==='8'),'novo evento exclui turma inativa');
+            q('#eventTitle').value='Evento criado';q('#eventType').value='Evento';q('#eventForm').requestSubmit();
+            await waitFor(()=>q('#calendarGrid').textContent.includes('Evento criado'));
+            check(p.events.at(-1).id===20,'criação usa ID retornado pela API');
+            q('[data-event-id="20"]').click();q('#completeEventButton').click();
+            await waitFor(()=>q('[data-primeway-confirm-accept]'));q('[data-primeway-confirm-accept]').click();
+            await waitFor(()=>q('#viewEventStatus').textContent==='Concluído');
+            check(q('.event-view-actions').hidden,'concluído não permite editar');q('#eventViewClose').click();
+            await waitFor(()=>!q('.primeway-confirm'));
+            q('[data-event-id="2"]').click();q('#cancelEventButton').click();
+            await waitFor(()=>q('[data-primeway-confirm-accept]'));q('[data-primeway-confirm-accept]').click();
+            await waitFor(()=>q('#viewEventStatus').textContent==='Cancelado');q('#eventViewClose').click();
+            check(p.events.length===4,'cancelamento e conclusão mantêm registros');
+            check(p.requests.filter(r=>r.payload).every(r=>r.csrf==='a'.repeat(64)),'CSRF nas alterações Admin');
+            q('#nextMonthButton').click();await waitFor(()=>q('#calendarGrid').getAttribute('aria-busy')==='false');
+            check(!q('#calendarGrid').textContent.includes('Evento criado')&&p.events.length===4,'navegação não exclui outros meses');
+            q('#todayButton').click();await waitFor(()=>q('.calendar-event'));
+            p.fail=true;q('#newEventButton').click();q('#eventTitle').value='Preservar formulário';q('#eventType').value='Evento';q('#eventForm').requestSubmit();
+            await waitFor(()=>d.body.textContent.includes('Falha simulada'));
+            check(q('#eventModal').classList.contains('active')&&q('#eventTitle').value==='Preservar formulário','falha mantém formulário');
+        }
+        check(p.errors.length===0,'nenhuma exceção JavaScript: '+role);frame.remove();
+    }
+    const notes=await frameFor('notificacoes.html','admin');
+    await waitFor(()=>notes.contentDocument.querySelector('.notification-card'));
+    check(notes.contentDocument.body.textContent.includes('Aviso histórico'),'avisos de evento ausente permanecem visíveis');
+    const saved=JSON.parse(notes.contentWindow.localStorage.getItem('primewayNotifications'));
+    check(saved.length===1&&saved[0].read===true,'normalização preserva aviso e leitura sem eventos legados');
+    check(notes.contentWindow.probe.errors.length===0,'Notificações sem exceções');notes.remove();
+    document.querySelector('#result').textContent=count+' verificações aprovadas.';document.querySelector('#result').dataset.status='passed';
+})().catch(e=>{document.querySelector('#result').textContent=e.stack;document.querySelector('#result').dataset.status='failed';});
+</script>
+</html>

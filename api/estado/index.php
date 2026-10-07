@@ -69,14 +69,12 @@ $chavesPorPerfil = [
     'admin' => [
         'primewayGuardians',
         'primewayClasses',
-        'primewayCalendarEvents',
         'primewayNotifications',
         'primewayChatProfessor'
     ],
 
     'professor' => [
         'primewayClasses',
-        'primewayCalendarEvents',
         'primewayNotifications',
         'primewayChatProfessor'
     ],
@@ -111,7 +109,6 @@ $chavesGravaveisPorPerfil = [
         $chavesPorPerfil['admin'],
 
     'professor' => [
-        'primewayCalendarEvents',
         'primewayNotifications',
         'primewayChatProfessor'
     ],
