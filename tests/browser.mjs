@@ -46,14 +46,17 @@ try {
     ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise(resolve=>ws.addEventListener('open',resolve));
     ws.addEventListener('message',event=>{const m=JSON.parse(event.data),p=pending.get(m.id);if(!p)return;clearTimeout(p.timer);pending.delete(m.id);m.error?p.reject(Error(JSON.stringify(m.error))):p.resolve(m.result);});
     await send('Runtime.enable');await send('Page.enable');
-    const pages=['calendario.html','disciplinas.html','chat_composer.html','chat_messages.html','chat_visibility.html','saida_segura_mapa.html'];
+    const pages=['notificacoes.html','calendario.html','disciplinas.html','chat_composer.html','chat_messages.html','chat_visibility.html','saida_segura_mapa.html'];
     if(process.argv.includes('--leaflet-real'))pages.push('saida_segura_mapa.html?real=1');
     for(const file of pages) {
         await send('Page.navigate',{url:origin+'/tests/'+file});
         await until("document.querySelector('#result')?.dataset.status");
         const result=await evaluate("({status:document.querySelector('#result').dataset.status,text:document.querySelector('#result').textContent})");
         console.log(JSON.stringify({file,...result}));
-        if(result.status!=='passed')throw Error('Falha em '+file);
+        if(result.status!=='passed') {
+            if(file==='notificacoes.html') console.log(await evaluate("({probe:window.previewFrame?.contentWindow?.probe,body:window.previewFrame?.contentDocument?.body?.innerText})"));
+            throw Error('Falha em '+file);
+        }
     }
     if(process.argv.includes('--calendar-visual')) {
         await send('Page.navigate',{url:origin+'/tests/calendario.html?preview=1'});

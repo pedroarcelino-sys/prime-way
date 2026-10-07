@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__.'/../notificacoes/_notificacoes.php';
 
 require_once __DIR__ . '/../_bootstrap.php';
 
@@ -19,52 +20,7 @@ try {
     $usuarioId =
         (int) $usuario['id'];
 
-    $stmtNotificacoes =
-        $pdo->prepare(
-            "
-                SELECT COUNT(DISTINCT n.id)
-
-                FROM notificacoes n
-
-                LEFT JOIN notificacao_destinatarios nd
-                    ON nd.notificacao_id = n.id
-                   AND nd.usuario_id = :usuario_id
-
-                WHERE n.status = 'Publicada'
-
-                  AND COALESCE(
-                        n.publicada_em,
-                        n.criado_em
-                      ) <= CURRENT_TIMESTAMP
-
-                  AND (
-                        (
-                            nd.id IS NOT NULL
-                            AND nd.excluida_em IS NULL
-                            AND nd.lida_em IS NULL
-                        )
-
-                        OR
-
-                        (
-                            nd.id IS NULL
-                            AND LOWER(n.publico) IN (
-                                'todos',
-                                'alunos',
-                                'aluno'
-                            )
-                        )
-                      )
-            "
-        );
-
-    $stmtNotificacoes->execute([
-        ':usuario_id' =>
-            $usuarioId
-    ]);
-
-    $unreadNotifications =
-        (int) $stmtNotificacoes->fetchColumn();
+    $unreadNotifications=primewayNotificationUnread($pdo,$usuario);
 
     $stmtMensagens =
         $pdo->prepare(

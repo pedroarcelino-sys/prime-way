@@ -1,4 +1,11 @@
 /*====================================================
+    AUTORIZAÇÃO E ACESSIBILIDADE DA CENTRAL RELACIONAL
+====================================================*/
+.notifications-page [hidden], .notification-view-modal [hidden] { display: none !important; }
+.notification-card:focus-visible { outline: 2px solid var(--secundaria); outline-offset: -2px; }
+#notificationHistoryLabel { font: 11px/1.4 Arial, sans-serif; color: var(--texto-secundario); }
+
+/*====================================================
         NOTIFICAÇÕES - PRIMEWAY SCHOOL
 ====================================================*/
 

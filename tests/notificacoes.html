@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="pt-BR"><meta charset="UTF-8"><title>Notificações relacionais — interfaces</title>
+<h1>Notificações: páginas reais, APIs simuladas</h1><pre id="result">Executando…</pre>
+<script>
+function notificationFixture(role) {
+    const p=window.probe={requests:[],errors:[],role,fail:false};window.addEventListener('error',e=>p.errors.push(e.message));
+    p.items=[{id:1,title:'Aviso relacional',type:'Aviso',message:'Conteúdo do MySQL',audience:'Todos',origin:'Manual',eventId:null,status:'Publicada',date:'2026-10-06 10:00:00',read:false,author:'Admin',authorRole:'admin'},
+        {id:2,title:'Histórico ligado a evento ausente',type:'Evento',message:'Não remover',audience:'Todos',origin:'Calendario',eventId:999,status:'Publicada',date:'2020-01-01 10:00:00',read:true,author:'Secretaria',authorRole:'secretaria'}];
+    p.sent=[];
+    localStorage.setItem('primewayNotifications',JSON.stringify([{id:900,title:'Legado não confiável'}]));
+    localStorage.setItem('primewayCalendarEvents','[]');
+    window.fetch=async(url,init={})=>{
+        const u=new URL(url,document.baseURI),payload=init.body?JSON.parse(init.body):null,route=u.pathname;p.requests.push({route,payload,csrf:new Headers(init.headers).get('X-CSRF-Token')});
+        const result=(data,status=200)=>new Response(JSON.stringify({success:status<400,...data}),{status,headers:{'Content-Type':'application/json'}});
+        if(route.endsWith('/auth/session.php'))return result({authenticated:true,usuario:{id:1,perfil:role},csrfToken:'a'.repeat(64)});
+        if(route.endsWith('/estado/index.php'))return result({state:{primewayNotifications:[{id:901,title:'Estado genérico não confiável'}]},writableKeys:['primewayNotifications']});
+        if(route.endsWith('/navegacao.php'))return result({unreadNotifications:p.items.filter(x=>!x.read&&x.status==='Publicada').length,unreadMessages:0,unreadChat:0});
+        if(p.fail)return result({message:'Falha simulada'},500);
+        if(route.endsWith('/notificacoes/index.php')) {
+            const items=p.items.filter(x=>x.status==='Publicada'||u.searchParams.get('history')==='1');
+            return result({notifications:items,inbox:items,sent:p.sent,canManage:role==='admin',classes:[{id:3,name:'Turma permitida',series:'Teste',shift:'Integral'}],profile:{name:'Professor'},schoolYear:{year:2026}});
+        }
+        if(route.endsWith('/notificacoes/leitura.php')||route.endsWith('/notificacoes/marcar_lida.php')){const x=p.items.find(x=>x.id===payload.notificationId);x.read=payload.read??true;return result({});}
+        if(route.endsWith('/notificacoes/marcar_todas_lidas.php')){p.items.forEach(x=>x.read=true);return result({updated:p.items.length});}
+        if(route.endsWith('/notificacoes/publicar.php')) {
+            const x={...p.items[0],...payload,id:20,read:false,status:'Publicada',recipients:2,readCount:0};
+            if(role==='admin')p.items.push(x);else p.sent.push(x);return result({notificationId:20,recipients:2},201);
+        }
+        if(route.endsWith('/notificacoes/cancelar.php')){p.items.find(x=>x.id===payload.notificationId).status='Cancelada';return result({});}
+        throw Error('API inesperada: '+route);
+    };
+}
+const pause=ms=>new Promise(r=>setTimeout(r,ms));async function waitFor(fn){for(let i=0;i<240;i++){if(fn())return;await pause(25);}throw Error('Tempo limite');}
+async function notificationFrame(role,central=false,width=1440) {
+    const page=role==='admin'||central?'notificacoes.html':role+'_notificacoes.html';let html=await(await fetch('../pages/'+page)).text();
+    html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,'');
+    html=html.replace(/<head>/i,'<head><base href="'+new URL('../pages/',location.href).href+'"><script>('+notificationFixture.toString()+')('+JSON.stringify(role)+');<\/script>');
+    const frame=document.createElement('iframe');frame.style.cssText=`width:${width}px;height:950px;border:0`;frame.srcdoc=html;document.body.append(frame);return frame;
+}
+(async()=>{
+    let count=0;const check=(ok,label)=>{if(!ok)throw Error(label);count++;};
+    const selectors={admin:['#notificationsList .notification-card','#notificationSearch','#unreadNotifications'],professor:['#inboxList .teacher-notification-item','#inboxSearch','#unreadCount'],secretaria:['#inboxList .secretary-notification-item','#inboxSearch','#unreadCount'],aluno:['#notificationInbox .notification-item','#notificationSearch','#notificationUnread'],responsavel:['#noticeList .guardian-notice','#noticeSearch','#unreadCount']};
+    for(const role of ['admin','professor','secretaria','aluno','responsavel']) {
+        const frame=window.previewFrame=await notificationFrame(role);
+        const [cards,search,unread]=selectors[role];await waitFor(()=>frame.contentDocument.querySelectorAll(cards).length===2);
+        const w=frame.contentWindow,d=frame.contentDocument,q=s=>d.querySelector(s),p=w.probe;
+        check(q(unread).textContent==='1',role+': contador inicial individual');
+        check(!d.body.textContent.includes('Legado não confiável')&&!d.body.textContent.includes('Estado genérico não confiável'),role+': usa somente resposta relacional');
+        check(w.localStorage.getItem('primewayNotifications')===null,role+': compatibilidade limpa');
+        w.localStorage.setItem('primewayNotifications','[]');await pause(250);
+        check(w.localStorage.getItem('primewayNotifications')===null&&!p.requests.some(r=>r.payload?.key==='primewayNotifications'),role+': escrita legada ignorada e não enviada');
+        for(const width of [1440,390]){frame.style.width=width+'px';await pause(100);check(d.documentElement.scrollWidth<=d.documentElement.clientWidth,role+': largura '+width+' sem transbordamento');}
+        check(d.body.textContent.includes('Histórico ligado a evento ausente'),role+': histórico consultável sem calendário');
+        q(search).value='evento ausente';q(search).dispatchEvent(new w.Event('input',{bubbles:true}));check(d.querySelectorAll(cards).length===1,role+': pesquisa');
+        q(search).value='';q(search).dispatchEvent(new w.Event('input',{bubbles:true}));q(cards).click();await waitFor(()=>q(unread).textContent==='0');
+        check(p.requests.some(r=>r.payload?.notificationId===1),role+': leitura por ID pela API');
+        if(role==='admin') {
+            q('#toggleReadButton').click();await waitFor(()=>q(unread).textContent==='1');check(!p.items[0].read,'Admin alterna somente sua leitura');q('#notificationViewClose').click();
+            q('#newNotificationButton').click();q('#notificationTitle').value='Novo relacional';q('#notificationMessage').value='Mensagem';q('#notificationForm').requestSubmit();
+            await waitFor(()=>d.querySelectorAll(cards).length===3);check(p.items.at(-1).id===20,'Admin usa ID gerado no servidor');
+            q('[data-notification-id="20"]').click();await waitFor(()=>q('#notificationViewModal').classList.contains('active'));q('#deleteNotificationButton').click();
+            await waitFor(()=>q('[data-primeway-confirm-accept]'));q('[data-primeway-confirm-accept]').click();await waitFor(()=>d.querySelectorAll(cards).length===2);
+            check(p.items.length===3&&p.items.at(-1).status==='Cancelada','cancelamento mantém histórico');q('#notificationHistory').checked=true;q('#notificationHistory').dispatchEvent(new w.Event('change'));await waitFor(()=>d.querySelectorAll(cards).length===3);
+            check(q('#notificationsList').textContent.includes('Cancelada'),'Admin consulta histórico cancelado');
+            p.fail=true;q('#newNotificationButton').click();q('#notificationTitle').value='Preservar formulário';q('#notificationMessage').value='Mensagem';q('#notificationForm').requestSubmit();
+            await waitFor(()=>d.body.textContent.includes('Falha simulada'));check(q('#notificationModal').classList.contains('active')&&q('#notificationTitle').value==='Preservar formulário','erro preserva formulário Admin');
+        } else if(['secretaria','professor'].includes(role)) {
+            q('#newNoticeButton').click();q('#noticeTitle').value='Comunicado permitido';q('#noticeMessage').value='Mensagem';if(role==='professor')q('#noticeClass').value='3';else q('#noticeAudience').value='all';
+            q('#noticeForm').requestSubmit();await waitFor(()=>p.sent.length===1&&!q('#noticeDialog').open);check(p.requests.some(r=>r.route.endsWith('/'+role+'/notificacoes/publicar.php')),role+': publicação mantém rota própria');
+        } else check(!q('#newNoticeButton')&&!q('#newNotificationButton'),role+': não recebe ação de publicação');
+        check(p.requests.filter(r=>r.payload&&!r.route.includes('/estado/')).every(r=>r.csrf==='a'.repeat(64)),role+': CSRF em escritas');
+        check(p.errors.length===0,role+': sem exceções JavaScript');frame.remove();
+    }
+    const teacher=await notificationFrame('professor',true,390);await waitFor(()=>teacher.contentDocument.querySelectorAll('.notification-card').length===2);
+    const d=teacher.contentDocument,q=s=>d.querySelector(s);q('.notification-card').click();
+    check(q('#newNotificationButton').hidden&&q('#markAllReadButton').hidden&&q('#toggleReadButton').hidden&&q('#deleteNotificationButton').hidden,'central compartilhada mantém Professor somente leitura');
+    check(!teacher.contentWindow.probe.requests.some(r=>r.payload),'Professor não escreve pela central compartilhada');teacher.remove();
+    document.querySelector('#result').dataset.status='passed';document.querySelector('#result').textContent=count+' verificações aprovadas.';
+})().catch(e=>{document.querySelector('#result').dataset.status='failed';document.querySelector('#result').textContent=e.stack;});
+</script></html>

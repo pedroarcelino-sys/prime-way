@@ -22,6 +22,7 @@ function fixture(role='admin') {
         const result=(data,status=200)=>new Response(JSON.stringify({success:status<400,...data}),{status,headers:{'Content-Type':'application/json'}});
         if(u.pathname.endsWith('/auth/session.php'))return result({authenticated:true,usuario:{perfil:role},csrfToken:'a'.repeat(64)});
         if(u.pathname.endsWith('/estado/index.php'))return result({state:{},writableKeys:[]});
+        if(u.pathname.endsWith('/notificacoes/index.php'))return result({notifications:[{id:999,title:'Aviso histórico',type:'Evento',message:'Preservar',date,origin:'Calendario',eventId:999,read:true,status:'Publicada',audience:'Todos'}],canManage:role==='admin'});
         if(p.fail)return result({message:'Falha simulada'},500);
         if(u.pathname.endsWith('/calendario/index.php')) {
             const events=p.events.filter(e=>e.date>=u.searchParams.get('inicio')&&e.date<=u.searchParams.get('fim')&&(!u.searchParams.get('status')||e.status===u.searchParams.get('status')));
@@ -51,8 +52,8 @@ async function frameFor(page,role) {
         const w=frame.contentWindow,d=frame.contentDocument,q=s=>d.querySelector(s),p=w.probe;
         check(!d.body.textContent.includes('Legado ignorado'),'eventos legados ignorados');
         check(!w.PrimeWay.managedStorageKeys.has('primewayCalendarEvents'),'core não gerencia calendário legado');
-        check(w.PrimeWay.managedStorageKeys.has('primewayNotifications'),'core preserva notificações');
-        check(JSON.parse(w.localStorage.getItem('primewayNotifications'))[0].read===true,'primeira execução do core preserva aviso lido');
+        check(!w.PrimeWay.managedStorageKeys.has('primewayNotifications'),'core não gerencia notificações relacionais');
+        check(w.localStorage.getItem('primewayNotifications')===null,'core limpa somente a compatibilidade do navegador');
         w.localStorage.setItem('primewayCalendarEvents','[]');await pause(300);
         check(!p.requests.some(r=>r.payload?.key==='primewayCalendarEvents'),'estado não recebe calendário legado');
         if(preview&&role==='admin'){document.querySelector('#result').dataset.status='passed';document.querySelector('#result').textContent='Preview com dados simulados; nenhuma escrita no banco.';return;}
@@ -96,8 +97,7 @@ async function frameFor(page,role) {
     const notes=await frameFor('notificacoes.html','admin');
     await waitFor(()=>notes.contentDocument.querySelector('.notification-card'));
     check(notes.contentDocument.body.textContent.includes('Aviso histórico'),'avisos de evento ausente permanecem visíveis');
-    const saved=JSON.parse(notes.contentWindow.localStorage.getItem('primewayNotifications'));
-    check(saved.length===1&&saved[0].read===true,'normalização preserva aviso e leitura sem eventos legados');
+    check(notes.contentWindow.localStorage.getItem('primewayNotifications')===null,'consulta relacional não recria estado legado');
     check(notes.contentWindow.probe.errors.length===0,'Notificações sem exceções');notes.remove();
     document.querySelector('#result').textContent=count+' verificações aprovadas.';document.querySelector('#result').dataset.status='passed';
 })().catch(e=>{document.querySelector('#result').textContent=e.stack;document.querySelector('#result').dataset.status='failed';});
