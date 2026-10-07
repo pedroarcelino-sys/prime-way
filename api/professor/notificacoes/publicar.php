@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__.'/../../notificacoes/_notificacoes.php';
 
 require_once __DIR__ . '/../../_bootstrap.php';
 require_once __DIR__ . '/../_contexto.php';
@@ -430,6 +431,7 @@ try {
         ]);
     }
 
+    primewayNotificationAudit($pdo,$usuario,'PUBLICAR_NOTIFICACAO_PROFESSOR',$notificationId,null,['classId'=>$classId,'recipients'=>count($destinatarios)]);
     $pdo->commit();
 
     primewayResponderJson(

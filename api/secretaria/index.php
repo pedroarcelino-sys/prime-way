@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__.'/../notificacoes/_notificacoes.php';
 
 require_once __DIR__ . '/../_bootstrap.php';
 require_once __DIR__ . '/_contexto.php';
@@ -29,19 +30,7 @@ try {
             ->fetchColumn();
     };
 
-    $stmtUnread = $pdo->prepare(
-        "
-            SELECT COUNT(*)
-            FROM notificacao_destinatarios
-            WHERE usuario_id = :usuario_id
-              AND lida_em IS NULL
-              AND excluida_em IS NULL
-        "
-    );
-
-    $stmtUnread->execute([
-        ':usuario_id' => (int) $usuario['id']
-    ]);
+    $unreadNotifications=primewayNotificationUnread($pdo,$usuario);
 
     $stmtRecent = $pdo->query(
         "
@@ -159,7 +148,7 @@ try {
             ),
 
             'unreadNotifications' =>
-                (int) $stmtUnread->fetchColumn()
+                $unreadNotifications
         ],
 
         'pickupRequests' => $requests

@@ -1,11 +1,12 @@
 <?php
 
 declare(strict_types=1);
+require_once __DIR__.'/../notificacoes/_notificacoes.php';
 
 require_once __DIR__ . '/../_bootstrap.php';
 
 primewayExigirMetodo('GET');
-primewayExigirPerfis(['admin']);
+$usuario = primewayExigirPerfis(['admin']);
 
 try {
     $pdo = primewayPdo();
@@ -88,15 +89,7 @@ try {
         "
     )->fetchAll();
 
-    $notificacoes = $pdo->query(
-        "
-            SELECT titulo, tipo, mensagem, COALESCE(publicada_em, criado_em) AS data
-            FROM notificacoes
-            WHERE status = 'Publicada'
-            ORDER BY COALESCE(publicada_em, criado_em) DESC, id DESC
-            LIMIT 5
-        "
-    )->fetchAll();
+    $notificacoes=array_map(static fn(array $row):array=>[...$row,'data'=>$row['data_notificacao']],primewayNotificationRows($pdo,$usuario,[],5));
 
     $desempenho = $pdo->query(
         "

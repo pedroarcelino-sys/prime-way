@@ -8,13 +8,14 @@
     const MANAGED_STORAGE_KEYS = new Set([
         "primewayGuardians",
         "primewayClasses",
-        "primewayNotifications",
         "primewayChatProfessor"
     ]);
 
     const originalFetch = window.fetch.bind(window);
     const originalSetItem = Storage.prototype.setItem;
     const originalRemoveItem = Storage.prototype.removeItem;
+    const RETIRED_STORAGE_KEYS = new Set(["primewayNotifications"]);
+    for (const key of RETIRED_STORAGE_KEYS) originalRemoveItem.call(window.localStorage, key);
     const pendingSaves = new Map();
     let hydrating = false;
 
@@ -33,7 +34,7 @@
             "primewayChatProfessor"
         ];
 
-        // Avisos existentes continuam válidos após a migração do Calendário.
+        // Notificações relacionais não participam da limpeza de dados de demonstração.
 
         for (const key of legacyKeys) {
             originalRemoveItem.call(window.localStorage, key);
@@ -176,6 +177,7 @@
     }
 
     Storage.prototype.setItem = function primewaySetItem(key, value) {
+        if (this === window.localStorage && RETIRED_STORAGE_KEYS.has(String(key))) return;
         originalSetItem.call(this, key, value);
 
         if (
