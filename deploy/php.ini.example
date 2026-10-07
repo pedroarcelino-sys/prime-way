@@ -1,0 +1,21 @@
+; Configurar no PHP/FPM do provedor. Não depende de .htaccess ou PHP em HTML.
+display_errors = Off
+display_startup_errors = Off
+log_errors = On
+expose_php = Off
+error_reporting = E_ALL
+date.timezone = America/Sao_Paulo
+; Definir error_log e session.save_path em pastas privadas graváveis.
+; error_log = /var/log/primeway/php-error.log
+; session.save_path = /var/lib/primeway/sessions
+session.use_strict_mode = 1
+session.use_only_cookies = 1
+session.use_trans_sid = 0
+session.cookie_httponly = 1
+session.cookie_secure = 1
+session.cookie_samesite = Lax
+upload_max_filesize = 20M
+post_max_size = 22M
+max_file_uploads = 20
+memory_limit = 128M
+; Ambiente: PHP-FPM pode limpar env; definir PRIMEWAY_* no pool/provedor.

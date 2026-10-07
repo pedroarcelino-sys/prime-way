@@ -109,16 +109,14 @@ function primewayMigrationPdo(): PDO
         $config['database']
     );
 
-    return new PDO(
+    $pdo = new PDO(
         $dsn,
         (string) $config['user'],
         (string) $config['password'],
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
-        ]
+        primewayDatabaseOptions($config)
     );
+    primewayDatabaseRequireTls($pdo, $config);
+    return $pdo;
 }
 
 

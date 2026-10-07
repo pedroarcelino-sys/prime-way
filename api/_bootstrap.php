@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../config/storage.php';
+
 /*====================================================
         BASE DAS APIs - PRIMEWAY SCHOOL
 ====================================================*/

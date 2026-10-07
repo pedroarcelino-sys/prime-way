@@ -11,6 +11,8 @@ Sistema acadêmico para gerenciamento escolar, com áreas administrativas e de p
 
 ## Instalação local
 
+Para implantação pública, seguir [docs/preparacao-producao.md](docs/preparacao-producao.md). Os modelos de servidor/PHP estão em `deploy/`; `.env` não é carregado automaticamente. Não enviar configurações locais, dados de desenvolvimento ou anexos junto ao código.
+
 1. Inicie Apache e MySQL pelo XAMPP.
 2. Para uma instalação nova, importe `database/primeway.sql` no MySQL.
 3. Copie `config/database.local.example.php` para `config/database.local.php`.

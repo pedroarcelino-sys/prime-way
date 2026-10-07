@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/runtime.php';
+
 /*====================================================
             SESSÃO - PRIMEWAY SCHOOL
 ====================================================*/
@@ -33,12 +35,7 @@ function primewayIniciarSessao(): void
     );
 
 
-    $secure =
-        !empty(
-            $_SERVER['HTTPS']
-        ) &&
-        $_SERVER['HTTPS'] !==
-        'off';
+    $secure = primewayCookieSecure();
 
 
     session_name(

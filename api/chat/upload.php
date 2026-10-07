@@ -198,7 +198,7 @@ try {
             : 'Arquivo enviado com sucesso.'
     ], 201);
 
-} catch (RuntimeException $erro) {
+} catch (PrimewayChatUploadValidationError $erro) {
     if (isset($pdo) && $pdo instanceof PDO && $pdo->inTransaction()) {
         $pdo->rollBack();
     }

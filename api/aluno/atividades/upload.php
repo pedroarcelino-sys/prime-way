@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_atividade.php';
 
+require_once __DIR__ . '/../../chat/_attachments.php';
+
 
 primewayExigirMetodo('POST');
 
@@ -346,6 +348,12 @@ if (
 /*====================================================
                     BANCO
 ====================================================*/
+
+try {
+    primewayChatValidateContent($caminhoTemporario, $extensao, $mimeType);
+} catch (PrimewayChatUploadValidationError $erro) {
+    primewayResponderJson(['success'=>false,'message'=>$erro->getMessage()],422);
+}
 
 try {
 
@@ -732,11 +740,7 @@ try {
     ================================================*/
 
     $diretorioBase =
-        dirname(
-            __DIR__,
-            3
-        ) .
-        '/storage/atividades';
+        primewayActivitiesStorageRoot();
 
 
     if (
@@ -745,7 +749,7 @@ try {
         ) &&
         !mkdir(
             $diretorioBase,
-            0775,
+            0770,
             true
         ) &&
         !is_dir(

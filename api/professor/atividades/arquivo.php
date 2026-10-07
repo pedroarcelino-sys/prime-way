@@ -210,11 +210,7 @@ try {
 
 
     $caminho =
-        dirname(
-            __DIR__,
-            3
-        ) .
-        '/storage/atividades/' .
+        primewayActivitiesStorageRoot() . DIRECTORY_SEPARATOR .
         $nomeArmazenado;
 
 

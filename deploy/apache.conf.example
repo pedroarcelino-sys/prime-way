@@ -1,0 +1,25 @@
+# Apache 2.4, módulos ssl/rewrite/headers e integração PHP-FPM do provedor.
+ServerTokens Prod
+ServerSignature Off
+<VirtualHost *:80>
+    ServerName escola.example.org
+    # Ajustar ACME caso o certificado use HTTP-01.
+    Redirect permanent / https://escola.example.org/
+</VirtualHost>
+<VirtualHost *:443>
+    ServerName escola.example.org
+    DocumentRoot /var/www/primeway/current
+    SSLEngine on
+    SSLProtocol -all +TLSv1.2 +TLSv1.3
+    SSLCertificateFile /etc/letsencrypt/live/escola.example.org/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/escola.example.org/privkey.pem
+    <Directory /var/www/primeway/current>
+        AllowOverride All
+        Require all granted
+    </Directory>
+    Header always set Strict-Transport-Security "max-age=31536000"
+    # Configurar o handler/socket PHP-FPM conforme o provedor, sem habilitar
+    # execução PHP em storage. Storage deve estar fora de DocumentRoot.
+    ErrorLog /var/log/primeway/apache-error.log
+    CustomLog /var/log/primeway/apache-access.log combined
+</VirtualHost>

@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../../config/storage.php';
+
+final class PrimewayChatUploadValidationError extends RuntimeException {}
+
 function primewayChatStorageRoot(): string
 {
-    $configured = getenv('PRIMEWAY_STORAGE_DIR');
+    $configured = primewayStorageBase();
 
     if (is_string($configured) && trim($configured) !== '') {
         $base = rtrim(trim($configured), "\\/");
@@ -75,6 +79,11 @@ function primewayChatAllowedMimeTypes(): array
 
 function primewayChatValidateUpload(array $file): array
 {
+    foreach (['error','tmp_name','name','type','size'] as $key) {
+        if (isset($file[$key]) && !is_scalar($file[$key])) {
+            throw new PrimewayChatUploadValidationError('Arquivo enviado inválido.');
+        }
+    }
     $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
 
     if ($error !== UPLOAD_ERR_OK) {
@@ -84,27 +93,28 @@ function primewayChatValidateUpload(array $file): array
             UPLOAD_ERR_NO_FILE => 'Selecione um arquivo para enviar.',
             default => 'Não foi possível receber o arquivo enviado.'
         };
-        throw new RuntimeException($message);
+        throw new PrimewayChatUploadValidationError($message);
     }
 
     $temporaryPath = (string) ($file['tmp_name'] ?? '');
-    $originalName = trim((string) ($file['name'] ?? ''));
+    $originalName = basename(str_replace('\\', '/', trim((string) ($file['name'] ?? ''))));
     $clientMimeType = strtolower(trim((string) ($file['type'] ?? '')));
     $size = (int) ($file['size'] ?? 0);
 
     if ($temporaryPath === '' || !is_uploaded_file($temporaryPath)) {
-        throw new RuntimeException('Arquivo enviado inválido.');
+        throw new PrimewayChatUploadValidationError('Arquivo enviado inválido.');
     }
+    $size = (int)filesize($temporaryPath);
     if ($size <= 0) {
-        throw new RuntimeException('O arquivo está vazio.');
+        throw new PrimewayChatUploadValidationError('O arquivo está vazio.');
     }
     if ($size > 10 * 1024 * 1024) {
-        throw new RuntimeException('O arquivo deve possuir no máximo 10 MB.');
+        throw new PrimewayChatUploadValidationError('O arquivo deve possuir no máximo 10 MB.');
     }
 
     $extension = strtolower((string) pathinfo($originalName, PATHINFO_EXTENSION));
     if (!in_array($extension, primewayChatAllowedExtensions(), true)) {
-        throw new RuntimeException('Formato de arquivo não permitido no chat.');
+        throw new PrimewayChatUploadValidationError('Formato de arquivo não permitido no chat.');
     }
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -121,12 +131,14 @@ function primewayChatValidateUpload(array $file): array
     }
 
     if (!in_array($mimeType, primewayChatAllowedMimeTypes(), true)) {
-        throw new RuntimeException('O tipo real do arquivo não é permitido no chat.');
+        throw new PrimewayChatUploadValidationError('O tipo real do arquivo não é permitido no chat.');
     }
 
     if ($mimeType === 'application/zip' && !in_array($extension, ['docx', 'xlsx', 'pptx'], true)) {
-        throw new RuntimeException('Arquivos ZIP não são permitidos no chat.');
+        throw new PrimewayChatUploadValidationError('Arquivos ZIP não são permitidos no chat.');
     }
+
+    primewayChatValidateContent($temporaryPath, $extension, $mimeType);
 
     $audioExtensions = ['webm', 'ogg', 'mp3', 'm4a', 'wav'];
     $isAudio = in_array($extension, $audioExtensions, true)
@@ -136,7 +148,7 @@ function primewayChatValidateUpload(array $file): array
         );
 
     if (in_array($extension, $audioExtensions, true) && !$isAudio) {
-        throw new RuntimeException('O arquivo selecionado não é um áudio válido.');
+        throw new PrimewayChatUploadValidationError('O arquivo selecionado não é um áudio válido.');
     }
 
     $safeOriginalName = preg_replace('/[^\pL\pN._()\- ]+/u', '_', $originalName);
@@ -155,11 +167,53 @@ function primewayChatValidateUpload(array $file): array
     ];
 }
 
+// MIME real deve corresponder à extensão; ZIP genérico não é documento Office.
+function primewayChatValidateContent(string $path, string $extension, string $mime): void
+{
+    $office = [
+        'docx'=>['application/vnd.openxmlformats-officedocument.wordprocessingml.document','word/document.xml'],
+        'xlsx'=>['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','xl/workbook.xml'],
+        'pptx'=>['application/vnd.openxmlformats-officedocument.presentationml.presentation','ppt/presentation.xml']
+    ];
+    if (isset($office[$extension])) {
+        if (!in_array($mime, [$office[$extension][0],'application/zip','application/octet-stream'], true)) {
+            throw new PrimewayChatUploadValidationError('O conteúdo não corresponde ao documento informado.');
+        }
+        try {
+            $archive = new PharData($path);
+            $valid = $archive->isFileFormat(Phar::ZIP)
+                && isset($archive['[Content_Types].xml'], $archive[$office[$extension][1]]);
+            foreach (new RecursiveIteratorIterator($archive) as $entry) {
+                if (strtolower($entry->getFilename()) === 'vbaproject.bin') $valid=false;
+            }
+        } catch (Throwable $error) {
+            $valid=false;
+        }
+        if (!$valid) throw new PrimewayChatUploadValidationError('Documento Office inválido ou com macros não permitidas.');
+        return;
+    }
+    $types = [
+        'pdf'=>['application/pdf'], 'png'=>['image/png'], 'jpg'=>['image/jpeg'], 'jpeg'=>['image/jpeg'],
+        'webp'=>['image/webp'], 'txt'=>['text/plain'],
+        'doc'=>['application/msword'], 'xls'=>['application/vnd.ms-excel'], 'ppt'=>['application/vnd.ms-powerpoint'],
+        'webm'=>['audio/webm','video/webm'], 'ogg'=>['audio/ogg','application/ogg'],
+        'mp3'=>['audio/mpeg'], 'm4a'=>['audio/mp4','video/mp4','audio/x-m4a'],
+        'wav'=>['audio/wav','audio/x-wav','audio/vnd.wave']
+    ];
+    if (in_array($extension, ['doc','xls','ppt'], true) && in_array($mime,['application/octet-stream','application/x-ole-storage'],true)) {
+        $handle=fopen($path,'rb');$magic=$handle?fread($handle,8):'';if($handle)fclose($handle);
+        if ($magic === hex2bin('d0cf11e0a1b11ae1')) return;
+    }
+    if (!in_array($mime, $types[$extension] ?? [], true)) {
+        throw new PrimewayChatUploadValidationError('O conteúdo do arquivo não corresponde ao tipo informado.');
+    }
+}
+
 function primewayChatAttachmentMessageType(string $kind, string $content): string
 {
     if ($kind === 'audio') {
         if (trim($content) !== '') {
-            throw new RuntimeException(
+            throw new PrimewayChatUploadValidationError(
                 'Envie o áudio separadamente, sem texto na mesma mensagem.'
             );
         }

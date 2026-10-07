@@ -9,7 +9,10 @@ import {setTimeout as pause} from 'node:timers/promises';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const output=fs.mkdtempSync(path.join(os.tmpdir(),'primeway-browser-'));
+const productionHeaders=process.argv.includes('--production-headers')
+    ?JSON.parse(execFileSync(process.env.PHP_BINARY || 'php',['-r',`require '${root.replaceAll('\\','/')}/config/runtime.php'; echo json_encode(primewaySecurityHeaders());`],{windowsHide:true}).toString()):{};
 const server=http.createServer((req,res)=>{
+    for(const [name,value] of Object.entries(productionHeaders))res.setHeader(name,value);
     try {
         const url=new URL(req.url,'http://localhost');
         if(url.pathname==='/__test__/disciplinas') {

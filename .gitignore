@@ -24,3 +24,27 @@ Thumbs.db
 
 storage/atividades/
 config/saida_segura.local.php
+
+# Backups, anexos e segredos de implantação (nunca artefatos de release)
+/storage/chat/
+/storage/logs/
+/backups/
+/tmp/
+*.sql.gz
+*.sql.bz2
+*.dump
+*.bak
+*.tmp
+*.pem
+*.key
+*.p12
+*.pfx
+.user.ini
+config/*.local.php
+*.sql
+!database/primeway.sql
+!database/migrations/*.sql
+*.zip
+*.tar
+*.tgz
+*.7z
