@@ -3,8 +3,6 @@
 ====================================================*/
 
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     /*====================================================
                 API / AUTENTICAÇÃO
     ====================================================*/

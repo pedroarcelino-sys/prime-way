@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     const SESSION_URL = "../api/auth/session.php";
     const LOGOUT_URL = "../api/auth/logout.php";
     const GUARDIANS_URL = "../api/responsaveis/index.php";

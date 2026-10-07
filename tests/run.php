@@ -184,17 +184,12 @@ try {
             $raiz . '/js/core.js'
         );
 
-    preg_match(
-        '/const MANAGED_STORAGE_KEYS = new Set\(\[(.*?)\]\);/s',
-        (string) $nucleoJavascript,
-        $estadoGerenciado
-    );
-
     verificar(
         is_string($nucleoJavascript) &&
-        isset($estadoGerenciado[1]) &&
-        !str_contains($estadoGerenciado[1], '"primewayStudents"'),
-        'cache de Alunos não é duplicado no estado genérico'
+        !str_contains($nucleoJavascript, 'MANAGED_STORAGE_KEYS') &&
+        !str_contains($nucleoJavascript, 'PrimeWayStorage') &&
+        !str_contains($nucleoJavascript, 'api/estado'),
+        'núcleo não hidrata nem sincroniza estado genérico'
     );
 
     require_once $raiz . '/api/chat/_attachments.php';

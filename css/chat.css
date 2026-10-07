@@ -2436,6 +2436,11 @@
 
 }
 
+#newChatButton[hidden],
+#conversationOptionsButton[hidden] {
+    display: none !important;
+}
+
 #chatConversations:not([data-ready]) > .conversation {
     display: none;
 }

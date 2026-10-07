@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
-
     const INDEX =
         "../api/responsavel/saida_segura/index.php";
 

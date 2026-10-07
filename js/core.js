@@ -1,64 +1,30 @@
 (function () {
     "use strict";
-
     const CSRF_STORAGE_KEY = "primewayCsrfToken";
-    const STATE_API_URL = "../api/estado/index.php";
-    const DATA_MODEL_VERSION_KEY = "primewayDataModelVersion";
-    const DATA_MODEL_VERSION = "database-first-v1";
-    const MANAGED_STORAGE_KEYS = new Set([
-        "primewayGuardians",
-        "primewayClasses",
-        "primewayChatProfessor"
+    const RETIRED_STORAGE_KEYS = new Set([
+        "primewayGuardians", "primewayClasses", "primewayChatProfessor",
+        "primewayNotifications", "primewayCalendarEvents", "primewaySubjects",
+        "primewayStudents", "primewaySettings", "primewayDataModelVersion"
     ]);
-
     const originalFetch = window.fetch.bind(window);
     const originalSetItem = Storage.prototype.setItem;
     const originalRemoveItem = Storage.prototype.removeItem;
-    const RETIRED_STORAGE_KEYS = new Set(["primewayNotifications"]);
+    // Somente caches aposentados; sessão e dados relacionais permanecem nas APIs.
     for (const key of RETIRED_STORAGE_KEYS) originalRemoveItem.call(window.localStorage, key);
-    const pendingSaves = new Map();
-    let hydrating = false;
-
-    function limparDadosDeDemonstracaoLegados() {
-        if (
-            window.localStorage.getItem(DATA_MODEL_VERSION_KEY) ===
-            DATA_MODEL_VERSION
-        ) {
-            return;
-        }
-
-        const legacyKeys = [
-            "primewayStudents",
-            "primewayGuardians",
-            "primewayClasses",
-            "primewayChatProfessor"
-        ];
-
-        // Notificações relacionais não participam da limpeza de dados de demonstração.
-
-        for (const key of legacyKeys) {
-            originalRemoveItem.call(window.localStorage, key);
-        }
-
-        originalSetItem.call(
-            window.localStorage,
-            DATA_MODEL_VERSION_KEY,
-            DATA_MODEL_VERSION
-        );
-    }
-
-    limparDadosDeDemonstracaoLegados();
-
+    Storage.prototype.setItem = function primewaySetItem(key, value) {
+        if (this === window.localStorage && RETIRED_STORAGE_KEYS.has(String(key))) return;
+        originalSetItem.call(this, key, value);
+    };
     function isApiRequest(input) {
         try {
             const rawUrl =
                 input instanceof Request
                     ? input.url
                     : String(input);
-            const url = new URL(rawUrl, window.location.href);
+            const url = new URL(rawUrl, document.baseURI);
 
             return (
-                url.origin === window.location.origin &&
+                url.origin === window.origin &&
                 url.pathname.includes("/api/")
             );
         } catch (error) {
@@ -119,162 +85,6 @@
 
         return response;
     };
-
-    async function saveState(key, serializedValue) {
-        let value;
-
-        try {
-            value = JSON.parse(serializedValue);
-        } catch (error) {
-            value = serializedValue;
-        }
-
-        const response = await window.fetch(
-            STATE_API_URL,
-            {
-                method: "POST",
-                credentials: "same-origin",
-                cache: "no-store",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ key, value })
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error(
-                `Falha ao persistir ${key}: HTTP ${response.status}`
-            );
-        }
-    }
-
-    function scheduleSave(key, value) {
-        const previous = pendingSaves.get(key);
-
-        if (previous) {
-            window.clearTimeout(previous);
-        }
-
-        const timeout = window.setTimeout(
-            async function () {
-                pendingSaves.delete(key);
-
-                try {
-                    await saveState(key, value);
-                } catch (error) {
-                    console.error(
-                        "PrimeWay: não foi possível sincronizar o estado com o servidor.",
-                        error
-                    );
-                }
-            },
-            200
-        );
-
-        pendingSaves.set(key, timeout);
-    }
-
-    Storage.prototype.setItem = function primewaySetItem(key, value) {
-        if (this === window.localStorage && RETIRED_STORAGE_KEYS.has(String(key))) return;
-        originalSetItem.call(this, key, value);
-
-        if (
-            this === window.localStorage &&
-            !hydrating &&
-            MANAGED_STORAGE_KEYS.has(String(key))
-        ) {
-            scheduleSave(
-                String(key),
-                String(value)
-            );
-        }
-    };
-
-    async function hydrateState() {
-        if (
-            !window.location.pathname.includes("/pages/") ||
-            window.location.pathname.endsWith("/login.html")
-        ) {
-            return;
-        }
-
-        try {
-            const response = await window.fetch(
-                STATE_API_URL,
-                {
-                    method: "GET",
-                    credentials: "same-origin",
-                    cache: "no-store",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                return;
-            }
-
-            const data = await response.json();
-
-            if (
-                !data?.success ||
-                !data.state ||
-                typeof data.state !== "object"
-            ) {
-                return;
-            }
-
-            hydrating = true;
-
-            const serverKeys =
-                new Set(
-                    Object.keys(data.state)
-                );
-
-            const writableKeys =
-                new Set(
-                    Array.isArray(data.writableKeys)
-                        ? data.writableKeys
-                        : []
-                );
-
-            for (const [key, value] of Object.entries(data.state)) {
-                if (MANAGED_STORAGE_KEYS.has(key)) {
-                    originalSetItem.call(
-                        window.localStorage,
-                        key,
-                        JSON.stringify(value)
-                    );
-                }
-            }
-
-            hydrating = false;
-
-            for (const key of writableKeys) {
-                if (
-                    !serverKeys.has(key) &&
-                    MANAGED_STORAGE_KEYS.has(key)
-                ) {
-                    const localValue =
-                        window.localStorage.getItem(key);
-
-                    if (localValue !== null) {
-                        scheduleSave(key, localValue);
-                    }
-                }
-            }
-        } catch (error) {
-            console.warn(
-                "PrimeWay: o modo offline local foi mantido.",
-                error
-            );
-        } finally {
-            hydrating = false;
-        }
-    }
 
 /*====================================================
             FEEDBACK GLOBAL - PRIMEWAY
@@ -1117,11 +927,6 @@ window.PrimeWayConfirm =
 
     window.PrimeWay = Object.freeze({
         csrfStorageKey: CSRF_STORAGE_KEY,
-        managedStorageKeys: MANAGED_STORAGE_KEYS,
         fetch: window.fetch
-    });
-
-    window.PrimeWayStorage = Object.freeze({
-        ready: hydrateState()
     });
 })();

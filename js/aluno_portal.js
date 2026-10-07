@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    await window.PrimeWayStorage?.ready;
     const PORTAL_URL="../api/aluno/index.php";
 
     function set(selector,value){const e=document.querySelector(selector);if(e)e.textContent=value===null||value===undefined||value===""?"—":String(value)}
