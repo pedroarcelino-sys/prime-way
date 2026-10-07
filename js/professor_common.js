@@ -10,7 +10,7 @@
         admin: "dashboard.html",
         aluno: "aluno_portal.html",
         responsavel: "responsavel.html",
-        secretaria: "dashboard.html"
+        secretaria: "secretaria.html"
     };
 
     let cachedSession = null;

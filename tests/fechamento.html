@@ -1,0 +1,51 @@
+<!DOCTYPE html><html lang="pt-BR"><meta charset="UTF-8"><title>Fechamento funcional</title>
+<pre id="result">Executando…</pre><script>
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+async function waitFor(fn){for(let i=0;i<300;i++){if(fn())return;await pause(25);}throw Error('Tempo limite');}
+function fixture(role){
+    window.probe={requests:[],errors:[]};
+    addEventListener('error',e=>probe.errors.push(e.message));
+    addEventListener('unhandledrejection',e=>probe.errors.push(String(e.reason)));
+    window.fetch=async(url,init={})=>{
+        const route=new URL(url,document.baseURI).pathname;probe.requests.push(route);
+        const response=data=>new Response(JSON.stringify({success:true,...data}),{headers:{'Content-Type':'application/json'}});
+        if(route.endsWith('/auth/session.php'))return response({authenticated:true,usuario:{id:1,perfil:role},csrfToken:'a'.repeat(64)});
+        if(route.endsWith('/navegacao.php'))return response({unreadNotifications:3,unreadMessages:2});
+        if(route.endsWith('/notas/index.php'))return response({schoolYear:2026,enrollment:{className:'Turma teste'},
+            subjects:[{id:4,name:'Matemática'}],periods:[{id:5,name:'Bimestre'}],students:[{studentId:7,name:'Estudante teste'}],
+            summary:{average:8,graded:1,pending:1,subjects:1},grades:[
+                {id:1,studentId:7,studentName:'Estudante teste',subjectId:4,subject:'Matemática',periodId:5,period:'Bimestre',title:'Prova relacional',type:'Prova',status:'Finalizada',date:'2026-10-07',value:8,maximum:10,normalized:8},
+                {id:2,studentId:7,studentName:'Estudante teste',subjectId:4,subject:'Matemática',periodId:5,period:'Bimestre',title:'Avaliação pendente',type:'Prova',status:'Planejada',date:'2026-10-07',value:null,maximum:10,normalized:null}
+            ]});
+        throw Error('API inesperada: '+route);
+    };
+}
+(async()=>{
+    let total=0;const check=(ok,label)=>{if(!ok)throw Error(label);total++;};
+    for(const role of ['aluno','responsavel']){
+        let html=await(await fetch('../pages/'+role+'_notas.html')).text();
+        html=html.replace(/<link\b[^>]*href="https?:[^>]*>/g,'');
+        html=html.replace(/<head>/i,'<head><base href="'+new URL('../pages/',location.href).href+'"><script>('+fixture.toString()+')('+JSON.stringify(role)+');<\/script>');
+        const f=document.createElement('iframe');f.style.cssText='width:1440px;height:1000px;border:0';f.srcdoc=html;document.body.append(f);
+        await waitFor(()=>f.contentDocument?.querySelector('#gradesList h3'));
+        const d=f.contentDocument,w=f.contentWindow,q=s=>d.querySelector(s);
+        check(q('#gradesList').textContent.includes('Prova relacional'),role+': notas da API');
+        check(q('[data-nav-badge="notifications"]').textContent==='3',role+': contador da API');
+        check(q('#reportCardLink').href.endsWith('/api/'+role+'/boletim/index.php'),role+': boletim próprio');
+        if(role==='responsavel'){
+            q('#studentFilter').value='7';q('#studentFilter').dispatchEvent(new w.Event('change'));
+            check(q('#reportCardLink').href.endsWith('?studentId=7'),'Responsável: boletim acompanha estudante selecionado');
+        }
+        q('#gradeStatusFilter').value='pending';q('#gradeStatusFilter').dispatchEvent(new w.Event('change'));
+        check(!q('#gradesList').textContent.includes('Prova relacional')&&q('#gradesList').textContent.includes('Avaliação pendente'),role+': filtro individual');
+        for(const width of [1440,390]){
+            f.style.width=width+'px';await pause(100);
+            check(d.documentElement.scrollWidth<=d.documentElement.clientWidth,role+': sem overflow '+width);
+            const r=q('#reportCardLink').getBoundingClientRect();check(r.width>0&&r.right<=width,role+': boletim acessível '+width);
+        }
+        check(!w.probe.errors.length,role+': sem erros JavaScript');
+        check(!w.probe.requests.some(x=>x.includes('/estado/')),role+': sem estado legado');f.remove();
+    }
+    document.querySelector('#result').dataset.status='passed';document.querySelector('#result').textContent=total+' verificações de fechamento aprovadas.';
+})().catch(e=>{document.querySelector('#result').dataset.status='failed';document.querySelector('#result').textContent=e.stack;});
+</script></html>

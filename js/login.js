@@ -280,7 +280,7 @@ if (
 
 
             PrimeWayFeedback.info(
-                "A recuperação de senha ainda não está disponível nesta etapa."
+                "Para recuperar seu acesso, entre em contato com a Secretaria da escola."
             );
 
         }

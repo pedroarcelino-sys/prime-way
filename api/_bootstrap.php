@@ -171,7 +171,7 @@ function primewayUsuarioSessao(): ?array
 function primewayExigirAutenticacao(): array
 {
     $usuario =
-        primewayUsuarioSessao();
+        primewayUsuarioAtualSessao();
 
 
     if (
@@ -193,6 +193,36 @@ function primewayExigirAutenticacao(): array
 
 
     return $usuario;
+}
+
+function primewayUsuarioAtualSessao(): ?array
+{
+    $usuario = primewayUsuarioSessao();
+    if (!$usuario) return null;
+    // A sessão identifica a conta; atividade e perfil atuais pertencem ao banco.
+    try {
+    $stmt = primewayPdo()->prepare(
+        'SELECT u.id,u.email,u.perfil,u.ativo,pe.ativo AS pessoa_ativa,
+                COALESCE(pe.nome,u.nome,u.email) AS nome
+         FROM usuarios u LEFT JOIN pessoas pe ON pe.id=u.pessoa_id WHERE u.id=? LIMIT 1'
+    );
+    $stmt->execute([$usuario['id']]);
+    $atual = $stmt->fetch();
+    if (!$atual || (int)$atual['ativo'] !== 1
+        || !in_array($atual['perfil'], ['admin','secretaria','professor','aluno','responsavel'], true)
+        || ($atual['pessoa_ativa'] !== null && (int)$atual['pessoa_ativa'] !== 1)) {
+        unset($_SESSION['usuario_id'], $_SESSION['usuario_email'], $_SESSION['usuario_perfil'], $_SESSION['usuario_nome']);
+        return null;
+    }
+    $usuario = ['id'=>(int)$atual['id'],'nome'=>$atual['nome'],'email'=>$atual['email'],'perfil'=>$atual['perfil']];
+    $_SESSION['usuario_perfil'] = $usuario['perfil'];
+    $_SESSION['usuario_email'] = $usuario['email'];
+    $_SESSION['usuario_nome'] = $usuario['nome'];
+    return $usuario;
+    } catch (Throwable $error) {
+        error_log('PrimeWay sessão: '.$error->getMessage());
+        primewayResponderJson(['success'=>false,'message'=>'Não foi possível validar a sessão.'],500);
+    }
 }
 
 
