@@ -15,7 +15,7 @@ function ensureStyles(){
     if(document.querySelector('link[data-primeway-chat-attachments="1"]'))return;
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="../css/chat_attachments_shared.css?v=20261005-2";
+    link.href="../css/chat_attachments_shared.css?v=20261110-1";
     link.dataset.primewayChatAttachments="1";
     document.head.append(link);
 }
