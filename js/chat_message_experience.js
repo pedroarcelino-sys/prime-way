@@ -6,8 +6,6 @@ let openMenu=null;
 let confirmDialog=null;
 let confirmResolver=null;
 let globalEventsBound=false;
-let audioContext=null;
-const processedAudios=new WeakMap();
 const messageLists=new WeakMap();
 
 function ensureStyles(){
@@ -81,79 +79,6 @@ function confirmDelete(){
     confirmDialog.returnValue="cancel";
     confirmDialog.showModal();
     return new Promise(resolve=>{confirmResolver=resolve;});
-}
-
-function getAudioContext(){
-    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
-    if(!AudioContextClass)return null;
-
-    if(!audioContext){
-        try{
-            audioContext=new AudioContextClass();
-        }catch{
-            audioContext=null;
-        }
-    }
-
-    return audioContext;
-}
-
-function prepareVoiceAudio(audio){
-    if(!audio)return null;
-    if(processedAudios.has(audio))return processedAudios.get(audio);
-
-    const context=getAudioContext();
-    if(!context)return null;
-
-    try{
-        const source=context.createMediaElementSource(audio);
-
-        const highpass=context.createBiquadFilter();
-        highpass.type="highpass";
-        highpass.frequency.value=80;
-        highpass.Q.value=.7;
-
-        const presence=context.createBiquadFilter();
-        presence.type="peaking";
-        presence.frequency.value=2600;
-        presence.Q.value=.8;
-        presence.gain.value=2.2;
-
-        const compressor=context.createDynamicsCompressor();
-        compressor.threshold.value=-24;
-        compressor.knee.value=18;
-        compressor.ratio.value=3;
-        compressor.attack.value=.004;
-        compressor.release.value=.24;
-
-        const gain=context.createGain();
-        gain.gain.value=1.08;
-
-        source.connect(highpass);
-        highpass.connect(presence);
-        presence.connect(compressor);
-        compressor.connect(gain);
-        gain.connect(context.destination);
-
-        const chain={context,source,highpass,presence,compressor,gain};
-        processedAudios.set(audio,chain);
-        return chain;
-    }catch{
-        return null;
-    }
-}
-
-async function resumeVoiceAudio(audio){
-    const chain=prepareVoiceAudio(audio);
-    if(!chain?.context)return;
-
-    if(chain.context.state==="suspended"){
-        try{
-            await chain.context.resume();
-        }catch{
-            // O áudio continua podendo tocar pelo elemento HTML sem o processamento.
-        }
-    }
 }
 
 function enhanceAudio(root){
@@ -254,8 +179,8 @@ function enhanceAudio(root){
             setLoading(true);
 
             try{
-                await resumeVoiceAudio(audio);
-
+                // Reprodução nativa: não redirecionar o áudio por WebAudio,
+                // o que pode causar silêncio quando o contexto é suspenso.
                 if(audio.ended||Number.isFinite(audio.duration)&&audio.currentTime>=audio.duration){
                     audio.currentTime=0;
                 }

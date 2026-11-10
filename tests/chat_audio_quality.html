@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<meta charset="UTF-8">
+<title>Regressão da qualidade dos áudios — PrimeWay</title>
+<h1>Teste da captura e reprodução de áudio</h1>
+<pre id="result">Executando…</pre>
+<form id="form"><textarea id="message" placeholder="Mensagem"></textarea></form>
+<div id="messages"></div>
+<script>
+let requestedConstraints=null;
+let recorderOptions=null;
+let recorderStartArgument=null;
+let microphoneStopped=false;
+let audioGraphCalls=0;
+let uploadedFile=null;
+let revokedPreviewUrl=null;
+
+window.AudioContext=class{
+    constructor(){audioGraphCalls+=1;throw new Error("O player não deve criar um grafo de áudio.");}
+};
+const originalRevoke=URL.revokeObjectURL.bind(URL);
+URL.revokeObjectURL=url=>{revokedPreviewUrl=url;originalRevoke(url);};
+
+Object.defineProperty(navigator,"mediaDevices",{
+    configurable:true,
+    value:{
+        async getUserMedia(constraints){
+            requestedConstraints=constraints;
+            return{getTracks:()=>[{stop(){microphoneStopped=true;}}]};
+        }
+    }
+});
+window.MediaRecorder=class extends EventTarget{
+    static isTypeSupported(type){return type==="audio/webm;codecs=opus";}
+    constructor(stream,options={}){
+        super();recorderOptions=options;
+        this.mimeType=options.mimeType||"audio/webm";
+        this.state="inactive";
+    }
+    start(interval){recorderStartArgument=interval;this.state="recording";}
+    stop(){
+        this.state="inactive";
+        queueMicrotask(()=>{
+            const event=new Event("dataavailable");
+            Object.defineProperty(event,"data",{
+                value:new Blob(["conteudo-de-audio"],{type:this.mimeType})
+            });
+            this.dispatchEvent(event);
+            this.dispatchEvent(new Event("stop"));
+        });
+    }
+};
+window.fetch=async(url,options)=>{
+    uploadedFile=options?.body?.get("file")||null;
+    return new Response('{"success":true}',{status:200,headers:{"Content-Type":"application/json"}});
+};
+</script>
+<script src="../js/chat_attachments_shared.js"></script>
+<script src="../js/chat_message_experience.js"></script>
+<script>
+(async()=>{
+    const output=document.querySelector("#result"),passed=[];
+    const check=(value,description)=>{
+        if(!value)throw new Error(description);
+        passed.push("[OK] "+description);
+    };
+    const settle=()=>new Promise(resolve=>setTimeout(resolve,0));
+    try{
+        const form=document.querySelector("#form");
+        const input=document.querySelector("#message");
+        const composer=window.PrimeWayChatAttachments.createComposer({
+            form,input,csrfToken:"teste"
+        });
+        const mic=form.querySelector(".pw-chat-audio-button");
+        mic.click();
+        await settle();
+        check(requestedConstraints?.audio?.echoCancellation?.ideal===true,
+            "A captura solicita cancelamento de eco");
+        check(requestedConstraints?.audio?.noiseSuppression?.ideal===true,
+            "A captura solicita redução de ruído");
+        check(requestedConstraints?.audio?.autoGainControl?.ideal===true,
+            "A captura solicita controle de ganho");
+        check(recorderOptions?.audioBitsPerSecond===96000,
+            "Codificação de voz em 96 kbps quando suportada");
+        check(recorderStartArgument===undefined,
+            "A gravação mantém o fluxo contínuo");
+        mic.click();
+        await settle();
+        check(microphoneStopped,"Microfone liberado após parar");
+        check(composer.hasFile(),"Áudio gravado disponível para envio");
+
+        const preview=form.querySelector(".pw-chat-selected-meta audio");
+        check(preview&&!preview.hidden&&preview.src.startsWith("blob:"),
+            "Prévia de áudio disponível antes do envio");
+        const previewUrl=preview.src;
+        await composer.upload({conversationId:1});
+        check(uploadedFile instanceof File&&uploadedFile.type.startsWith("audio/"),
+            "Arquivo original de áudio enviado sem transcodificação");
+        composer.clear();
+        check(preview.hidden&&revokedPreviewUrl===previewUrl,
+            "Remoção libera a URL temporária da prévia");
+
+        const card=document.createElement("div");
+        card.className="pw-chat-audio-card";
+        const playback=document.createElement("audio");
+        card.append(playback);
+        document.querySelector("#messages").append(card);
+        let playCalls=0;
+        playback.play=()=>{playCalls+=1;return Promise.resolve();};
+        window.PrimeWayChatMessageExperience.enhanceAudio(card.parentNode);
+        card.querySelector(".pw-chat-voice-play").click();
+        await settle();
+        check(playCalls===1,"Player inicia a reprodução diretamente no elemento");
+        check(audioGraphCalls===0,"Player não cria filtros que possam silenciar o áudio");
+
+        output.textContent=passed.join("\n");
+        output.dataset.status="passed";
+    }catch(error){
+        output.textContent=passed.concat("[FALHA] "+error.message).join("\n");
+        output.dataset.status="failed";
+    }
+})();
+</script>
+</html>
