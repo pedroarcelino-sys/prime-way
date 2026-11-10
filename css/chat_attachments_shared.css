@@ -153,6 +153,18 @@
     color: #8490a5;
 }
 
+.pw-chat-selected-meta audio {
+    display: block;
+    width: 100%;
+    max-width: 330px;
+    height: 34px;
+    margin-top: 7px;
+}
+
+.pw-chat-selected-meta audio[hidden] {
+    display: none;
+}
+
 .pw-chat-remove-file {
     width: 30px !important;
     min-width: 30px;
