@@ -346,11 +346,19 @@ function createAudioRecorder({
         }
 
         try{
-            stream=await navigator.mediaDevices.getUserMedia({audio:true});
+            stream=await navigator.mediaDevices.getUserMedia({
+                audio:{
+                    // Preferências flexíveis: o navegador negocia os recursos disponíveis.
+                    echoCancellation:{ideal:true},
+                    noiseSuppression:{ideal:true},
+                    autoGainControl:{ideal:true},
+                    channelCount:{ideal:1}
+                }
+            });
             const mime=chooseRecorderMime();
             try{
                 recorder=mime
-                    ?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:64000})
+                    ?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:96000})
                     :new MediaRecorder(stream);
             }catch{
                 recorder=new MediaRecorder(stream);
@@ -396,7 +404,7 @@ function createAudioRecorder({
             },{once:true});
 
             setRecordingUi(true);
-            recorder.start(250);
+            recorder.start();
             timer=window.setInterval(()=>{
                 const seconds=recordingSeconds();
                 time.textContent=formatDuration(seconds);
@@ -464,7 +472,12 @@ function createComposer({form,input,csrfToken,uploadUrl="../api/chat/upload.php"
     selectedMeta.className="pw-chat-selected-meta";
     const selectedName=document.createElement("strong");
     const selectedSize=document.createElement("span");
-    selectedMeta.append(selectedName,selectedSize);
+    const audioPreview=document.createElement("audio");
+    audioPreview.controls=true;
+    audioPreview.preload="metadata";
+    audioPreview.hidden=true;
+    audioPreview.setAttribute("aria-label","Ouvir áudio antes de enviar");
+    selectedMeta.append(selectedName,selectedSize,audioPreview);
 
     const removeButton=document.createElement("button");
     removeButton.type="button";
@@ -495,6 +508,7 @@ function createComposer({form,input,csrfToken,uploadUrl="../api/chat/upload.php"
     wrapper.append(selected,row,fileInput);
 
     let selectedFile=null;
+    let previewUrl=null;
     let composerEnabled=true;
 
     function reportError(message){
@@ -504,6 +518,13 @@ function createComposer({form,input,csrfToken,uploadUrl="../api/chat/upload.php"
 
     function clear(){
         selectedFile=null;
+        audioPreview.pause();
+        audioPreview.removeAttribute("src");
+        audioPreview.hidden=true;
+        if(previewUrl){
+            URL.revokeObjectURL(previewUrl);
+            previewUrl=null;
+        }
         fileInput.value="";
         selected.hidden=true;
         selectedName.textContent="";
@@ -513,6 +534,7 @@ function createComposer({form,input,csrfToken,uploadUrl="../api/chat/upload.php"
 
     function chooseFile(file,meta={}){
         if(!file){clear();return false;}
+        clear();
         const extension=extensionOf(file.name);
         if(!ACCEPTED_EXTENSIONS.includes(extension)){
             clear();reportError("Formato de arquivo não permitido no chat.");return false;
@@ -527,6 +549,11 @@ function createComposer({form,input,csrfToken,uploadUrl="../api/chat/upload.php"
         selectedSize.textContent=audio&&Number.isFinite(meta.duration)
             ?`${formatDuration(meta.duration)} • ${formatSize(file.size)}`
             :formatSize(file.size);
+        if(audio){
+            previewUrl=URL.createObjectURL(file);
+            audioPreview.src=previewUrl;
+            audioPreview.hidden=false;
+        }
         selected.hidden=false;
         return true;
     }
