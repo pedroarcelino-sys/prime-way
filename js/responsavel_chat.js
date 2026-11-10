@@ -11,7 +11,7 @@ async function loadAttachmentModule(){
         }
 
         const script=document.createElement("script");
-        script.src="../js/chat_attachments_shared.js?v=20261005-2";
+        script.src="../js/chat_attachments_shared.js?v=20261110-1";
         script.dataset.primewayChatAttachments="1";
         script.addEventListener("load",resolve,{once:true});
         script.addEventListener("error",reject,{once:true});
